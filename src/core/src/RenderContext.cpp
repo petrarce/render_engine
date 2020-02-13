@@ -23,6 +23,7 @@ RenderContext::RenderContext() {
 
     SDL_GL_SetSwapInterval(1); // v-sync
     auto gl_context = SDL_GL_CreateContext(m_Window);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     glewExperimental = true;
     glewInit();
@@ -117,7 +118,7 @@ RenderContext::drawIndex(PrimitiveType p, int size) {
 
 }
 
-void
+/*void
 RenderContext::drawDepthMap(Shader & shader, Texture & texture) {
     glViewport(0,0,800,600);
     shader.activate();
@@ -126,7 +127,7 @@ RenderContext::drawDepthMap(Shader & shader, Texture & texture) {
     m_Quad.bindVertexArray();
     draw(m_Quad,PrimitiveType::Triangle);
 }
-
+*/
 void
 RenderContext::swapBuffers() {
     SDL_GL_SwapWindow(m_Window);

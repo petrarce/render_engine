@@ -1,25 +1,31 @@
-cmake_minimum_required(VERSION 2.8)
-#specify project
-project( Animation )
-SET(CMAKE_CXX_FLAGS "-std=c++14")
-# The following folder will be included
-include_directories(${PROJECT_SOURCE_DIR})
-include_directories(
-	src
-)
+# stop if cmake version below 3.5
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-add_executable(animation ${PROJECT_SOURCE_DIR}/src/main.cpp
-                ${PROJECT_SOURCE_DIR}/src/RenderAbstraction
-                ${PROJECT_SOURCE_DIR}/src/Texture
-                ${PROJECT_SOURCE_DIR}/src/main
-                ${PROJECT_SOURCE_DIR}/src/Mesh
-                ${PROJECT_SOURCE_DIR}/src/RenderContext
-                ${PROJECT_SOURCE_DIR}/src/VertexArray
-                ${PROJECT_SOURCE_DIR}/src/Camera
-                ${PROJECT_SOURCE_DIR}/src/Shader
-                ${PROJECT_SOURCE_DIR}/src/FrameBuffer
-                ${PROJECT_SOURCE_DIR}/src/AnimationController
-                ${PROJECT_SOURCE_DIR}/src/Animation
-                ${PROJECT_SOURCE_DIR}/src/AssimpLoader
-                ${PROJECT_SOURCE_DIR}/src/KeyBoardHandler
-               )
+# project name and supported languages
+project(example CXX)
+
+# detect operating system and host processor
+message(STATUS "We are on a ${CMAKE_SYSTEM_NAME} system")
+message(STATUS "The host processor is ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+
+# place binaries and libraries according to GNU standards
+include(GNUInstallDirs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+# project version
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+if(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+endif()
+
+add_subdirectory(src/core/)
+add_subdirectory(src/apps/skeletal/)
+

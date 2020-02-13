@@ -1,7 +1,6 @@
 #pragma once
-#include "VertexArray.hpp"
-#include "Shader.hpp"
-#include "Texture.hpp"
+#include <VertexArray.hpp>
+#include <Shader.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <SDL2/SDL.h>
@@ -50,9 +49,9 @@ public:
    void
    drawIndex(PrimitiveType p, int size);
 
-   void
+/*   void
    drawDepthMap(Shader & shader, Texture &texture);
-
+*/
    void
    swapBuffers();
 
