@@ -19,13 +19,10 @@ struct Camera
         return glm::lookAt(Position, Position + LookAt, LookUp);
     }
 
-    void rotateCamera(struct ProgramState& state){
-        rotateCamera(state.mouseMove.x, 
-                    state.mouseMove.y, 
-                    state.camera.maxAngle, 
-                    state.camera.sensitivity);
-    }
     void update(struct ProgramState& state){
+        if(!state.camera.active){
+            return;
+        }
         rotateCamera(state.mouseMove.x, 
                     state.mouseMove.y, 
                     state.camera.maxAngle, 

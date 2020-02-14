@@ -55,6 +55,14 @@ public:
    void
    swapBuffers();
 
+   SDL_GLContext getContext(){
+      return SDL_GL_GetCurrentContext();
+   }
+
+   SDL_Window* getWindow(){
+      return m_Window;
+   }
+
 private:
    SDL_Window * m_Window;
 
