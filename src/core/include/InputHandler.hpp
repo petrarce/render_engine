@@ -46,6 +46,14 @@ public:
                         case SDL_SCANCODE_S:
                         state.camera.move.back = true;
                         break;
+
+                        case SDL_SCANCODE_Q:
+                        state.camera.move.up = true;
+                        break;
+
+                        case SDL_SCANCODE_E:
+                        state.camera.move.down = true;
+                        break;
                     }
                     break;
                 }
@@ -66,6 +74,14 @@ public:
                         
                         case SDL_SCANCODE_S:
                         state.camera.move.back = false;
+                        break;
+
+                        case SDL_SCANCODE_Q:
+                        state.camera.move.up = false;
+                        break;
+                        
+                        case SDL_SCANCODE_E:
+                        state.camera.move.down = false;
                         break;
                     }
                     break;
