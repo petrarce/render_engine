@@ -23,7 +23,7 @@ RenderContext::RenderContext() {
 
     SDL_GL_SetSwapInterval(1); // v-sync
     auto gl_context = SDL_GL_CreateContext(m_Window);
-    SDL_SetRelativeMouseMode(SDL_TRUE);
+    //SDL_SetRelativeMouseMode(SDL_TRUE);
 
     glewExperimental = true;
     glewInit();

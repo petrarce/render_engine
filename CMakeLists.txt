@@ -27,5 +27,6 @@ else()
 endif()
 
 add_subdirectory(src/core/)
+add_subdirectory(src/DearImGui/)
 add_subdirectory(src/apps/)
 

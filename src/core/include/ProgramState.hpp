@@ -21,6 +21,7 @@ struct ProgramState {
 			char down : 1;
 		} move;
 		float velocity;
+		bool active;
 	} camera;
 	struct {
 		unsigned int before;
