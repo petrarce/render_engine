@@ -17,6 +17,8 @@ struct ProgramState {
 			char back : 1;
 			char left : 1;
 			char right : 1;
+			char up : 1;
+			char down : 1;
 		} move;
 		float velocity;
 	} camera;
@@ -29,7 +31,7 @@ struct ProgramState {
 	ProgramState(unsigned int currentMs):
 		quit(false),
 		mouseMove({0, 0}),
-		camera({30, 1.0f, {0,0,0,0}, 0.001}),
+		camera({30, 1.0f, {0,0,0,0,0,0}, 0.001}),
 		time({currentMs, currentMs}){
 			for(unsigned char& state : keyStates){
 				state = false;

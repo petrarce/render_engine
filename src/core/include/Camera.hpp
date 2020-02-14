@@ -34,6 +34,8 @@ struct Camera
                    state.camera.move.back,
                    state.camera.move.left,
                    state.camera.move.right,
+                   state.camera.move.up,
+                   state.camera.move.down,
                    state.camera.velocity,
                    state.time.after - state.time.before);
     }
@@ -45,16 +47,20 @@ private:
                bool backward,
                bool left,
                bool right,
+               bool up,
+               bool down,
                float velocity,
                float dt)
     {
         glm::vec3 leftDir = glm::normalize(glm::cross(LookUp, LookAt));
+        glm::vec3 upDir   = glm::normalize(glm::cross(LookAt, leftDir));
         Position += dt * velocity * left * leftDir;
         Position -= dt * velocity * right * leftDir;
         Position += dt * velocity * foreward * normalize(LookAt);
         Position -= dt * velocity * backward * normalize(LookAt);
+        Position += dt * velocity * up * upDir;
+        Position -= dt * velocity * down * upDir;
     }
-
     void rotateCamera(int dx, int dy, int maxAngle, float sensitivity){
         //no need to rotate view and alternative vectors
         if(dx + dy == 0){
@@ -67,18 +73,20 @@ private:
         auto Normal = glm::normalize(LookAt);
 
         constexpr float degreToRad = 3.14 / 360.0f;
-        float dxAngle = dx * degreToRad;
-        float dyAngle = dy * degreToRad;
+        float dxAngle = dx * degreToRad * sensitivity;
+        float dyAngle = dy * degreToRad * sensitivity;
 
         auto n1 = glm::mat3(glm::rotate(glm::mat4(1.0f), dxAngle, Bitangent)) * Normal;
         auto n2 = glm::mat3(glm::rotate(glm::mat4(1.0f), dyAngle, Tangent)) * Normal;
 
         auto newNormal = normalize(glm::normalize(n1 + n2));
         auto axe = glm::cross(Normal, newNormal);
-        float angle = acos(dot(newNormal, Normal)) * sensitivity;
+        float angle = acos(dot(newNormal, Normal));
         auto transl = glm::mat3(glm::rotate(glm::mat4(1.0f), angle, axe));
 
         LookAt = glm::normalize(transl * LookAt);
+        LookUp = glm::normalize(transl * LookUp);
+
     }
     glm::vec3 LookUp;
     glm::vec3 LookAt;
