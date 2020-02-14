@@ -39,15 +39,18 @@ int main(int argc, char** argv) {
 
       //update camera
       cam.update(state);
+
+      //update context
       rctx.enableDepthTest();
       rctx.clearColor(0.0f, 0.0f, 0.1f, 1.0f);
       rctx.clearColorBuffer();
       rctx.clearDepthBuffer();
 
-
+      //initialise shader
       shader.activate();
       shader["mvp"] = cam.getProjection() * cam.getView() * model;
 
+      //Draw all
       myModel.Draw(shader);
       rctx.swapBuffers();
    }
