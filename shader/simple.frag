@@ -1,8 +1,23 @@
 #version 330 core
-out vec4 col;
-in vec3 nrm;
-in vec3 color;
+in vec3 Normal;
+in vec2 TextureCoord;
+
+out vec4 FragColor;
+
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
+
+uniform vec3 defaultDiffuse;
+uniform vec3 defaultSpecular;
+uniform bool useDiffuse;
+uniform bool useSpecular;
+
+
 void main()
 {
-  col = vec4(vec3(nrm),1.0);
+	if(useDiffuse){
+		FragColor = vec4(vec3(texture(texture_diffuse1, TextureCoord)),1.0f);
+		return;
+	}
+	FragColor = vec4(Normal, 1.0f);
 }

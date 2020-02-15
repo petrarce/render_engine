@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <SDL2/SDL.h>
+#include <ProgramState.hpp>
+
 
 
 enum class PrimitiveType { Point, TriangleStrip, Triangle };
@@ -15,6 +17,8 @@ public:
    RenderContext();
    ~RenderContext(){}
 
+   void 
+   enableSRGB();  
 
    void
    enableDepthTest();
@@ -62,6 +66,17 @@ public:
    SDL_Window* getWindow(){
       return m_Window;
    }
+
+   void initGui();
+
+   void updateGui(struct ProgramState& state);
+
+   void drawGui();
+
+   void ShowStatisticsWindow(struct ProgramState& state);
+   void ShowConfigsWidget(struct ProgramState& state);
+
+
 
 private:
    SDL_Window * m_Window;

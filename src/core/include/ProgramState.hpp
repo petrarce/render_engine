@@ -28,12 +28,23 @@ struct ProgramState {
 		unsigned int after;
 	} time;
 	std::array<unsigned char, SDL_NUM_SCANCODES> keyStates;
+	unsigned long long int frame;
+	struct {
+		struct {
+            float r;
+            float g;
+            float b;
+            float a;
+        } color;
+	}window;
 
 	ProgramState(unsigned int currentMs):
 		quit(false),
 		mouseMove({0, 0}),
 		camera({30, 1.0f, {0,0,0,0,0,0}, 0.001}),
-		time({currentMs, currentMs}){
+		time({currentMs, currentMs}),
+		frame(0),
+		window({{0,0,0,0}}){
 			for(unsigned char& state : keyStates){
 				state = false;
 			}

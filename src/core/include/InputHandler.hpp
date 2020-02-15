@@ -8,6 +8,7 @@ public:
     static void handleInput(struct ProgramState& state){
         SDL_Event e;
         
+        state.frame++;
         state.mouseMove.x = 0;
         state.mouseMove.y = 0;
 

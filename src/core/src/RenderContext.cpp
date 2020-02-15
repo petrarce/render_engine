@@ -5,7 +5,22 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <GL/glew.h>
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_impl_opengl3.h>
 
+static void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
 
 RenderContext::RenderContext() {
 
@@ -65,6 +80,10 @@ int mapToGl ( DepthFunction d ) {
     return lut[ static_cast<int>( d )];
 }
 
+void 
+RenderContext::enableSRGB(){
+    glEnable(GL_FRAMEBUFFER_SRGB); 
+}
 void
 RenderContext::enableDepthTest() {
     glEnable( GL_DEPTH_TEST );
@@ -111,6 +130,40 @@ RenderContext::draw( VertexArray & VertexArray,
     glBindVertexArray( 0 );
 }
 
+void RenderContext::initGui()
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplSDL2_InitForOpenGL(getWindow(), getContext());
+    const char* glsl_version = "#version 130";
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+}
+
+void RenderContext::updateGui(struct ProgramState& state)
+{
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplSDL2_NewFrame(getWindow());
+      ImGui::NewFrame();
+      ImGui::ShowDemoWindow();
+      ShowStatisticsWindow(state);
+      ShowConfigsWidget(state);
+      ImGui::Render();
+}
+void RenderContext::drawGui()
+{
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
 void
 RenderContext::drawIndex(PrimitiveType p, int size) {
     glDrawElements(mapToGl( p ), size, GL_UNSIGNED_INT, 0);
@@ -131,4 +184,34 @@ RenderContext::drawDepthMap(Shader & shader, Texture & texture) {
 void
 RenderContext::swapBuffers() {
     SDL_GL_SwapWindow(m_Window);
+}
+
+void RenderContext::ShowStatisticsWindow(struct ProgramState& state)
+{
+      ImGui::Begin("Statistics");
+      {
+        static int latestTime = SDL_GetTicks();
+        int dT = SDL_GetTicks() - latestTime;
+
+        ImGui::BulletText("Framerate: %3.1f fps\n", (1000.0f * float(state.frame) / dT));
+        if(dT > 1000){
+          latestTime = SDL_GetTicks();
+          state.frame = 0;
+        }
+      }
+      ImGui::End();
+}
+
+void RenderContext::ShowConfigsWidget(struct ProgramState& state)
+{
+    ImGui::Begin("Configurations");
+        ImGui::Text("Edit background");
+        ImGui::SameLine(); HelpMarker("Configure background color"); ImGui::SameLine();
+        ImGui::ColorEdit4("MyColor##3", (float*)&state.window.color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+    
+        ImGui::SliderFloat("Camera velocity", &state.camera.velocity, 0.001f, 0.01f, "%.3f m/s");
+
+        ImGui::SliderFloat("Mouse sensitivity", &state.camera.sensitivity, 0.1f, 5.0f, "%.3f");
+
+    ImGui::End();
 }
