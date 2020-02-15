@@ -6,11 +6,11 @@ layout(location=2) in vec2 texCoord;
 
 uniform mat4 mvp;
 
-out vec3 nrm;
-out vec3 color;
+out vec3 Normal;
+out vec2 TextureCoord;
 void main()
 {
-   nrm = normalize(normal);
-
+   Normal = normalize(normal);
+   TextureCoord = texCoord;
    gl_Position = mvp*vec4(pos,1.0);
 }

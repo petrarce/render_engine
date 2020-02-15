@@ -12,18 +12,24 @@ void Mesh::Draw(Shader shader)
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
+    shader["useDiffuse"] = 0;
+    shader["useSpecular"] = 0;
     for(unsigned int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
         string number;
         string name = textures[i].type;
-        if(name == "texture_diffuse")
+        if(name == "texture_diffuse"){
             number = std::to_string(diffuseNr++);
-        else if(name == "texture_specular")
+            shader["useDiffuse"] = 1;
+        }
+        else if(name == "texture_specular"){
             number = std::to_string(specularNr++);
+            shader["useSpecular"] = 1;
+        }
 
-        shader["material." + name + number] = int(i);
+        shader[name + number] = int(i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
     glActiveTexture(GL_TEXTURE0);
