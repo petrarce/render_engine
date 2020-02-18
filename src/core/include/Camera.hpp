@@ -20,7 +20,7 @@ struct Camera
     }
 
     void update(struct ProgramState& state){
-        if(!state.camera.active){
+        if(!state.active){
             return;
         }
         rotateCamera(state.mouseMove.x, 
@@ -35,6 +35,14 @@ struct Camera
                    state.camera.move.down,
                    state.camera.velocity,
                    state.time.after - state.time.before);
+        if(state.light.moveToCamera){
+            state.light.position = this->Position;
+            state.light.moveToCamera = false;
+        }
+    }
+    glm::vec3 getPosition()
+    {
+        return Position;
     }
 private:
     void clamp(int& val, int clamp){

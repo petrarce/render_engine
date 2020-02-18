@@ -16,13 +16,13 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     string filename = string(path);
     filename = directory + '/' + filename;
 
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
+    unsigned int textureID = -1;
 
     int width, height, nrComponents;
     unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
+        glGenTextures(1, &textureID);
         GLenum internalFormat;
         GLenum dataFormat;
 
@@ -161,6 +161,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vector<Texture_s> specularMaps = loadMaterialTextures(material, 
                                             aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());    
+        vector<Texture_s> normalMaps = loadMaterialTextures(material, 
+                                            aiTextureType_NORMALS, "texture_normal");
+        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());    
     }
 
     return Mesh(vertices, indices, textures);}
@@ -173,11 +176,27 @@ vector<Texture_s> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType typ
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture_s Texture_s;
-        Texture_s.id = TextureFromFile(str.C_Str(), directory);
-        Texture_s.type = typeName;
-        Texture_s.path = string(str.C_Str());
-        textures.push_back(Texture_s);
+        Texture_s Texture;
+        Texture.id = TextureFromFile(str.C_Str(), directory);
+        Texture.type = typeName;
+        Texture.path = string(str.C_Str());
+        textures.push_back(Texture);
     }
     return textures;
+}
+
+void Model::loadNormalMapTexture(string path){
+    Texture_s Texture;
+    pr_info("Loading normal map %s ", path.c_str());
+    string directory = path.substr(0, path.find_last_of('/'));
+    Texture.id = TextureFromFile(path.c_str(), directory, false);
+    if(Texture.id == -1){
+        return;
+    }
+    Texture.type = "texture_normal";
+    Texture.path = path.c_str();
+    for(Mesh& mesh : meshes){
+        mesh.textures.push_back(Texture);
+    }
+    pr_info("Normal map %s loaded sucessfully", (directory + path).c_str());
 }

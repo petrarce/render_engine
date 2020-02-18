@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
    shader.bindShader(shaderFg);
 
    Model myModel(modelPath.c_str());
+   myModel.loadNormalMapTexture(argv[4]);
 
    glm::mat4 model(1.f);
    model            = glm::scale(model,glm::vec3(0.08f));
@@ -45,7 +46,9 @@ int main(int argc, char** argv) {
       InputHandler::handleInput(state);
 
       //update camera
-      cam.update(state);
+      if(state.active){
+        cam.update(state);
+      }
 
       //update context
       rctx.clearColor(state.window.color.r, state.window.color.g, state.window.color.b, state.window.color.a);
@@ -55,7 +58,20 @@ int main(int argc, char** argv) {
       //initialise shader
       shader.activate();
       shader["mvp"] = cam.getProjection() * cam.getView() * model;
+      shader["model"] = model;
       shader["defaultDiffuse"] = glm::vec3(0.1,0.2,0.6);
+      shader["lightPosition"] = state.light.position;
+      shader["lightColor"] = glm::vec3(state.light.color);
+      shader["camPosition"] = cam.getPosition();
+      shader["ambFactor"] = state.light.model.ambient.factor;
+      shader["specFactor"] = state.light.model.specular.factor;
+      shader["diffFactor"] = state.light.model.diffuse.factor;
+      shader["lightingModel"] = state.light.model.specular.type;
+      shader["rghness"] = state.light.model.specular.roughness;
+      shader["frnlFactor"] = state.light.model.specular.fresnel;
+      shader["metalicness"] = state.light.model.specular.metalicness;
+      shader["mode"] = state.mode;
+
 
       //Draw all
       myModel.Draw(shader);
