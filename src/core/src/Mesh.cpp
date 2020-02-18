@@ -1,5 +1,5 @@
 #include <Mesh.hpp>
-
+#include <types.hpp>
 Mesh::Mesh(const vector<Vertex_s>& vertices, const vector<unsigned int>& indeces, const vector<Texture_s>& textures)
 {
 	this->vertices = vertices;
@@ -12,8 +12,10 @@ void Mesh::Draw(Shader shader)
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
+    unsigned int normalNr = 1;
     shader["useDiffuse"] = 0;
     shader["useSpecular"] = 0;
+    shader["hasNormalMap"] = 0;
     for(unsigned int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
@@ -22,12 +24,17 @@ void Mesh::Draw(Shader shader)
         string name = textures[i].type;
         if(name == "texture_diffuse"){
             number = std::to_string(diffuseNr++);
-            shader["useDiffuse"] = 1;
+            shader["hasDiffuseMap"] = 1;
         }
         else if(name == "texture_specular"){
             number = std::to_string(specularNr++);
-            shader["useSpecular"] = 1;
+            shader["hasSpecularMap"] = 1;
         }
+        else if(name == "texture_normal"){
+            number = std::to_string(normalNr++);
+            shader["hasNormalMap"] = 1;
+        }
+
 
         shader[name + number] = int(i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);

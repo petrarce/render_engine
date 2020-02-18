@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+#include <types.hpp>
 
 static void HelpMarker(const char* desc)
 {
@@ -207,11 +208,39 @@ void RenderContext::ShowConfigsWidget(struct ProgramState& state)
     ImGui::Begin("Configurations");
         ImGui::Text("Edit background");
         ImGui::SameLine(); HelpMarker("Configure background color"); ImGui::SameLine();
-        ImGui::ColorEdit4("MyColor##3", (float*)&state.window.color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+        ImGui::ColorEdit4("BGColor", (float*)&state.window.color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
     
+        ImGui::Text("Light color");
+        ImGui::SameLine(); HelpMarker("Configure light color"); ImGui::SameLine();
+        ImGui::ColorEdit4("LColor", (float*)&state.light.color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+
+
         ImGui::SliderFloat("Camera velocity", &state.camera.velocity, 0.001f, 0.01f, "%.3f m/s");
 
         ImGui::SliderFloat("Mouse sensitivity", &state.camera.sensitivity, 0.1f, 5.0f, "%.3f");
+
+        ImGui::Text("Rendering mode");
+        ImGui::RadioButton("Aldebo", &state.mode, RenderingMode::ALDEBO); ImGui::SameLine();
+        ImGui::RadioButton("Normal map", &state.mode, RenderingMode::NORMALMAP); ImGui::SameLine();
+        ImGui::RadioButton("Roughness map", &state.mode, RenderingMode::ROUGHNESS); ImGui::SameLine();
+        ImGui::RadioButton("Height/bump map", &state.mode, RenderingMode::HEIGHT);
+
+        if(state.mode == RenderingMode::ALDEBO){
+            ImGui::SliderFloat("Ambient Factor", &state.light.model.ambient.factor, 0.0f, 1.0f, "%.3f");            
+            ImGui::Text("Specular Model");
+            ImGui::RadioButton("Phong", &state.light.model.specular.type, SpecularTypes::PHONG); ImGui::SameLine();
+            ImGui::RadioButton("Blinn Phong", &state.light.model.specular.type, SpecularTypes::BLINNPHONG); ImGui::SameLine();
+            ImGui::RadioButton("GGX", &state.light.model.specular.type, SpecularTypes::GGX);
+            if(state.light.model.specular.type == SpecularTypes::GGX){
+                ImGui::SliderFloat("Roughness", &state.light.model.specular.roughness, 0.0f, 1.0f, "%.3f");
+                ImGui::SliderFloat("Fresnel", &state.light.model.specular.fresnel, 0.0f, 1.0f, "%.3f");
+                ImGui::SliderFloat("Metalicness", &state.light.model.specular.metalicness, 0.0f, 1.0f, "%.3f");
+            } else {
+                ImGui::SliderFloat("Specular Intensity", &state.light.model.specular.factor, 0.0f, 50.0f, "%.3f");
+                ImGui::SliderFloat("Diffuse Factor", &state.light.model.diffuse.factor, 0.0f, 1.0f, "%.3f");
+            }
+        }
+
 
     ImGui::End();
 }

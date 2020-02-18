@@ -21,6 +21,8 @@ class Model
             loadModel(path);
             return *this;
         };
+        void loadNormalMapTexture(string path);
+
     private:
         /*  Model Data  */
         vector<Mesh> meshes;

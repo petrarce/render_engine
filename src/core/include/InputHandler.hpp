@@ -57,7 +57,7 @@ public:
                         break;
 
                         case SDL_SCANCODE_LSHIFT:
-                        state.camera.active = true;
+                        state.active = true;
                         break;
                     }
                     break;
@@ -90,12 +90,21 @@ public:
                         break;
 
                         case SDL_SCANCODE_LSHIFT:
-                        state.camera.active = false;
+                        state.active = false;
                         break;
 
                     }
                     break;
                 }
+                case SDL_MOUSEBUTTONDOWN:
+                pr_info("mouse button pressed, id:%d", e.button.button);
+                    switch(e.button.button){
+                        case SDL_BUTTON_RIGHT:
+                        pr_info("right mouse pressed");
+                        state.light.moveToCamera = true;
+                        break;
+                    }
+                break;
                 default:
                 //cout << "unsupported input" << endl;
                 break; 
