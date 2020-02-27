@@ -24,7 +24,8 @@ int main(int argc, char** argv) {
    shader.bindShader(shaderFg);
 
    Model myModel(modelPath.c_str());
-   myModel.loadNormalMapTexture(argv[4]);
+   if(argc == 5)
+      myModel.loadNormalMapTexture(argv[4]);
 
    glm::mat4 model(1.f);
    model            = glm::scale(model,glm::vec3(0.08f));
