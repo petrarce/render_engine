@@ -15,14 +15,14 @@ out vec3 Bitangent;
 void main()
 {
    Normal = normalize(mat3(transpose(inverse(model))) * normal) ;
-/*   if(abs(dot(Normal, vec3(0,1,0))) < 0.001){
+   if(1 - abs(dot(Normal, vec3(0,1,0))) < 0.001){
         Tangent = normalize(cross(Normal, vec3(1,0,0)));
         Bitangent = normalize(cross(Normal, Tangent));
    } else {
-*/        Tangent = normalize(cross(Normal, vec3(0,1,0)));
+        Tangent = normalize(cross(Normal, vec3(0,1,0)));
         Bitangent = normalize(cross(Normal, Tangent));
-/*   }
-*/   TextureCoord = texCoord;
+   }
+   TextureCoord = texCoord;
    WorldPos = vec3(model * vec4(pos, 1));
    gl_Position = mvp*vec4(pos,1.0);
 }

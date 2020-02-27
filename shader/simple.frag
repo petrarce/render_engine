@@ -156,6 +156,7 @@ void main()
 
 	if(hasNormalMap){
 		mat3 trsf = mat3(Tangent, Bitangent, Normal);
+		normal = vec3(texture(texture_normal1, TextureCoord)) * 2 - vec3(1.0f);
 		normal = normalize(trsf * vec3(texture(texture_normal1, TextureCoord)));
 	} 
 
@@ -166,7 +167,8 @@ void main()
 
 	switch(mode){
 		case NORMALMAP:
-		FragColor = vec4(normal, 1.0f);
+		vec3 normalColor = (normal + vec3(1.0f))*0.5;
+		FragColor = vec4(normalColor, 1.0f);
 		return;
 
 		case ALDEBO:
