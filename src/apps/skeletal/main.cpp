@@ -7,8 +7,15 @@
 #include <Model.hpp>
 #include <InputHandler.hpp>
 #include <ProgramState.hpp>
+#include <RigidBodySystem.h>
+#include <RigidBody.h>
+#include <Eigen/Dense>
 
+using namespace Eigen;
 
+static float myrand(){
+   return float(rand()) / RAND_MAX;
+}
 
 int main(int argc, char** argv) {
    string shaderVx = string(argv[1]);
@@ -35,6 +42,18 @@ int main(int argc, char** argv) {
 
    struct ProgramState state(SDL_GetTicks());
    glViewport(0,0,800,600);
+   
+   RigidBodySystem rbs;
+   for(int i = 0; i < 10; i++){
+      RigidBody rb(  i,
+                     Vector3f::Zero() * i,
+                     Vector3f::Random() * i,
+                     Vector3f(0.05,0.05,0.05) * i,
+                     Vector3f(1,1,1) * i,
+                     modelPath);
+      rbs.addRigidBody(rb);
+   }
+
    while(!state.quit) {
       //collect time
 
@@ -58,7 +77,8 @@ int main(int argc, char** argv) {
 
       //initialise shader
       shader.activate();
-      shader["mvp"] = cam.getProjection() * cam.getView() * model;
+      shader["view"] = cam.getView();
+      shader["projection"] = cam.getProjection();
       shader["model"] = model;
       shader["defaultDiffuse"] = glm::vec3(0.1,0.2,0.6);
       shader["lightPosition"] = state.light.position;
@@ -75,7 +95,9 @@ int main(int argc, char** argv) {
 
 
       //Draw all
-      myModel.Draw(shader);
+      //myModel.Draw(shader);
+      rbs.update(1.0/60);
+      rbs.draw(shader);
       rctx.drawGui();
       rctx.swapBuffers();
    }

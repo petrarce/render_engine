@@ -5,7 +5,8 @@ layout(location=1) in vec3 normal;
 layout(location=2) in vec2 texCoord;
 
 uniform mat4 model;
-uniform mat4 mvp;
+uniform mat4 view;
+uniform mat4 projection;
 
 out vec3 Normal;
 out vec2 TextureCoord;
@@ -24,5 +25,5 @@ void main()
    }
    TextureCoord = texCoord;
    WorldPos = vec3(model * vec4(pos, 1));
-   gl_Position = mvp*vec4(pos,1.0);
+   gl_Position = projection * view * vec4(WorldPos, 1);
 }
