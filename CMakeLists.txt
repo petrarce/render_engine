@@ -26,7 +26,12 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 endif()
 
+include_directories(AFTER .)
+
 add_subdirectory(src/core/)
 add_subdirectory(src/DearImGui/)
 add_subdirectory(src/apps/)
+add_subdirectory(src/physics)
+
+
 
