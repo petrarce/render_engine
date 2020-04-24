@@ -59,6 +59,10 @@ public:
                         case SDL_SCANCODE_LSHIFT:
                         state.active = true;
                         break;
+
+                        case SDL_SCANCODE_R:
+                        state.sim.active = true;
+                        break;
                     }
                     break;
                 }
@@ -91,6 +95,10 @@ public:
 
                         case SDL_SCANCODE_LSHIFT:
                         state.active = false;
+                        break;
+
+                        case SDL_SCANCODE_R:
+                        state.sim.active = false;
                         break;
 
                     }

@@ -70,9 +70,13 @@ struct ProgramState {
 			} specular;
 		} model;
 	} light;
+
 	int mode;
 
 	bool active;
+	struct {
+		bool active;
+	} sim;
 
 	ProgramState(unsigned int currentMs):
 		quit(false),
@@ -81,7 +85,8 @@ struct ProgramState {
 		time({currentMs, currentMs}),
 		frame(0),
 		window({{0,0,0,0}}),
-		light({false, glm::vec3(4,4,4), glm::vec4(1,1,1,1), {{0.3, 0}, {1,0}, {0.1,0, 0.5, 0.5, 0.04}}})
+		light({false, glm::vec3(4,4,4), glm::vec4(1,1,1,1), {{0.3, 0}, {1,0}, {0.1,0, 0.5, 0.5, 0.04}}}),
+		sim({false})
 		{
 			for(unsigned char& state : keyStates){
 				state = false;

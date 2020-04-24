@@ -200,3 +200,7 @@ void Model::loadNormalMapTexture(string path){
     }
     pr_info("Normal map %s loaded sucessfully", (directory + path).c_str());
 }
+
+const vector<Mesh>& Model::getMeshList() const{
+    return this->meshes;
+}

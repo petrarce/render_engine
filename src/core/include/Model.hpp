@@ -23,6 +23,9 @@ class Model
             return *this;
         };
         void loadNormalMapTexture(string path);
+        const Mesh& getMesh(int meshId);
+        const vector<Mesh>& getMeshList() const;
+
 
     private:
         /*  Model Data  */

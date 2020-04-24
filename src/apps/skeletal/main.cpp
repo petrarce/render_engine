@@ -44,16 +44,21 @@ int main(int argc, char** argv) {
    glViewport(0,0,800,600);
    
    RigidBodySystem rbs;
-   for(int i = 0; i < 10; i++){
-      RigidBody rb(  i,
-                     Vector3f::Zero() * i,
-                     Vector3f::Random() * i,
-                     Vector3f(0.05,0.05,0.05) * i,
-                     Vector3f(1,1,1) * i,
-                     modelPath);
-      rbs.addRigidBody(rb);
-   }
+   RigidBody rb1(  1,
+                  Vector3f(0,0,0),
+                  Vector3f(0,0,0),
+                  Vector3f::Zero(),
+                  Vector3f(0,0,0),
+                  modelPath);
+   RigidBody rb2(  1,
+                  Vector3f(3.14f / 4.0f,0, 0),//3.14f / 4.0f),
+                  Vector3f(0, 3, 3),
+                  Vector3f::Zero(),
+                  Vector3f(0,-0.5,-0.5),
+                  modelPath);
 
+   rbs.addRigidBody(rb1);
+   rbs.addRigidBody(rb2);
    while(!state.quit) {
       //collect time
 
@@ -66,15 +71,18 @@ int main(int argc, char** argv) {
       InputHandler::handleInput(state);
 
       //update camera
-      if(state.active){
-        cam.update(state);
-      }
 
       //update context
       rctx.clearColor(state.window.color.r, state.window.color.g, state.window.color.b, state.window.color.a);
       rctx.clearColorBuffer();
       rctx.clearDepthBuffer();
 
+      if(state.active){
+         cam.update(state);
+      }
+      if(state.sim.active) {
+         rbs.update(1.0/60);         
+      }
       //initialise shader
       shader.activate();
       shader["view"] = cam.getView();
@@ -96,7 +104,6 @@ int main(int argc, char** argv) {
 
       //Draw all
       //myModel.Draw(shader);
-      rbs.update(1.0/60);
       rbs.draw(shader);
       rctx.drawGui();
       rctx.swapBuffers();
