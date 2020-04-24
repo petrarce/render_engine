@@ -19,7 +19,11 @@ private:
 
 	Model m_mod;
 
+	float color;
 
+	array<float,6> m_minMaxXYZ;
+
+	void init_obb();
 
 public:
   	float mass() const ;
@@ -32,17 +36,28 @@ public:
 	const Eigen::Vector3f& velocity() const;
 	const Eigen::Vector3f& angVelocity() const;
 
+	const vector<Eigen::Vector3f> obb() const;
 
 
 	void setMass(const float& Mass);
 	void setInertia(const Eigen::Vector3f& Inertia);
-	
+
 	void setRotation(const Eigen::Quaternionf& Rotation);
 	void setTranslation(const Eigen::Vector3f& Translation);
 
 	void setVelocity(const Eigen::Vector3f& Velocity);
 	void setAngVelocity(const Eigen::Vector3f& AngVelocity);
 
+	void setColor(const float val){ color = val;}
+
+	const Eigen::Vector3f toWorldSpace(const Eigen::Vector3f& localSpacePoint) const;
+	const Eigen::Vector3f toLocalSpace(const Eigen::Vector3f& worldSpacePoint) const;
+
+	bool isColliding(const RigidBody& rb_other, 
+						Eigen::Vector3f& wCollisionPoint, 
+						Eigen::Vector3f& wCollisionNormal);
+
+	
 	virtual void update(const float timeStep) override;
 
 	virtual void draw(Shader& shader) override;
