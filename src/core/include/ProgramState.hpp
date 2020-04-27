@@ -86,7 +86,8 @@ struct ProgramState {
 		frame(0),
 		window({{0,0,0,0}}),
 		light({false, glm::vec3(4,4,4), glm::vec4(1,1,1,1), {{0.3, 0}, {1,0}, {0.1,0, 0.5, 0.5, 0.04}}}),
-		sim({false})
+		sim({false}),
+		active(false)
 		{
 			for(unsigned char& state : keyStates){
 				state = false;

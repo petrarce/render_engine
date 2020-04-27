@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # project name and supported languages
-project(example CXX)
+project(graphics CXX)
 
 # detect operating system and host processor
 message(STATUS "We are on a ${CMAKE_SYSTEM_NAME} system")
@@ -13,6 +13,8 @@ include(GNUInstallDirs)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+
+find_package(Qt5 COMPONENTS Core REQUIRED)
 
 # project version
 set(VERSION_MAJOR 1)
@@ -32,6 +34,5 @@ add_subdirectory(src/core/)
 add_subdirectory(src/DearImGui/)
 add_subdirectory(src/apps/)
 add_subdirectory(src/physics)
-
 
 

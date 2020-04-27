@@ -9,8 +9,10 @@ add_library(core STATIC
                 src/Shader.cpp 
                 src/RenderContext.cpp 
                 src/FrameBuffer.cpp
-                src/VertexArray.cpp)
+                src/VertexArray.cpp
+                src/TextureManager.cpp
+                src/Texture.cpp)
 add_dependencies(core imgui)
-target_link_libraries(core imgui)
+target_link_libraries(core imgui Qt5::Core)
 # install libs
 install(TARGETS core DESTINATION lib/)

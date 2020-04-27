@@ -9,7 +9,7 @@ struct Camera
     Camera(glm::vec3 position, glm::vec3 lookAt): 
         Position(position),
         LookAt(lookAt),
-        LookUp(glm::vec3(0,-1,0)){}
+        LookUp(glm::vec3(0,0,1)){}
 
     const glm::mat4 getProjection(){
         return glm::perspective( glm::radians(45.0f), 1.33f, 0.1f, 500.0f );

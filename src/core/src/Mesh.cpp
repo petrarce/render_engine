@@ -1,6 +1,10 @@
 #include <Mesh.hpp>
 #include <types.hpp>
-Mesh::Mesh(const vector<Vertex_s>& vertices, const vector<unsigned int>& indeces, const vector<Texture_s>& textures)
+#include <TextureManager.hpp>
+
+Mesh::Mesh(const vector<Vertex_s>& vertices, 
+			const vector<unsigned int>& indeces, 
+			const vector<pair<TexturePath, MapType>>& textures)
 {
 	this->vertices = vertices;
 	this->indeces = indeces;
@@ -18,28 +22,33 @@ void Mesh::Draw(Shader shader)
     shader["hasNormalMap"] = 0;
     for(unsigned int i = 0; i < textures.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-        // retrieve texture number (the N in diffuse_textureN)
         string number;
-        string name = textures[i].type;
-        if(name == "texture_diffuse"){
+        MapType mapType =  textures[i].second;
+        string name;
+        switch(mapType)
+        {
+        case diffuse_map:
+            name = "texture_diffuse";
             number = std::to_string(diffuseNr++);
             shader["hasDiffuseMap"] = 1;
-        }
-        else if(name == "texture_specular"){
+            break;
+        case specular_map:
+            name = "texture_specular";
             number = std::to_string(specularNr++);
             shader["hasSpecularMap"] = 1;
-        }
-        else if(name == "texture_normal"){
+            break;
+        case normal_map:
+            name = "texture_normal";
             number = std::to_string(normalNr++);
             shader["hasNormalMap"] = 1;
+            break;
+        default:
+            pr_warn("undefinde map type for the texture. Treading it as diffuse map");
         }
 
-
         shader[name + number] = int(i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        TextureManager::activateTexture(textures[i].first, i);
     }
-    glActiveTexture(GL_TEXTURE0);
 
     // draw mesh
     glBindVertexArray(VAO);
