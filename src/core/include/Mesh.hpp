@@ -15,18 +15,22 @@ typedef struct {
     glm::vec2  TexCoords;
 } Vertex_s;
 
-typedef struct {
-    unsigned int id;
-    string type;
-    string path;
-} Texture_s;
+enum MapType {
+    unknown_map = 0,
+    normal_map,
+    diffuse_map,
+    specular_map
+};
+typedef string TexturePath;
 
 class Mesh {
 public:
 	vector<Vertex_s> vertices;
 	vector<unsigned int> indeces;
-    vector<Texture_s> textures;
-    Mesh(const vector<Vertex_s>& vertices, const vector<unsigned int>& indices, const vector<Texture_s>& textures);
+    vector<pair<TexturePath, MapType>> textures;
+    Mesh(const vector<Vertex_s>& vertices, 
+         const vector<unsigned int>& indices, 
+         const vector<pair<TexturePath, MapType>>& textures);
     void Draw(Shader shader);
 
 private:

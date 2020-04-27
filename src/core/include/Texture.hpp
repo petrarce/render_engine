@@ -10,18 +10,12 @@ public:
     Texture(){}
     ~Texture(){}
 
-    void
-    activate(int textureUnit);
-
-    void
-    load2DTexture(std::string path, ColorChanel c);
-
-    void
-    createDepthTexture(int width, int height);
-
-    GLuint
-    getTexture();
+    void activate(int textureUnit);
+    unsigned int load2DTexture(std::string path, bool gamma = true);
+    void createDepthTexture(int width, int height);
+    void free();
+    GLuint getTexture();
 
 private:
-    GLuint m_Texture;
+    GLuint textureId;
 };

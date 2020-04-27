@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.81.16 commit date:2019-12-04, commit time:11:32, hash:f1aa4d18d49d</authoring_tool>
     </contributor>
-    <created>2020-04-15T11:15:10</created>
-    <modified>2020-04-15T11:15:10</modified>
+    <created>2020-04-27T11:39:31</created>
+    <modified>2020-04-27T11:39:31</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -78,13 +78,23 @@
   <library_effects>
     <effect id="Material-effect">
       <profile_COMMON>
+        <newparam sid="Wood_jpg-surface">
+          <surface type="2D">
+            <init_from>Wood_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Wood_jpg-sampler">
+          <sampler2D>
+            <source>Wood_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
           <lambert>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0.8 0.8 0.8 1</color>
+              <texture texture="Wood_jpg-sampler" texcoord="UVMap"/>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1.45</float>
@@ -94,7 +104,11 @@
       </profile_COMMON>
     </effect>
   </library_effects>
-  <library_images/>
+  <library_images>
+    <image id="Wood_jpg" name="Wood_jpg">
+      <init_from>Wood.jpg</init_from>
+    </image>
+  </library_images>
   <library_materials>
     <material id="Material-material" name="Material">
       <instance_effect url="#Material-effect"/>

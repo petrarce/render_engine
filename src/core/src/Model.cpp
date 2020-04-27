@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Model.hpp>
 #include <types.hpp>
+#include <TextureManager.hpp>
 
 void Model::Draw(Shader shader)
 {
@@ -98,7 +99,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     vector<Vertex_s> vertices;
     vector<unsigned int> indices;
-    vector<Texture_s> textures;
+    vector<pair<TexturePath, MapType>> textures;
 
     pr_info("Loading mesh %s", mesh->mName.C_Str());
     if(!mesh->HasPositions()){
@@ -155,50 +156,34 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
     if(mesh->mMaterialIndex >= 0)
     {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        vector<Texture_s> diffuseMaps = loadMaterialTextures(material, 
-                                            aiTextureType_DIFFUSE, "texture_diffuse");
+        vector<pair<TexturePath, MapType>> diffuseMaps = loadMaterialTextures(material, 
+                                            aiTextureType_DIFFUSE, diffuse_map);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        vector<Texture_s> specularMaps = loadMaterialTextures(material, 
-                                            aiTextureType_SPECULAR, "texture_specular");
+        vector<pair<TexturePath, MapType>> specularMaps = loadMaterialTextures(material, 
+                                            aiTextureType_SPECULAR, specular_map);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());    
-        vector<Texture_s> normalMaps = loadMaterialTextures(material, 
-                                            aiTextureType_NORMALS, "texture_normal");
+        vector<pair<TexturePath, MapType>> normalMaps = loadMaterialTextures(material, 
+                                            aiTextureType_NORMALS, normal_map);
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());    
     }
 
     return Mesh(vertices, indices, textures);}
 
-vector<Texture_s> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, 
-                                     string typeName)
+vector<pair<TexturePath, MapType>> Model::loadMaterialTextures(
+        aiMaterial *mat, 
+        aiTextureType type, 
+        MapType mapType)
 {
-    vector<Texture_s> textures;
+    vector<pair<TexturePath, MapType>> textures;
     for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture_s Texture;
-        Texture.id = TextureFromFile(str.C_Str(), directory);
-        Texture.type = typeName;
-        Texture.path = string(str.C_Str());
-        textures.push_back(Texture);
+        string pathToTexture = /*directory + "/" +*/ string(str.C_Str());
+        TextureManager::createTexture(pathToTexture, GL_TEXTURE_2D);
+        textures.push_back(make_pair(pathToTexture, mapType));
     }
     return textures;
-}
-
-void Model::loadNormalMapTexture(string path){
-    Texture_s Texture;
-    pr_info("Loading normal map %s ", path.c_str());
-    string directory = path.substr(0, path.find_last_of('/'));
-    Texture.id = TextureFromFile(path.c_str(), directory, false);
-    if(Texture.id == -1){
-        return;
-    }
-    Texture.type = "texture_normal";
-    Texture.path = path.c_str();
-    for(Mesh& mesh : meshes){
-        mesh.textures.push_back(Texture);
-    }
-    pr_info("Normal map %s loaded sucessfully", (directory + path).c_str());
 }
 
 const vector<Mesh>& Model::getMeshList() const{

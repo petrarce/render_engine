@@ -5,6 +5,7 @@
 #include <Mesh.hpp>
 #include <string>
 #include <vector>
+#include <Texture.hpp>
 
 using namespace std;
 
@@ -35,6 +36,8 @@ class Model
         void loadModel(string path);
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-        vector<Texture_s> loadMaterialTextures(aiMaterial *mat, aiTextureType type, 
-                                             string typeName);
+        vector<pair<TexturePath, MapType>> loadMaterialTextures(
+                aiMaterial *mat, 
+                aiTextureType type, 
+                MapType mapType);
 };
