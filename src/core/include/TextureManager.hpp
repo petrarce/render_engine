@@ -18,16 +18,11 @@ public:
     static void setTextureParameter(unsigned int paramType, 
                                     unsigned int value);
     
-    void createTextureL(std::string path, 
-                              unsigned int type);
-    void deleteTextureL(std::string);
-    void activateTextureL(std::string,
-                                unsigned int unit);
+private:
     static TextureManager& getInstance() {
         static TextureManager inst;
         return inst;
     }
-private:
 
     TextureManager(){}
     TextureManager(const TextureManager&) = delete;
