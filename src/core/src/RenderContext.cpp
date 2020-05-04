@@ -240,6 +240,8 @@ void RenderContext::ShowConfigsWidget(struct ProgramState& state)
                 ImGui::SliderFloat("Diffuse Factor", &state.light.model.diffuse.factor, 0.0f, 1.0f, "%.3f");
             }
         }
+        ImGui::SliderInt("ShadowKernelSize", &state.shadow.kernelSize, 0, 100);
+        ImGui::SliderInt("ShadowKernelOffset", &state.shadow.kernelOffset, 0, 100);
 
 
     ImGui::End();

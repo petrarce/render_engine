@@ -11,6 +11,15 @@ struct Camera
         LookAt(lookAt),
         LookUp(glm::vec3(0,0,1)){}
 
+    const glm::mat4 getOrthProjection()
+    {
+        return glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 500.0f);
+    }
+    const glm::vec3 getDirection()
+    {
+        return LookAt;
+    }
+
     const glm::mat4 getProjection(){
         return glm::perspective( glm::radians(45.0f), 1.33f, 0.1f, 500.0f );
     }

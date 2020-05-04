@@ -77,6 +77,10 @@ struct ProgramState {
 	struct {
 		bool active;
 	} sim;
+	struct {
+		int kernelSize;
+		int kernelOffset;
+	} shadow;
 
 	ProgramState(unsigned int currentMs):
 		quit(false),
@@ -85,9 +89,10 @@ struct ProgramState {
 		time({currentMs, currentMs}),
 		frame(0),
 		window({{0,0,0,0}}),
-		light({false, glm::vec3(4,4,4), glm::vec4(1,1,1,1), {{0.3, 0}, {1,0}, {0.1,0, 0.5, 0.5, 0.04}}}),
+		light({false, glm::vec3(1,1,1), glm::vec4(1,1,1,1), {{0.3, 0}, {1,0}, {0.1,0, 0.5, 0.5, 0.04}}}),
 		sim({false}),
-		active(false)
+		active(false),
+		shadow({0, 1})
 		{
 			for(unsigned char& state : keyStates){
 				state = false;
