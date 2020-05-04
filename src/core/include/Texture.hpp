@@ -7,14 +7,17 @@ enum class ColorChanel {
 
 class Texture {
 public:
-    Texture(){}
-    ~Texture(){}
+    Texture();
+    ~Texture();
 
     void activate(int textureUnit);
     unsigned int load2DTexture(std::string path, bool gamma = true);
     void createDepthTexture(int width, int height);
+    void createColorTexture(int width, int height);
     void free();
-    GLuint getTexture();
+    GLuint getId(){
+        return textureId;
+    }
 
 private:
     GLuint textureId;

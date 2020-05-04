@@ -10,6 +10,7 @@
 #include <RigidBodySystem.h>
 #include <RigidBody.h>
 #include <Eigen/Dense>
+#include <FrameBuffer.hpp>
 
 using namespace Eigen;
 
@@ -26,8 +27,14 @@ int main(int argc, char** argv) {
    Camera cam = Camera(glm::vec3(3,3,3), glm::vec3(-1, -1, -1));
    // Shader
    Shader shader;
-   shader.bindShader(shaderDir + "simple.vert");
-   shader.bindShader(shaderDir + "simple.frag");
+   shader.bindShader(shaderDir + "shadow.vert");
+   shader.bindShader(shaderDir + "shadow.frag");
+   Shader shadowShader;
+   shadowShader.bindShader(shaderDir + "lightDepth.vert");
+   shadowShader.bindShader(shaderDir + "lightDepth.frag");
+   Shader quadShader;
+   quadShader.bindShader(shaderDir + "light.vert");
+   quadShader.bindShader(shaderDir + "light.frag");
 
    Model scene(modelPath.c_str());
 
@@ -79,45 +86,27 @@ int main(int argc, char** argv) {
    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), static_cast<void*>(0));
    glEnableVertexAttribArray(1);
    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)(2*sizeof(float)));
-   Shader quadShader;
-   quadShader.bindShader(shaderDir + "light.vert");
-   quadShader.bindShader(shaderDir + "light.frag");
    
-   //configure frame buffer
-   unsigned int framebuffer;
-   glGenFramebuffers(1, &framebuffer);
-   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-   //create texture for the framebuffer
-   unsigned int fbufTexture;
-   glGenTextures(1, &fbufTexture);
-   glBindTexture(GL_TEXTURE_2D, fbufTexture);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbufTexture, 0);
+   FrameBuffer shadowBuffer;
+   shadowBuffer.create();
+   shadowBuffer.createDepthTexture(800, 600);
+   shadowBuffer.bind();
+   glDrawBuffer(GL_NONE);
+   glReadBuffer(GL_NONE);
+   FrameBuffer::bindDefault();
    
-   //create render buffer
-   unsigned int rbo;
-   glGenTextures(1, &rbo);
-   glBindTexture(GL_TEXTURE_2D, rbo);
-   //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 800,600, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);   
-   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, rbo, 0);
-   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-   {
-       cout << "failed to generate framebuffer";
-       return 0;
-   } else 
-   {
-       cout << "framebuffer sucessfully created";
-   }
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   
-
+   FrameBuffer defferedBuffer;
+   defferedBuffer.create();
+   defferedBuffer.bind();
+   defferedBuffer.createColorTexture(800, 600);
+   defferedBuffer.createDepthTexture(800, 600);
+   defferedBuffer.bind();
+   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+   FrameBuffer::bindDefault();
+   glm::mat4 lightView = cam.getView();
+   glm::mat4 lightProj = cam.getOrthProjection();
+   glm::vec3 lightDir = cam.getDirection();
+   glEnable(GL_CULL_FACE);
    
    while(!state.quit) {
       //collect time
@@ -129,8 +118,21 @@ int main(int argc, char** argv) {
       //update program state up on input
       InputHandler::handleInput(state);
 
-      //update context
-      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);      
+      //firs path generate depth buffer from light sorce
+      shadowBuffer.bind();
+      rctx.enableDepthTest();
+      rctx.clearDepthBuffer();
+      shadowShader.activate();
+      shadowShader["projection"] = lightProj;
+      shadowShader["model"] = model;
+      shadowShader["view"] = lightView;
+      glCullFace(GL_FRONT);
+      scene.Draw(shadowShader);
+      glCullFace(GL_BACK);
+      
+      //second path draw scene
+      defferedBuffer.bind();
+      rctx.enableDepthTest();      
       rctx.clearColor(state.window.color.r, state.window.color.g, state.window.color.b, state.window.color.a);
       rctx.clearColorBuffer();
       rctx.clearDepthBuffer();
@@ -140,44 +142,36 @@ int main(int argc, char** argv) {
          cam.update(state);
       }
       if(state.sim.active) {
-         rbs.update(1.0/60);         
+          lightView = cam.getView();
+          lightProj = cam.getOrthProjection();
+          lightDir = cam.getDirection();
+
+         //rbs.update(1.0/60);         
       }
       //initialise shader
       shader.activate();
-      shader["view"] = cam.getView();
-      shader["projection"] = cam.getProjection();
+      shadowBuffer.bindDepthTexture(3);
+      shader["shadow_depth"] = 3;
       shader["model"] = model;
-      shader["defaultDiffuse"] = glm::vec3(0.1,0.2,0.6);
-      shader["lightPosition"] = state.light.position;
-      shader["lightColor"] = glm::vec3(state.light.color);
-      shader["camPosition"] = cam.getPosition();
-      shader["ambFactor"] = state.light.model.ambient.factor;
-      shader["specFactor"] = state.light.model.specular.factor;
-      shader["diffFactor"] = state.light.model.diffuse.factor;
-      shader["lightingModel"] = state.light.model.specular.type;
-      shader["rghness"] = state.light.model.specular.roughness;
-      shader["frnlFactor"] = state.light.model.specular.fresnel;
-      shader["metalicness"] = state.light.model.specular.metalicness;
-      shader["mode"] = state.mode;
-
-
+      shader["projection"] = cam.getProjection();
+      shader["view"] = cam.getView();
+      shader["lightViewProjection"] = lightProj * lightView;
+      shader["lightDirection"] = lightDir;
+      shader["shadowKernelSize"] = state.shadow.kernelSize;
+      shader["shadowKernelOffset"] = state.shadow.kernelOffset;
       //Draw all
       scene.Draw(shader);
       rbs.draw(shader);
       
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      rctx.clearColor(1,1,1,1);
-      //rctx.clearColorBuffer();
+      FrameBuffer::bindDefault();
       rctx.disableDepthTest();
       
       quadShader.activate();
       quadShader["frame"] = 0;
       quadShader["depth_texture"] = 1;
       quadShader["numPixels"] = 0;
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, fbufTexture);
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, rbo);
+      defferedBuffer.bindColorTexture(0);
+      defferedBuffer.bindDepthTexture(1);
       
       glBindVertexArray(quadVAO);
       glDrawArrays(GL_TRIANGLES, 0, 6);
