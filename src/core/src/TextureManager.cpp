@@ -8,11 +8,11 @@
 
 using namespace std;
 
-void TextureManager::createTexture(string path, 
-                                          unsigned int type)
+void TextureManager::createItem(string path, 
+                                          GLint type)
 {
-    TextureManager& texManager = getInstance();
-    if(texManager.textures.find(path) != texManager.textures.end()){
+    auto& texManager = getInstance();
+    if(texManager.mItemList.find(path) != texManager.mItemList.end()){
         return;
     }
     
@@ -40,45 +40,36 @@ void TextureManager::createTexture(string path,
             pr_err("failed to load 2D texture from %s", path.c_str());
             return;
         }
-        texManager.textures[path] = move(newTex);
+        texManager.mItemList[path] = move(newTex);
         break;
     }
 }
 
-void TextureManager::deleteTexture(string path)
+void TextureManager::createItem(std::string path) 
 {
-    TextureManager& texManager = getInstance();
-    if(texManager.textures.find(path) != texManager.textures.end()){
-        texManager.textures[path]->free();
-    }
-}
-
-void TextureManager::activateTexture(string path, unsigned int textureUnit)
-{
-    TextureManager& texManager = getInstance();
-    if(texManager.textures.find(path) != texManager.textures.end()){
-        assert(texManager.textures[path] != nullptr);
-        texManager.textures[path]->activate(textureUnit);
-    }
+    createItem(path, GL_TEXTURE_2D);
 }
 
 
-//void TextureManager::createTexture(std::string path, 
-//                          unsigned int type)
-//{
-//    TextureManager& manager = TextureManager::getInstance();
-//    manager.createTextureL(path, type);
-//}
+void TextureManager::deleteItem(string path) 
+{
+    auto& texManager = getInstance();
+    if(texManager.mItemList.find(path) != texManager.mItemList.end()){
+        texManager.mItemList.erase(path);
+    }
+}
 
-//void TextureManager::deleteTexture(std::string path)
-//{
-//    TextureManager& manager = TextureManager::getInstance();
-//    manager.deleteTextureL(path);
-//}
-//void TextureManager::activateTexture(std::string path,
-//                    unsigned int unit)
-//{
-//    TextureManager& manager = TextureManager::getInstance();
-//    manager.activateTextureL(path, unit);
-//}
+void TextureManager::activateItem(string path, GLint textureUnit)
+{
+    auto& texManager = getInstance();
+    if(texManager.mItemList.find(path) != texManager.mItemList.end()){
+        assert(texManager.mItemList[path] != nullptr);
+        texManager.mItemList[path]->activate(textureUnit);
+    }
+}
+void TextureManager::activateItem(std::string key) 
+{
+    activateItem(key, 0);
+}
+
 

@@ -58,7 +58,8 @@ void RigidBody::draw(Shader& shader)
 void RigidBody::init_obb()
 {
 
-	for(const Mesh& msh : m_mod.getMeshList()){
+	for(const MeshID mshId  : m_mod.getMeshList()){
+		const auto& msh = MeshManager::getItem(mshId);
 		const vector<Vertex_s>& vertices = msh.vertices;
 		if(vertices.empty()){
 			continue;

@@ -1,9 +1,14 @@
 #version 330 core
+uniform bool diffuseTextureEnabled;
+uniform vec3 defaultDiffuse;
 uniform sampler2D texture_diffuse1;
+
+uniform bool shadowEnabled;
 uniform sampler2D shadow_depth;
-uniform vec3 lightDirection;
 uniform int shadowKernelSize;
 uniform int shadowKernelOffset;
+
+uniform vec3 lightDirection;
 
 
 in vec4 LightSpaceCoord;
@@ -49,7 +54,15 @@ void main()
 {
     vec3 light = -normalize(lightDirection);
     vec3 norm = normalize(Normal);
-    gl_FragColor = (0.1 + PCS(shadowKernelOffset, shadowKernelSize, LightSpaceCoord) * max(0, dot(norm, light))) * 
-            texture(texture_diffuse1, TexCoord);
+    if(diffuseTextureEnabled)
+        gl_FragColor = texture(texture_diffuse1, TexCoord);
+    else
+        gl_FragColor = vec4(defaultDiffuse, 1);
+    
+    float lighting = max(0, dot(norm, light));
+    if(shadowEnabled)
+        lighting *= PCS(shadowKernelOffset, shadowKernelSize, LightSpaceCoord);
+    
+    gl_FragColor *= (0.1 + lighting);
     
 }
