@@ -3,29 +3,24 @@
 #include <Texture.hpp>
 #include <unordered_map>
 #include <memory>
+#include <Manager.hpp>
+#include <Singleton.hpp>
 
 typedef unsigned int TextureId;
-class TextureManager {
-private:
-    std::unordered_map<std::string, std::unique_ptr<Texture>> textures;
-
-public:
-    static void createTexture(std::string path, 
-                              unsigned int type);
-    static void deleteTexture(std::string);
-    static void activateTexture(std::string,
-                                unsigned int unit = 0);
-    static void setTextureParameter(unsigned int paramType, 
-                                    unsigned int value);
+class TextureManager : public Manager<std::string,
+                                      Texture,
+                                      TextureManager>
+{
     
-private:
-    static TextureManager& getInstance() {
-        static TextureManager inst;
-        return inst;
-    }
+public:
+    static void createItem(std::string path);
+    static void createItem(string path, GLint type);
+    
+    static void deleteItem(std::string key);
+    static void activateItem(std::string key);
+    static void activateItem(std::string key, 
+                                GLint textureUnit);
 
-    TextureManager(){}
-    TextureManager(const TextureManager&) = delete;
-    const TextureManager& operator=(const TextureManager&) = delete;
-    ~TextureManager(){}
+    static void setItemParameters(unsigned int paramType, 
+                                    unsigned int value);
 };

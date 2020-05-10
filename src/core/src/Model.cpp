@@ -4,11 +4,12 @@
 #include <Model.hpp>
 #include <types.hpp>
 #include <TextureManager.hpp>
+#include <MeshManager.hpp>
 
 void Model::Draw(Shader shader)
 {
     for(auto& mesh : meshes){
-        mesh.Draw(shader);
+        MeshManager::draw(mesh, shader);
     }
 }
 
@@ -95,7 +96,7 @@ void Model::processNode(aiNode *node, const aiScene *scene)
     }
 }
 
-Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
+MeshID Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     vector<Vertex_s> vertices;
     vector<unsigned int> indices;
@@ -167,7 +168,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());    
     }
 
-    return Mesh(vertices, indices, textures);}
+    return MeshManager::createItem(vertices, indices, textures);
+}
 
 vector<pair<TexturePath, MapType>> Model::loadMaterialTextures(
         aiMaterial *mat, 
@@ -180,12 +182,12 @@ vector<pair<TexturePath, MapType>> Model::loadMaterialTextures(
         aiString str;
         mat->GetTexture(type, i, &str);
         string pathToTexture = /*directory + "/" +*/ string(str.C_Str());
-        TextureManager::createTexture(pathToTexture, GL_TEXTURE_2D);
+        TextureManager::createItem(pathToTexture, GL_TEXTURE_2D);
         textures.push_back(make_pair(pathToTexture, mapType));
     }
     return textures;
 }
 
-const vector<Mesh>& Model::getMeshList() const{
+const vector<MeshID>& Model::getMeshList() const{
     return this->meshes;
 }

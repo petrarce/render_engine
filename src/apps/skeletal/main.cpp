@@ -11,6 +11,8 @@
 #include <RigidBody.h>
 #include <Eigen/Dense>
 #include <FrameBuffer.hpp>
+#include <Buffer.hpp>
+#include <Renderer.hpp>
 
 using namespace Eigen;
 
@@ -48,21 +50,6 @@ int main(int argc, char** argv) {
    glViewport(0,0,800,600);
    
    RigidBodySystem rbs;
-//   RigidBody rb1(  1,
-//                  Vector3f(0,0,0),
-//                  Vector3f(0,0,0),
-//                  Vector3f::Zero(),
-//                  Vector3f(0,0,0),
-//                  modelPath);
-//   RigidBody rb2(  1,
-//                  Vector3f(3.14f / 4.0f,0, 0),//3.14f / 4.0f),
-//                  Vector3f(0, 3, 3),
-//                  Vector3f::Zero(),
-//                  Vector3f(0,-0.5,-0.5),
-//                  modelPath);
-
-//   rbs.addRigidBody(rb1);
-//   rbs.addRigidBody(rb2);
    
    float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
        // positions   // texCoords
@@ -70,22 +57,16 @@ int main(int argc, char** argv) {
        -1.0f, -1.0f,  0.0f, 0.0f,
         1.0f, -1.0f,  1.0f, 0.0f,
 
-       -1.0f,  1.0f,  0.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
         1.0f,  1.0f,  1.0f, 1.0f
    };
+   unsigned int indexBuffer[] = {0,1,2,0,2,3};
    
    //configure square screen quad
-   unsigned int quadVAO, quadVBO;
-   glGenVertexArrays(1, &quadVAO);
-   glGenBuffers(1, &quadVBO);
-   glBindVertexArray(quadVAO);
-   glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-   glEnableVertexAttribArray(0);
-   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), static_cast<void*>(0));
-   glEnableVertexAttribArray(1);
-   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)(2*sizeof(float)));
+//   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(float), (void*)(2*sizeof(float)));
+   ElementArrayBuffer screenQuadBuffer;
+   screenQuadBuffer.create(quadVertices, 4*sizeof(float), 4, indexBuffer, 6);
+   screenQuadBuffer.defineAttribute(0, 4*sizeof(float), 2, false, GL_FLOAT, 0);
+   screenQuadBuffer.defineAttribute(1, 4*sizeof(float), 2, false, GL_FLOAT, (void*)(2*sizeof(float)));
    
    FrameBuffer shadowBuffer;
    shadowBuffer.create();
@@ -127,7 +108,7 @@ int main(int argc, char** argv) {
       shadowShader["model"] = model;
       shadowShader["view"] = lightView;
       glCullFace(GL_FRONT);
-      scene.Draw(shadowShader);
+      //scene.Draw(shadowShader);
       glCullFace(GL_BACK);
       
       //second path draw scene
@@ -160,7 +141,7 @@ int main(int argc, char** argv) {
       shader["shadowKernelSize"] = state.shadow.kernelSize;
       shader["shadowKernelOffset"] = state.shadow.kernelOffset;
       //Draw all
-      scene.Draw(shader);
+      //scene.Draw(shader);
       rbs.draw(shader);
       
       FrameBuffer::bindDefault();
@@ -173,9 +154,7 @@ int main(int argc, char** argv) {
       defferedBuffer.bindColorTexture(0);
       defferedBuffer.bindDepthTexture(1);
       
-      glBindVertexArray(quadVAO);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-      
+      Renderer::draw(&screenQuadBuffer, GL_TRIANGLES);
 
       rctx.drawGui();
       rctx.swapBuffers();

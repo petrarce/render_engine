@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include <Shader.hpp>
+#include <Buffer.hpp>
 
 using namespace std;
 
@@ -34,8 +35,9 @@ public:
     void Draw(Shader shader);
 
 private:
+    Mesh();
     /*  Render data  */
-    unsigned int VAO, VBO, EBO;
+    ElementArrayBuffer vertexBuffer;
     /*  Functions    */
     void setupMesh();
 };
