@@ -1,6 +1,6 @@
 # static library
 include_directories(AFTER .)
-include_directories(AFTER ../core/include)
+include_directories(AFTER ../core/)
 
 add_library(physics STATIC 
                 ./RigidBody.cpp

@@ -16,14 +16,14 @@ Mesh::Mesh(const vector<Vertex_s>& vertices,
 	vertexBuffer.defineAttribute(1, sizeof(Vertex_s), 3, false, GL_FLOAT, (void*)offsetof(Vertex_s, Normal));
 	vertexBuffer.defineAttribute(2, sizeof(Vertex_s), 2, false, GL_FLOAT, (void*)offsetof(Vertex_s, TexCoords));
 }
-void Mesh::Draw(Shader shader)
+void Mesh::setup(Shader& shader) const
 {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
     unsigned int normalNr = 1;
     shader["useDiffuse"] = 0;
     shader["useSpecular"] = 0;
-    shader["hasNormalMap"] = 0;
+    shader["useNormal"] = 0;
     for(unsigned int i = 0; i < textures.size(); i++)
     {
         string number;
@@ -34,17 +34,17 @@ void Mesh::Draw(Shader shader)
         case diffuse_map:
             name = "texture_diffuse";
             number = std::to_string(diffuseNr++);
-            shader["hasDiffuseMap"] = 1;
+            shader["useDiffuse"] = 1;
             break;
         case specular_map:
             name = "texture_specular";
             number = std::to_string(specularNr++);
-            shader["hasSpecularMap"] = 1;
+            shader["useSpecular"] = 1;
             break;
         case normal_map:
             name = "texture_normal";
             number = std::to_string(normalNr++);
-            shader["hasNormalMap"] = 1;
+            shader["useNormal"] = 1;
             break;
         default:
             pr_warn("undefinde map type for the texture. Treading it as diffuse map");
@@ -53,5 +53,4 @@ void Mesh::Draw(Shader shader)
         shader[name + number] = int(i);
         TextureManager::activateItem(textures[i].first, i);
     }
-    Renderer::draw(&vertexBuffer, GL_TRIANGLES);
 }

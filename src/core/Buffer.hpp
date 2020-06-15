@@ -13,7 +13,7 @@ public:
     
     Buffer(): ABO(0){}
     virtual ~Buffer(){}
-    void bind()
+    void bind() const
     {
         assert(ABO != 0);
         glBindVertexArray(ABO);
@@ -45,14 +45,14 @@ public:
         assert(glGetError() == GL_NO_ERROR);
     }
     
-    virtual BufferType type() = 0;
+    virtual BufferType type() const = 0;
 
     static void bindDefault()
     {
         glBindVertexArray(0);
     }
 
-    virtual unsigned int size() = 0;
+    virtual unsigned int size() const = 0;
     
     const Buffer& operator=(const Buffer&) = delete;
     Buffer(const Buffer&) = delete;
@@ -88,16 +88,16 @@ public:
         assert(glGetError() == GL_NO_ERROR);
         mNumData = numVertices;
     }
-    virtual BufferType type() override {
+    virtual BufferType type() const override {
         return ArrayBufferType;
     }
     
-    unsigned int numData()
+    unsigned int numData() const
     {
         return mNumData;
     }
     
-    virtual unsigned int size() override
+    virtual unsigned int size() const override
     {
         return numData();
     }
@@ -117,7 +117,7 @@ public:
         std::cerr << "~ElementArrayBuffer\n";
         glDeleteBuffers(1, &EBO);
     }
-    unsigned int numIndeces()
+    unsigned int numIndeces() const
     {
         return mNumIndecis;
     }
@@ -141,12 +141,12 @@ public:
         mNumIndecis = indecisNum;
     }
     
-    virtual unsigned int size() override
+    virtual unsigned int size() const override
     {
         return numIndeces();
     }
     
-    virtual BufferType type() override
+    virtual BufferType type() const override
     {
         return ElementArrayBufferType;
     }

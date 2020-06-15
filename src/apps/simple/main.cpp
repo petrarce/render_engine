@@ -4,15 +4,18 @@
 #include <Shader.hpp>
 #include <InputHandler.hpp>
 #include <Renderer.hpp>
-#include <Model.hpp>
+#include <ModelManager.hpp>
+#include <DrowableObjManager.hpp>
+
+using namespace glm;
 
 int main(int argc, char** argv)
 {
     RenderContext rctx;
     rctx.initGui();
     Shader shader;
-    shader.bindShader(string(argv[1]) + "shadow.vert");
-    shader.bindShader(string(argv[1]) + "shadow.frag");
+    shader.bindShader(string(argv[1]) + "point.vert");
+    shader.bindShader(string(argv[1]) + "point.frag");
     Camera cam = Camera(glm::vec3(3,3,3), glm::vec3(-1, -1, -1));
     
     vector<float> quad = {
@@ -59,12 +62,15 @@ int main(int argc, char** argv)
     tetrahedraBuffer.create(tetrahedra.data(), sizeof(float)*6, tetrahedra.size()/6);
     tetrahedraBuffer.defineAttribute(0,6*sizeof(float), 3, false, GL_FLOAT, 0);
     tetrahedraBuffer.defineAttribute(1,6*sizeof(float), 3, false, GL_FLOAT, (void*)(3*sizeof(float)));
-    Model scene;
     if(argc == 3)
-        scene = string(argv[2]);
-        
+    {
+        ModelManager::createItemFromFile(string(argv[2]));
+        DrowableID obj = DrowableObjectManager::createItem();
+        DrowableObjectManager::setModel(obj, string(argv[2]));
+        DrowableObjectManager::setModelMatrix(obj, mat4(1));
+    }
+    
 
-        
     struct ProgramState state(SDL_GetTicks());
     glViewport(0, 0, 800, 600);
     while(!state.quit)
@@ -99,12 +105,8 @@ int main(int argc, char** argv)
                                     glm::vec4(1,0,0,1));        
         Renderer::draw(&tetrahedraBuffer, GL_TRIANGLES);
         
-        shader["model"] = glm::mat4(glm::vec4(1,0,0,0), 
-                                    glm::vec4(0,1,0,0), 
-                                    glm::vec4(0,0,1,0), 
-                                    glm::vec4(-1,0,0,1));
-        scene.Draw(shader);
-        
+        shader["defaultDiffuse"] = glm::vec3(0.3,0.5,0.7);
+        Renderer::drawAll(shader, GL_TRIANGLES);
         rctx.swapBuffers();
         
     }

@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>
+#include <SDL2/SDL.h>
 
 enum SpecularTypes{
 	PHONG = 0,

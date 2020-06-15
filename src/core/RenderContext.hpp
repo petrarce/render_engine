@@ -1,5 +1,4 @@
 #pragma once
-#include <VertexArray.hpp>
 #include <Shader.hpp>
 #include <glm/glm.hpp>
 #include <memory>
@@ -44,12 +43,6 @@ public:
    void
    clearDepthBuffer();
 
-   VertexArray
-   createVertexArray();
-
-   void
-   draw(VertexArray & VertexArray, PrimitiveType p);
-
    void
    drawIndex(PrimitiveType p, int size);
 
@@ -81,5 +74,4 @@ public:
 private:
    SDL_Window * m_Window;
 
-   VertexArray m_Quad;
 };
