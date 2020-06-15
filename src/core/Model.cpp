@@ -6,60 +6,6 @@
 #include <TextureManager.hpp>
 #include <MeshManager.hpp>
 
-void Model::Draw(Shader shader)
-{
-    for(auto& mesh : meshes){
-        MeshManager::draw(mesh, shader);
-    }
-}
-
-unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = true)
-{
-    string filename = string(path);
-    filename = directory + '/' + filename;
-
-    unsigned int textureID = -1;
-
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        glGenTextures(1, &textureID);
-        GLenum internalFormat;
-        GLenum dataFormat;
-
-        if (nrComponents == 1){
-            internalFormat = dataFormat = GL_RED;
-        }
-        else if (nrComponents == 3){
-            dataFormat = GL_RGB;
-            internalFormat = (gamma)?GL_SRGB:dataFormat;
-        }
-        else if (nrComponents == 4){
-            dataFormat = GL_RGBA;
-            internalFormat = (gamma)?GL_SRGB_ALPHA:dataFormat;
-
-        }
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture_s failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
-}
 
 void Model::loadModel(string path)
 {

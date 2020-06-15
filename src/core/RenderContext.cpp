@@ -43,20 +43,6 @@ RenderContext::RenderContext() {
 
     glewExperimental = true;
     glewInit();
-
-    std::vector<float> quad = {
-       -1.0f,  1.0f,  0.0f, 1.0f,
-       -1.0f, -1.0f,  0.0f, 0.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
-
-       -1.0f,  1.0f,  0.0f, 1.0f,
-        1.0f, -1.0f,  1.0f, 0.0f,
-        1.0f,  1.0f,  1.0f, 1.0f
-     };
-
-    m_Quad.createVertexArray<float>(quad);
-    m_Quad.describeVertexArray(0,2,GlTypes::Float, 4, GlBool::False, 0);
-    m_Quad.describeVertexArray(1,2,GlTypes::Float, 4, GlBool::False, 2);
 }
 
 int
@@ -124,13 +110,6 @@ RenderContext::clearDepthBuffer() {
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void
-RenderContext::draw( VertexArray & VertexArray,
-                     PrimitiveType p) {
-    glDrawArrays( mapToGl( p ), 0, VertexArray.getSize() );
-    glBindVertexArray( 0 );
-}
-
 void RenderContext::initGui()
 {
     IMGUI_CHECKVERSION();
@@ -172,16 +151,6 @@ RenderContext::drawIndex(PrimitiveType p, int size) {
 
 }
 
-/*void
-RenderContext::drawDepthMap(Shader & shader, Texture & texture) {
-    glViewport(0,0,800,600);
-    shader.activate();
-    texture.activate(0);
-    clearDepthBuffer();
-    m_Quad.bindVertexArray();
-    draw(m_Quad,PrimitiveType::Triangle);
-}
-*/
 void
 RenderContext::swapBuffers() {
     SDL_GL_SwapWindow(m_Window);

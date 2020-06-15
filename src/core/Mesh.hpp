@@ -32,7 +32,8 @@ public:
     Mesh(const vector<Vertex_s>& vertices, 
          const vector<unsigned int>& indices, 
          const vector<pair<TexturePath, MapType>>& textures);
-    void Draw(Shader shader);
+    void setup(Shader& shader) const;
+    const Buffer* buffer() const {return &vertexBuffer;}
 
 private:
     Mesh();

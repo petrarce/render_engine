@@ -19,22 +19,19 @@ public:
     {
         loadModel(path);
     }
-    void Draw(Shader shader);
     const Model& operator=(const string& path){
         loadModel(path);
         return *this;
     }
     void loadNormalMapTexture(string path);
-    const Mesh& getMesh(int meshId);
     const vector<MeshID>& getMeshList() const;
-
+    void loadModel(string path);
 
 private:
     /*  Model Data  */
     vector<MeshID> meshes;
     string directory;
     /*  Functions   */
-    void loadModel(string path);
     void processNode(aiNode *node, const aiScene *scene);
     MeshID processMesh(aiMesh *mesh, const aiScene *scene);
     vector<pair<TexturePath, MapType>> loadMaterialTextures(

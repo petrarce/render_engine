@@ -32,12 +32,7 @@ public:
         if(manager.mItemList.find(key) != manager.mItemList.end())
             manager.mItemList.erase(key);
     }
-    static void draw(MeshID key, Shader shader)
-    {
-        auto& manager = getInstance();
-        if(manager.mItemList.find(key) != manager.mItemList.end())
-            manager.mItemList[key]->Draw(shader);
-    }
+
     static const Mesh& getItem(MeshID key)
     {
         auto& manager = getInstance();
