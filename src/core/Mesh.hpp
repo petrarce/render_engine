@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/glm.hpp>
+#include <Renderable.hpp>
 
 #include <Shader.hpp>
 #include <Buffer.hpp>
@@ -24,7 +25,8 @@ enum MapType {
 };
 typedef string TexturePath;
 
-class Mesh {
+class Mesh : Renderable
+{
 public:
 	vector<Vertex_s> vertices;
 	vector<unsigned int> indeces;
@@ -32,13 +34,11 @@ public:
     Mesh(const vector<Vertex_s>& vertices, 
          const vector<unsigned int>& indices, 
          const vector<pair<TexturePath, MapType>>& textures);
-    void setup(Shader& shader) const;
+    void setup(Shader& shader) const override;
     const Buffer* buffer() const {return &vertexBuffer;}
 
 private:
     Mesh();
     /*  Render data  */
     ElementArrayBuffer vertexBuffer;
-    /*  Functions    */
-    void setupMesh();
 };

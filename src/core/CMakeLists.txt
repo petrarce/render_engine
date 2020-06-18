@@ -31,6 +31,7 @@ add_library(core STATIC
                 Model.hpp
                 Shader.hpp
                 ModelManager.hpp
+                Renderable.hpp
 )
 add_dependencies(core imgui)
 target_link_libraries(core imgui Qt5::Core)

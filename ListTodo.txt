@@ -1,0 +1,5 @@
+1. get used to molecular shader generator	: DONE
+	a. compile test application	:	DONE
+	b. get used to the syntax 	:	DONE
+2. integrate shader generator into the engine
+3. revrite all shaders according to shader generator 

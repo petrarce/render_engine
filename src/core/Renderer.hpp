@@ -4,6 +4,9 @@
 #include <MeshManager.hpp>
 #include <ModelManager.hpp>
 #include <Camera.hpp>
+#include <Shader.hpp>
+#include <Eigen/Dense>
+
 class Renderer
 {
 public:
@@ -28,14 +31,16 @@ public:
         }
         Buffer::bindDefault();
     }
-    static void drawAll(Shader& lightingShader, GLenum primitiveType)
+    static void renderPass(const Camera& camera, Shader& lightingShader, GLenum primitiveType)
     {
         vector<DrowableID> objIds;
         DrowableObjectManager::getObjIds(objIds);
+        lightingShader["view"] = camera.getView();
+        lightingShader["projection"] = camera.getProjection();
         for(const DrowableID objId : objIds)
         {
             const DrowableObject& obj = DrowableObjectManager::getItem(objId);
-            lightingShader["model"] = obj.modelMatrix();
+            obj.setup(lightingShader);
             const vector<MeshID>& meshes = ModelManager::getMeshList(obj.modelName());
             for(MeshID meshID : meshes)
             {
