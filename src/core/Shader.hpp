@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include <map>
 
-class Shader{
+class Shader
+{
 public:
    Shader();
    ~Shader(){}

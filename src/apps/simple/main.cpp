@@ -14,8 +14,8 @@ int main(int argc, char** argv)
     RenderContext rctx;
     rctx.initGui();
     Shader shader;
-    shader.bindShader(string(argv[1]) + "point.vert");
-    shader.bindShader(string(argv[1]) + "point.frag");
+    shader.bindShader(string(argv[1]) + "simple.vert");
+    shader.bindShader(string(argv[1]) + "simple.frag");
     Camera cam = Camera(glm::vec3(3,3,3), glm::vec3(-1, -1, -1));
     
     vector<float> quad = {
@@ -62,6 +62,9 @@ int main(int argc, char** argv)
     tetrahedraBuffer.create(tetrahedra.data(), sizeof(float)*6, tetrahedra.size()/6);
     tetrahedraBuffer.defineAttribute(0,6*sizeof(float), 3, false, GL_FLOAT, 0);
     tetrahedraBuffer.defineAttribute(1,6*sizeof(float), 3, false, GL_FLOAT, (void*)(3*sizeof(float)));
+    
+    
+    
     if(argc == 3)
     {
         ModelManager::createItemFromFile(string(argv[2]));
@@ -91,24 +94,23 @@ int main(int argc, char** argv)
         glClearDepth(1.0f);
         rctx.clearDepthBuffer();
         shader.activate();
-        shader["model"] = glm::mat4(0.5);
-        shader["view"] = cam.getView();
-        shader["projection"] = cam.getProjection();
-        shader["lightDirection"] = glm::vec3(-1,-1,-1);
-        shader["defaultDiffuse"] = glm::vec3(1,0,0);
-        Renderer::draw(&quadBuf, GL_TRIANGLES);
-        
-        shader["defaultDiffuse"] = glm::vec3(0,1,0);
-        shader["model"] = glm::mat4(glm::vec4(1,0,0,0), 
-                                    glm::vec4(0,1,0,0), 
-                                    glm::vec4(0,0,1,0), 
-                                    glm::vec4(1,0,0,1));        
-        Renderer::draw(&tetrahedraBuffer, GL_TRIANGLES);
         
         shader["defaultDiffuse"] = glm::vec3(0.3,0.5,0.7);
-        Renderer::drawAll(shader, GL_TRIANGLES);
-        rctx.swapBuffers();
+        shader["lightDirection"] = glm::vec3(-1,-1,-1);
+        Renderer::renderPass(cam, shader, GL_TRIANGLES);
         
+        shader["useDiffuse"] = false;
+        shader["model"] = glm::mat4(0.5);
+        shader["defaultDiffuse"] = glm::vec3(1,0,0);
+        Renderer::draw(&quadBuf, GL_TRIANGLES);
+        shader["defaultDiffuse"] = glm::vec3(0,1,0);
+        shader["model"] = glm::mat4(glm::vec4(1,0,0,0),
+                                    glm::vec4(0,1,0,0),
+                                    glm::vec4(0,0,1,0),
+                                    glm::vec4(3,0,0,1));
+        Renderer::draw(&tetrahedraBuffer, GL_TRIANGLES);
+        
+        rctx.swapBuffers();
     }
     
     return 0;

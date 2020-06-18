@@ -1,3 +1,15 @@
 [submodule "src/DearImGui/imgui"]
 	path = src/DearImGui/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "molecular-gfx"]
+	path = molecular-gfx
+	url = ./molecular-gfx/
+[submodule "molecular-programgenerator"]
+	path = molecular-programgenerator
+	url = ./molecular-programgenerator/
+[submodule "molecular-util"]
+	path = molecular-util
+	url = ./molecular-util/
+[submodule "molecular-meshfile"]
+	path = molecular-meshfile
+	url = ./molecular-meshfile/

@@ -1,6 +1,6 @@
 #pragma once
 #include <ModelManager.hpp>
-class DrowableObject
+class DrowableObject : Renderable
 {
 private:
     std::string mModelName;
@@ -16,7 +16,10 @@ public:
     {
         mModelMatrix = modelMatrix;
     }
-
+    void setup(Shader& shader) const override
+    {
+        shader["model"] = mModelMatrix;
+    }
     DrowableObject(){}
     
 };
