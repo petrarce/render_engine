@@ -30,11 +30,17 @@ int main(int argc, char** argv)
         for(const auto& funct : prfile.GetFunctions())
             generator.AddFunction(funct);
     }
-    std::set<Hash> inp = {"textureCoordAttribute"_H,
-                            "diffuseTexture"_H,
-                            //"somevar"_H,
+    std::set<Hash> inp = {"projection"_H,
+                          "view"_H,
+                          "model"_H,
+                          "texCoord"_H,
+                          "positionAttr"_H,
+                          "diffuse_texture0"_H,
+                          "useDiffuse"_H,
+                          "defaultDiffuse"_H,
                          };
-    std::set<Hash> out = {"fragmentColor"_H};
+    std::set<Hash> out = {"FragColor"_H,
+                         "gl_Position"_H};
     ProgramGenerator::ProgramText prText = generator.GenerateProgram(inp, out);
     prdbg("Final vertex shader:\n %s\n", prText.vertexShader.c_str());
     prdbg("Final fragment shader:\n %s\n", prText.fragmentShader.c_str());
