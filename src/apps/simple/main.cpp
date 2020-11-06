@@ -6,16 +6,59 @@
 #include <Renderer.hpp>
 #include <ModelManager.hpp>
 #include <DrowableObjManager.hpp>
+#include <molecular/programgenerator/ProgramFile.h>
+#include <molecular/programgenerator/ProgramGenerator.h>
+#include <molecular/util/Hash.h>
+#include <fstream>
 
 using namespace glm;
+using namespace molecular::programgenerator;
+using namespace molecular::util;
+
+#define prdbg(msg, args...) fprintf(stderr, "DBG: " msg "\n", ##args)
 
 int main(int argc, char** argv)
 {
     RenderContext rctx;
     rctx.initGui();
     Shader shader;
-    shader.bindShader(string(argv[1]) + "simple.vert");
-    shader.bindShader(string(argv[1]) + "simple.frag");
+
+    //=============================================
+    //          Prepare shaders
+    //=============================================
+
+    //read shader file
+    ProgramGenerator generator;
+    std::ifstream file(string(argv[1]) + "simple.shader");
+    assert(file.is_open() == true);
+    stringstream ss;
+    ss << file.rdbuf();
+    char* content = new char[ss.str().size()];
+    memcpy(content, ss.str().c_str(), ss.str().size());
+    ProgramFile prfile(content, content + ss.str().size() - 1);
+    for(const auto& var : prfile.GetVariables())
+        generator.AddVariable(var);
+    for(const auto& funct : prfile.GetFunctions())
+        generator.AddFunction(funct);
+    delete content;
+
+    //define shader inputs (uniforms and attributes)
+    std::set<Hash> inp = {"projection"_H,
+                          "view"_H,
+                          "model"_H,
+                          "positionAttr"_H,
+                          "textureCoordAttr"_H,
+                          "useDiffuse"_H,
+                          "texture_diffuse0"_H,
+                          "defaultDiffuse"_H,
+                         };
+    //define outputs
+    std::set<Hash> out = {"FragColor"_H, "gl_Position"_H};
+    ProgramGenerator::ProgramText prText = generator.GenerateProgram(inp, out);
+    string version = "#version 330 core\n";
+    shader.bindShader(version + prText.vertexShader, "vert");
+    shader.bindShader(version + prText.fragmentShader, "frag");
+
     Camera cam = Camera(glm::vec3(3,3,3), glm::vec3(-1, -1, -1));
     
     vector<float> quad = {
