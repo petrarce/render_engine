@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <molecular/util/Hash.h>
+#include <sstream>
 
 #define prdbg(msg, args...) fprintf(stderr, "DBG: " msg "\n", ##args)
 using namespace std;
@@ -15,7 +16,7 @@ using namespace molecular::util;
 int main(int argc, char** argv)
 {
     ProgramGenerator generator;
-    for(int i = 1; i < argc; i++)
+    for(int i = 2; i < argc; i++)
     {
         std::ifstream file(argv[i]);
         assert(file.is_open() == true);
@@ -30,15 +31,15 @@ int main(int argc, char** argv)
         for(const auto& funct : prfile.GetFunctions())
             generator.AddFunction(funct);
     }
-    std::set<Hash> inp = {"projection"_H,
-                          "view"_H,
-                          "model"_H,
-                          "texCoord"_H,
-                          "positionAttr"_H,
-                          "diffuse_texture0"_H,
-                          "useDiffuse"_H,
-                          "defaultDiffuse"_H,
-                         };
+
+    std::stringstream inpStream;
+    inpStream << string(argv[1]);
+    string token;
+    std::set<Hash> inp;
+    while(std::getline(inpStream, token, ' '))
+    {
+        inp.insert(HashUtils::MakeHash(token));
+    }
     std::set<Hash> out = {"FragColor"_H,
                          "gl_Position"_H};
     ProgramGenerator::ProgramText prText = generator.GenerateProgram(inp, out);

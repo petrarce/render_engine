@@ -13,6 +13,9 @@ public:
    void
    bindShader(std::string path);
 
+   void
+   bindShader(std::string shaderString, std::string shaderType);
+
    bool
    readShader(std::string path, std::string & shader);
 
