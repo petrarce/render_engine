@@ -36,6 +36,7 @@ find_package(Threads)
 find_package(OpenGL)
 find_package(Eigen3)
 
+add_subdirectory(3rdparty/)
 add_subdirectory(molecular-util)
 add_subdirectory(molecular-programgenerator)
 add_subdirectory(molecular-meshfile)
