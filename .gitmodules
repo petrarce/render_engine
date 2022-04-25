@@ -6,7 +6,7 @@
 	url = https://github.com/petrarce/molecular-gfx.git
 [submodule "molecular-programgenerator"]
 	path = molecular-programgenerator
-	url = https://github.com/petrarce/molecular-programgenerator.git
+	url = git@github.com:petrarce/molecular-programgenerator.git
 [submodule "molecular-util"]
 	path = molecular-util
 	url = https://github.com/cmdrf/molecular-util.git
