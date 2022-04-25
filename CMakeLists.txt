@@ -36,14 +36,11 @@ find_package(Threads)
 find_package(OpenGL)
 find_package(Eigen3)
 
-add_subdirectory(src/core/)
-add_subdirectory(src/DearImGui/)
-add_subdirectory(src/apps/)
-add_subdirectory(src/physics)
-add_subdirectory(molecular-programgenerator)
 add_subdirectory(molecular-util)
-add_subdirectory(molecular-gfx)
+add_subdirectory(molecular-programgenerator)
 add_subdirectory(molecular-meshfile)
+add_subdirectory(molecular-gfx)
+add_subdirectory(apps/LearnOpenGL/)
 
 
 
