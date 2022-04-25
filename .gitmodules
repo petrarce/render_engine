@@ -15,4 +15,4 @@
 	url = https://github.com/cmdrf/molecular-meshfile.git
 [submodule "apps/LearnOpenGL"]
 	path = apps/LearnOpenGL
-	url = https://github.com/JoeyDeVries/LearnOpenGL.git
+	url = git@github.com:petrarce/LearnOpenGL.git
