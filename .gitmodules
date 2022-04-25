@@ -3,13 +3,16 @@
 	url = https://github.com/ocornut/imgui.git
 [submodule "molecular-gfx"]
 	path = molecular-gfx
-	url = ./molecular-gfx/
+	url = https://github.com/petrarce/molecular-gfx.git
 [submodule "molecular-programgenerator"]
 	path = molecular-programgenerator
-	url = ./molecular-programgenerator/
+	url = https://github.com/petrarce/molecular-programgenerator.git
 [submodule "molecular-util"]
 	path = molecular-util
-	url = ./molecular-util/
+	url = https://github.com/cmdrf/molecular-util.git
 [submodule "molecular-meshfile"]
 	path = molecular-meshfile
-	url = ./molecular-meshfile/
+	url = https://github.com/cmdrf/molecular-meshfile.git
+[submodule "apps/LearnOpenGL"]
+	path = apps/LearnOpenGL
+	url = https://github.com/JoeyDeVries/LearnOpenGL.git
