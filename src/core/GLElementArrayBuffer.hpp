@@ -5,6 +5,8 @@ namespace glwrapper {
 
 namespace core {
 
+class GLVertexArray;
+
 class GLElementArrayBuffer : public GLBuffer
 {
 public:
@@ -12,6 +14,7 @@ public:
 	~GLElementArrayBuffer() override {};
 	
 protected:
+	friend class GLVertexArray;
 	void bind() override
 	{
 		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &mObjectBeforeBinding);
