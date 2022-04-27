@@ -38,8 +38,18 @@ public:
 		createAttribute(spec, args...);
 	}
 protected:
-	void createAttribute(const AttributeSpecification& spec){
+	void createAttribute(const AttributeSpecification& spec)
+	{
+		// read off current binding of ElementArrayBuffer since VertexArrey
+		// during bind internally will overwrite ElementArrayBinding with value
+		// of ElementArrayObject which is refferenced by VertexArray
+		GLint eob;
+		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &eob);
 		GlObjectBinder binder(*this);
+
+		// now bind ElementArrayBuffer that was intended for VertexArray
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eob);
+
 		glVertexAttribPointer(spec.location, 
 							  spec.components,
 							  spec.type,
