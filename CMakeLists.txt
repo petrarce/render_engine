@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # project name and supported languages
-project(graphics CXX)
+project(graphics CXX C)
 
 # detect operating system and host processor
 message(STATUS "We are on a ${CMAKE_SYSTEM_NAME} system")
