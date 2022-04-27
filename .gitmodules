@@ -1,5 +1,5 @@
-[submodule "src/DearImGui/imgui"]
-	path = src/DearImGui/imgui
+[submodule "src/deprecated/DearImGui/imgui"]
+	path = src/deprecated/DearImGui/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "molecular-gfx"]
 	path = molecular-gfx
