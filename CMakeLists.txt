@@ -41,6 +41,7 @@ add_subdirectory(molecular-util)
 add_subdirectory(molecular-programgenerator)
 add_subdirectory(molecular-meshfile)
 add_subdirectory(molecular-gfx)
+add_subdirectory(src)
 add_subdirectory(apps/LearnOpenGL/)
 
 
