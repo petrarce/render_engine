@@ -2,6 +2,7 @@
 #include <iostream>
 #include <GLObject.hpp>
 #include <GLBuffer.hpp>
+#include <GLElementArrayBuffer.hpp>
 #include <GLObjectBinder.hpp>
 
 namespace glwrapper {
@@ -38,6 +39,25 @@ public:
 		createAttribute(spec, args...);
 	}
 protected:
+	void createAttribute(const AttributeSpecification& spec, GLElementArrayBuffer& ebo)
+	{
+		GlObjectBinder bindEbo(ebo);
+		GlObjectBinder bindVA(*this);
+
+		//since VertexArray internally binds ElementArrayBuffer that was active before VertexArra was
+		// unbind need to rebind again ElementArrayBuffer so that this buffer bound previously
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.mObjectId);
+
+		glVertexAttribPointer(spec.location,
+							  spec.components,
+							  spec.type,
+							  spec.normalize,
+							  spec.stride,
+							  spec.offset);
+		glEnableVertexAttribArray(spec.location);
+
+
+	}
 	void createAttribute(const AttributeSpecification& spec){
 		GlObjectBinder binder(*this);
 		glVertexAttribPointer(spec.location, 
