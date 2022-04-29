@@ -7,6 +7,9 @@ add_library(opengl-wrapper-core STATIC
 	GLArrayBuffer.hpp
 	GLVertexArray.hpp
 	GLElementArrayBuffer.hpp
+	GLProgram.hpp
+	GLProgram.cpp
+	GLShader.hpp
 )
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)
