@@ -7,6 +7,8 @@ namespace glwrapper {
 
 namespace core {
 
+class GLProgram;
+
 template<GLuint ShaderType>
 class GLShader : public GLObject
 {
@@ -24,9 +26,10 @@ public:
 	bool compile(const std::string& source)
 	{
 		int size = source.size();
+		const GLchar* dataPtr = reinterpret_cast<const GLchar*>(source.data());
 		glShaderSource(mObjectId, 
 			1, 
-			reinterpret_cast<const GLchar* const*>(source.data()), 
+			&dataPtr,
 			&size);
 		glCompileShader(mObjectId);
 
@@ -45,20 +48,22 @@ public:
 		if(compileStatus() == GL_FALSE)
 		{
 			std::string compileLog;
-			compileLog.resize(65536);
+			int logSize = 0;
+			compileLog.resize(65536, 0);
 			glGetShaderInfoLog(mObjectId, 
 							   compileLog.size(), 
-							   nullptr,
+							   &logSize,
 							   compileLog.data());
+			compileLog.resize(logSize);
 			return compileLog;
 		}
 		return "Succeed";
 	}
 	
 protected:
+	friend class GLProgram;
 	void bind() override
 	{
-		glAttachShader(ShaderType, mObjectId);
 	}
 	void unbind() override
 	{
