@@ -1,44 +1,41 @@
 #pragma once
-#include <iostream>
-#include <GLObject.hpp>
 #include <GLBuffer.hpp>
+#include <GLObject.hpp>
 #include <GLObjectBinder.hpp>
+#include <iostream>
 
-namespace glwrapper {
-
-namespace core {
-
+namespace glwrapper
+{
+namespace core
+{
 class GLVertexArray : public GLObject
 {
 public:
 	struct AttributeSpecification {
-		GLuint location {0};
-		GLint components {1};
+		GLuint location{0};
+		GLint components{1};
 		GLenum type;
 		bool normalize;
 		GLsizei stride;
 		const void *offset;
 	};
-	GLVertexArray(const std::string& name = "GLVertexArray")
+	GLVertexArray(const std::string &name = "GLVertexArray")
 		: GLObject(name)
 	{
 		glGenVertexArrays(1, &mObjectId);
 	}
-	~GLVertexArray()
-	{
-		glDeleteVertexArrays(1, &mObjectId);
-	}
-	
-	template<class Buffer, class... Buffers>
-	void createAttribute(const AttributeSpecification& spec, 
-						 Buffer& buffer, 
-						 Buffers& ...args)
+	~GLVertexArray() { glDeleteVertexArrays(1, &mObjectId); }
+
+	template <class Buffer, class... Buffers>
+	void createAttribute(const AttributeSpecification &spec, Buffer &buffer,
+						 Buffers &...args)
 	{
 		GlObjectBinder binder(buffer);
 		createAttribute(spec, args...);
 	}
+
 protected:
-	void createAttribute(const AttributeSpecification& spec)
+	void createAttribute(const AttributeSpecification &spec)
 	{
 		// read off current binding of ElementArrayBuffer since VertexArrey
 		// during bind internally will overwrite ElementArrayBinding with value
@@ -50,12 +47,8 @@ protected:
 		// now bind ElementArrayBuffer that was intended for VertexArray
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eob);
 
-		glVertexAttribPointer(spec.location, 
-							  spec.components,
-							  spec.type,
-							  spec.normalize,
-							  spec.stride,
-							  spec.offset);
+		glVertexAttribPointer(spec.location, spec.components, spec.type,
+							  spec.normalize, spec.stride, spec.offset);
 		glEnableVertexAttribArray(spec.location);
 	}
 
@@ -64,11 +57,8 @@ protected:
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &mObjectBeforeBinding);
 		glBindVertexArray(mObjectId);
 	}
-	void unbind() override
-	{
-		glBindVertexArray(mObjectBeforeBinding);
-	}
+	void unbind() override { glBindVertexArray(mObjectBeforeBinding); }
 };
 
-}
-}
+} // namespace core
+} // namespace glwrapper
