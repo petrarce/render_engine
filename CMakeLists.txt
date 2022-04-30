@@ -14,27 +14,24 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
-
 # project version
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-if(CMAKE_BUILD_TYPE MATCHES RELEASE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" CACHE PATH "Path to cmake modules")
 
 include_directories(AFTER .)
 include_directories(AFTER molecular-programgenerator)
 include_directories(AFTER molecular-util)
 
+find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Threads)
 find_package(OpenGL)
 find_package(Eigen3)
+find_package(Boost 1.63 COMPONENTS unit_test_framework REQUIRED)
+
+enable_testing()
 
 add_subdirectory(3rdparty/)
 add_subdirectory(molecular-util)

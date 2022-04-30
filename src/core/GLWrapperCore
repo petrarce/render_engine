@@ -1,0 +1,10 @@
+#pragma once
+#include <GLBuffer.hpp>
+#include <GLArrayBuffer.hpp>
+#include <GLObjectBinder.hpp>
+#include <GLElementArrayBuffer.hpp>
+#include <GLShader.hpp>
+#include <GLVertexArray.hpp>
+//#include <GLObjectFabric.hpp>
+#include <GLProgram.hpp>
+#include <GLObject.hpp>
