@@ -1,16 +1,19 @@
 #pragma once
 #include <GLObject.hpp>
 
-namespace glwrapper {
-namespace core {
+namespace glwrapper
+{
+namespace core
+{
 class GlObjectBinder
 {
-public: 
-	GlObjectBinder(GLObject& object);
+public:
+	GlObjectBinder(GLObject &object);
 	~GlObjectBinder();
+
 private:
-	GLObject& mGlObject;
+	GLObject &mGlObject;
 };
 
-}
-}
+} // namespace core
+} // namespace glwrapper

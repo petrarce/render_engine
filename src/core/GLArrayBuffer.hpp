@@ -1,16 +1,18 @@
 #pragma once
 #include <glad/glad.h>
+
 #include <GLBuffer.hpp>
-namespace glwrapper {
-
-namespace core {
-
+namespace glwrapper
+{
+namespace core
+{
 class GLArrayBuffer : public GLBuffer
 {
 public:
-	GLArrayBuffer(const std::string& name = "GLArrayBuffer") : GLBuffer(name) {};
-	~GLArrayBuffer() override {};
-	
+	GLArrayBuffer(const std::string &name = "GLArrayBuffer")
+		: GLBuffer(name){};
+	~GLArrayBuffer() override{};
+
 protected:
 	void bind() override
 	{
@@ -21,9 +23,8 @@ protected:
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, mObjectBeforeBinding);
 	}
-	
-	GLenum type() override { return GL_ARRAY_BUFFER; }
 
+	GLenum type() override { return GL_ARRAY_BUFFER; }
 };
-}
-}
+} // namespace core
+} // namespace glwrapper
