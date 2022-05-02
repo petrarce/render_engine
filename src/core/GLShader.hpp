@@ -44,7 +44,7 @@ public:
 			int logSize = 0;
 			compileLog.resize(65536, 0);
 			glGetShaderInfoLog(mObjectId, compileLog.size(), &logSize,
-							   compileLog.data());
+							   reinterpret_cast<GLchar*>(const_cast<char*>(compileLog.data())));
 			compileLog.resize(logSize);
 			return compileLog;
 		}

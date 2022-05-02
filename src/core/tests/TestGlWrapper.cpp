@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE OpengGL wrapper tests
-#include <GLFW/glfw3.h>
 #include <GLWrapperCore>
+#include <GLFW/glfw3.h>
 #include <boost/test/included/unit_test.hpp>
 #include <iostream>
 
@@ -155,5 +155,44 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 		}
 		BOOST_TEST(initialState == getGlBindings());
 	}
+}
+class TestGLProgram : public GLProgram
+{
+public:
+	TestGLProgram(const std::string& name = "TestGLProgram") : GLProgram(name) {}
+	GLuint objectId() const { return mObjectId; }
+};
+
+BOOST_AUTO_TEST_CASE(TestUniforms)
+{
+	std::string vsCode =
+			"#version 330 core\n"
+			"uniform int i1;\n"
+			"uniform ivec2 i2;\n"
+			"uniform ivec3 i3;\n"
+			"uniform ivec4 i4;\n"
+			"void main()\n"
+			"{\n"
+//			"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+			"}\0";
+
+	GLVertexShader vs;
+	vs.compile(vsCode);
+	std::cerr << vs.compilationLog() << std::endl;
+	BOOST_REQUIRE(vs.compileStatus());
+
+	GLFragmentShader fs;
+	fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
+	BOOST_REQUIRE(fs.compileStatus());
+
+	TestGLProgram prog;
+	prog.link(vs, fs);
+	BOOST_REQUIRE(prog.linkStatus());
+
+//	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
+//	prog.setUniform("i1", 5);
+//	glGetUniformiv(prog.objectId(), glGetUniformLocation(prog.objectId(), "i1"), &i1);
+//	BOOST_TEST(i1 == 5);
+
 }
 BOOST_AUTO_TEST_SUITE_END()
