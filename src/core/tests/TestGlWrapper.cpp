@@ -189,10 +189,13 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	prog.link(vs, fs);
 	BOOST_REQUIRE(prog.linkStatus());
 
-//	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
-//	prog.setUniform("i1", 5);
-//	glGetUniformiv(prog.objectId(), glGetUniformLocation(prog.objectId(), "i1"), &i1);
-//	BOOST_TEST(i1 == 5);
+	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
+	prog.use();
+	prog.setUniform1("i1", static_cast<int>(5));
+	glGetUniformiv(prog.objectId(), glGetUniformLocation(prog.objectId(), "i1"), &i1);
+	GLenum err = glGetError();
+	BOOST_TEST(err == GL_NO_ERROR);
+	BOOST_TEST(i1 == 5);
 
 }
 BOOST_AUTO_TEST_SUITE_END()

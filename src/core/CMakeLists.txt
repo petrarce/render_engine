@@ -11,6 +11,7 @@ add_library(opengl-wrapper-core STATIC
 	GLProgram.cpp
 	GLShader.hpp
 	GLWrapperCore
+	GLDefinitions.hpp
 )
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)

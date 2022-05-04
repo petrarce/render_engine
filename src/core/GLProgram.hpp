@@ -4,6 +4,7 @@
 #include <GLObject.hpp>
 #include <GLObjectBinder.hpp>
 #include <GLShader.hpp>
+#include <GLDefinitions.hpp>
 
 namespace glwrapper
 {
@@ -20,6 +21,7 @@ public:
 	bool link(Shader &shader, Shaders &...shaders)
 	{
 		glAttachShader(mObjectId, shader.mObjectId);
+		GL_THROW_ON_ERROR();
 		return link(shaders...);
 	}
 
@@ -27,6 +29,7 @@ public:
 	{
 		int success;
 		glGetProgramiv(mObjectId, GL_LINK_STATUS, &success);
+		GL_THROW_ON_ERROR();
 		return success;
 	}
 	std::string linkageLog()
@@ -37,42 +40,44 @@ public:
 			glGetProgramInfoLog(
 				mObjectId, log.size(), &finalSize,
 				reinterpret_cast<GLchar *>(const_cast<char *>(log.data())));
+			GL_THROW_ON_ERROR();
 			log.resize(finalSize);
 			return log;
 		}
 		return "Success";
 	}
 
-#define UNIFORM_SETTER(typeSuffix, type) \
-	template<class... VarueArgs> \
-	void setUniform(const std::string& var, type v1, const VarueArgs&... val) \
-	{ \
-		int components = sizeof...(val) + 1; \
-		GLint location = glGetUniformLocation(mObjectId, var.c_str()); \
-	 \
-		if(components == 1) \
-			glUniform1##typeSuffix(location, v1, val...); \
-		else if(components == 2) \
-			glUniform1##typeSuffix(location, v1, val...); \
-		else if(components == 3) \
-			glUniform1##typeSuffix(location, v1, val...); \
-		else if(components == 4) \
-			glUniform1##typeSuffix(location, v1, val...); \
-		else \
-			throw std::runtime_error("Failed to set uniform with more than 4 elements"); \
+	void use()
+	{
+		glUseProgram(mObjectId);
+		GL_THROW_ON_ERROR();
 	}
 
+#define UNIFORM_SETTER(tp, type, dim) \
+	template<class... VarueArgs> \
+	void setUniform##dim(const std::string& var, type v1, const VarueArgs&... val) \
+	{ \
+		GLint location = glGetUniformLocation(mObjectId, var.c_str()); \
+		GL_THROW_ON_ERROR(); \
+		glUniform##dim##tp(location, v1, val...); \
+		GL_THROW_ON_ERROR(); \
+	}
 
-	UNIFORM_SETTER(f, float)
-	UNIFORM_SETTER(i, int)
-	UNIFORM_SETTER(ui, unsigned int)
+#define UNIFORM_SETTER_API(tp, type) \
+	UNIFORM_SETTER(tp, type, 1) \
+	UNIFORM_SETTER(tp, type, 2) \
+	UNIFORM_SETTER(tp, type, 3) \
+	UNIFORM_SETTER(tp, type, 4) \
 
-	void use() { glUseProgram(mObjectId); }
+	UNIFORM_SETTER_API(f, float)
+	UNIFORM_SETTER_API(i, int)
+	UNIFORM_SETTER_API(ui, unsigned int)
 
 protected:
 	bool link()
 	{
 		glLinkProgram(mObjectId);
+		GL_THROW_ON_ERROR();
 		return linkStatus();
 	}
 
