@@ -20,8 +20,8 @@ public:
 
 		// glfw window creation
 		// --------------------
-		GLFWwindow *window = glfwCreateWindow(1, 1, "", NULL, NULL);
-		if (window == NULL) {
+		GLFWwindow *window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+		if (window == nullptr) {
 			glfwTerminate();
 			throw std::runtime_error("Failed to create GLFW window");
 		}
@@ -171,16 +171,25 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 			"uniform ivec2 i2;\n"
 			"uniform ivec3 i3;\n"
 			"uniform ivec4 i4;\n"
+			"uniform float fi1;\n"
+			"uniform vec2 fi2;\n"
+			"uniform vec3 fi3;\n"
+			"uniform vec4 fi4;\n"
+			"uniform unsigned int ui1;\n"
+			"uniform uvec2 ui2;\n"
+			"uniform uvec3 ui3;\n"
+			"uniform uvec4 ui4;\n"
+			
 			"void main()\n"
 			"{\n"
-//			"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+			"   gl_Position = vec4((i1 + i2.x + i3.x + i4.x), (fi1 + fi2.x + fi3.x + fi4.x), (ui1 + ui2.x + ui3.x + ui4.x), 1.0);\n"
 			"}\0";
 
 	GLVertexShader vs;
 	vs.compile(vsCode);
 	std::cerr << vs.compilationLog() << std::endl;
 	BOOST_REQUIRE(vs.compileStatus());
-
+	std::cout << vs.compilationLog();
 	GLFragmentShader fs;
 	fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
 	BOOST_REQUIRE(fs.compileStatus());
@@ -190,12 +199,71 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	BOOST_REQUIRE(prog.linkStatus());
 
 	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
+	int ci4[] {1, 2, 3, 4};
+	float fi1 = 0, fi2[] = {0, 0}, fi3[] = {0, 0, 0}, fi4[] = {0, 0, 0, 0};
+	float fci4[] {1, 2, 3, 4};
+	unsigned int ui1 = 0, ui2[] = {0, 0}, ui3[] = {0, 0, 0}, ui4[] = {0, 0, 0, 0};
+	unsigned int uci4[] {1, 2, 3, 4};
+	
 	prog.use();
-	prog.setUniform1("i1", static_cast<int>(5));
-	glGetUniformiv(prog.objectId(), glGetUniformLocation(prog.objectId(), "i1"), &i1);
-	GLenum err = glGetError();
-	BOOST_TEST(err == GL_NO_ERROR);
-	BOOST_TEST(i1 == 5);
+	prog.setUniform1("i1", ci4[0]);
+	prog.setUniform2("i2", ci4[0], ci4[1]);
+	prog.setUniform3("i3", ci4[0], ci4[1], ci4[2]);
+	prog.setUniform4("i4", ci4[0], ci4[1], ci4[2], ci4[3]);
+	prog.setUniform1("fi1", fci4[0]);
+	prog.setUniform2("fi2", fci4[0], fci4[1]);
+	prog.setUniform3("fi3", fci4[0], fci4[1], fci4[2]);
+	prog.setUniform4("fi4", fci4[0], fci4[1], fci4[2], fci4[3]);
+	prog.setUniform1("ui1", uci4[0]);
+	prog.setUniform2("ui2", uci4[0], uci4[1]);
+	prog.setUniform3("ui3", uci4[0], uci4[1], uci4[2]);
+	prog.setUniform4("ui4", uci4[0], uci4[1], uci4[2], uci4[3]);
+
+	
+	GLint i1l = glGetUniformLocation(prog.objectId(), "i1");
+	GLint i2l = glGetUniformLocation(prog.objectId(), "i2");
+	GLint i3l = glGetUniformLocation(prog.objectId(), "i3");
+	GLint i4l = glGetUniformLocation(prog.objectId(), "i4");
+	
+	GLint fi1l = glGetUniformLocation(prog.objectId(), "fi1");
+	GLint fi2l = glGetUniformLocation(prog.objectId(), "fi2");
+	GLint fi3l = glGetUniformLocation(prog.objectId(), "fi3");
+	GLint fi4l = glGetUniformLocation(prog.objectId(), "fi4");
+	
+	GLint ui1l = glGetUniformLocation(prog.objectId(), "ui1");
+	GLint ui2l = glGetUniformLocation(prog.objectId(), "ui2");
+	GLint ui3l = glGetUniformLocation(prog.objectId(), "ui3");
+	GLint ui4l = glGetUniformLocation(prog.objectId(), "ui4");
+	
+	glGetUniformiv(prog.objectId(), i1l, &i1);
+	glGetUniformiv(prog.objectId(), i2l, i2);
+	glGetUniformiv(prog.objectId(), i3l, i3);
+	glGetUniformiv(prog.objectId(), i4l, i4);
+	
+	glGetUniformfv(prog.objectId(), fi1l, &fi1);
+	glGetUniformfv(prog.objectId(), fi2l, fi2);
+	glGetUniformfv(prog.objectId(), fi3l, fi3);
+	glGetUniformfv(prog.objectId(), fi4l, fi4);
+	
+	glGetUniformuiv(prog.objectId(), ui1l, &ui1);
+	glGetUniformuiv(prog.objectId(), ui2l, ui2);
+	glGetUniformuiv(prog.objectId(), ui3l, ui3);
+	glGetUniformuiv(prog.objectId(), ui4l, ui4);
+	
+	BOOST_TEST(i1 == ci4[0]);
+	BOOST_TEST((i2[0] == ci4[0] && i2[1] == ci4[1]));
+	BOOST_TEST((i3[0] == ci4[0] && i3[1] == ci4[1] && i3[2] == ci4[2]));
+	BOOST_TEST((i4[0] == ci4[0] && i4[1] == ci4[1] && i4[2] == ci4[2] && i4[3] == ci4[3]));
+	
+	BOOST_TEST(fi1 == fci4[0]);
+	BOOST_TEST((fi2[0] == fci4[0] && fi2[1] == fci4[1]));
+	BOOST_TEST((fi3[0] == fci4[0] && fi3[1] == fci4[1] && fi3[2] == fci4[2]));
+	BOOST_TEST((fi4[0] == fci4[0] && fi4[1] == fci4[1] && fi4[2] == fci4[2] && fi4[3] == fci4[3]));
+	
+	BOOST_TEST(ui1 == uci4[0]);
+	BOOST_TEST((ui2[0] == uci4[0] && ui2[1] == uci4[1]));
+	BOOST_TEST((ui3[0] == uci4[0] && ui3[1] == uci4[1] && ui3[2] == uci4[2]));
+	BOOST_TEST((ui4[0] == uci4[0] && ui4[1] == uci4[1] && ui4[2] == uci4[2] && ui4[3] == uci4[3]));
 
 }
 BOOST_AUTO_TEST_SUITE_END()
