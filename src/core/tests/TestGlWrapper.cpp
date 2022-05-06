@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 			"uniform vec2 fi2;\n"
 			"uniform vec3 fi3;\n"
 			"uniform vec4 fi4;\n"
-			"uniform unsigned int ui1;\n"
+			"uniform uint ui1;\n"
 			"uniform uvec2 ui2;\n"
 			"uniform uvec3 ui3;\n"
 			"uniform uvec4 ui4;\n"
@@ -186,17 +186,13 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 			"}\0";
 
 	GLVertexShader vs;
-	vs.compile(vsCode);
-	std::cerr << vs.compilationLog() << std::endl;
-	BOOST_REQUIRE(vs.compileStatus());
-	std::cout << vs.compilationLog();
+	BOOST_REQUIRE(vs.compile(vsCode));
+
 	GLFragmentShader fs;
-	fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
-	BOOST_REQUIRE(fs.compileStatus());
+	BOOST_REQUIRE(fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource))));
 
 	TestGLProgram prog;
-	prog.link(vs, fs);
-	BOOST_REQUIRE(prog.linkStatus());
+	BOOST_REQUIRE(prog.link(vs, fs));
 
 	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
 	int ci4[] {1, 2, 3, 4};
