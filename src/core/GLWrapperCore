@@ -3,6 +3,6 @@
 #include <GLObjectBinder.hpp>
 #include <GLShader.hpp>
 #include <GLVertexArray.hpp>
-//#include <GLObjectFabric.hpp>
 #include <GLProgram.hpp>
 #include <GLObject.hpp>
+#include <GLTexture.hpp>
