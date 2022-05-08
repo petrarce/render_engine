@@ -11,7 +11,10 @@ GlObjectBinder::GlObjectBinder(GLObject &object)
 	mGlObject.bind();
 }
 
-GlObjectBinder::~GlObjectBinder() { mGlObject.unbind(); }
+GlObjectBinder::~GlObjectBinder()
+{
+	mGlObject.unbind();
+}
 
 } // namespace core
 } // namespace glwrapper

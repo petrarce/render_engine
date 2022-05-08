@@ -48,46 +48,78 @@ public:
 	}
 };
 
-std::map<GLenum, int> getGlBindings()
+class GLContextState
 {
-	std::map<GLenum, int> state = {
-		{GL_ARRAY_BUFFER_BINDING, 0},
-		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
-		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
-		{GL_ELEMENT_ARRAY_BUFFER_BINDING, 0},
-		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
-		{GL_MAX_UNIFORM_BUFFER_BINDINGS, 0},
-		{GL_MAX_VERTEX_ATTRIB_BINDINGS, 0},
-		{GL_PIXEL_PACK_BUFFER_BINDING, 0},
-		{GL_PIXEL_UNPACK_BUFFER_BINDING, 0},
-		{GL_PROGRAM_PIPELINE_BINDING, 0},
-		{GL_READ_FRAMEBUFFER_BINDING, 0},
-		{GL_RENDERBUFFER_BINDING, 0},
-		{GL_SAMPLER_BINDING, 0},
-		{GL_SHADER_STORAGE_BUFFER_BINDING, 0},
-		{GL_TEXTURE_BINDING_1D, 0},
-		{GL_TEXTURE_BINDING_1D_ARRAY, 0},
-		{GL_TEXTURE_BINDING_2D, 0},
-		{GL_TEXTURE_BINDING_2D_ARRAY, 0},
-		{GL_TEXTURE_BINDING_2D_MULTISAMPLE, 0},
-		{GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY, 0},
-		{GL_TEXTURE_BINDING_3D, 0},
-		{GL_TEXTURE_BINDING_BUFFER, 0},
-		{GL_TEXTURE_BINDING_CUBE_MAP, 0},
-		{GL_TEXTURE_BINDING_RECTANGLE, 0},
-		{GL_TRANSFORM_FEEDBACK_BUFFER_BINDING, 0},
-		{GL_UNIFORM_BUFFER_BINDING, 0},
-		{GL_VERTEX_ARRAY_BINDING, 0},
-		{GL_VERTEX_BINDING_BUFFER, 0},
-		{GL_VERTEX_BINDING_DIVISOR, 0},
-		{GL_VERTEX_BINDING_OFFSET, 0},
-		{GL_VERTEX_BINDING_STRIDE, 0},
-	};
-	for (auto &binding : state)
-		glGetIntegerv(binding.first, &binding.second);
-	return state;
-}
+public:
+	using GLStateMap = std::map<GLenum, int>;
+	static GLContextState& instance()
+	{
+		static GLContextState state;
+		return state;
+	}
 
+	const GLStateMap& updateState()
+	{
+		for(auto& stateVar : mState)
+			glGetIntegerv(stateVar.first, &(stateVar.second));
+		return mState;
+	}
+
+	operator std::string()
+	{
+		std::string res;
+		res.reserve(65542);
+		res.append("OpenGL state:\n");
+		for(auto& stateVar : mState)
+			res.append(glEnumString(stateVar.first)
+				+ ": "
+				+ std::to_string(stateVar.second) + "\n");
+		return res;
+	}
+
+
+
+private:
+	GLContextState()
+		: mState({
+			{GL_ARRAY_BUFFER_BINDING, 0},
+			{GL_ELEMENT_ARRAY_BUFFER_BINDING, 0},
+			{GL_CURRENT_PROGRAM, 0},
+			{GL_VERTEX_ARRAY_BINDING, 0},
+	//		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
+	//		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
+	//		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
+	//		{GL_MAX_UNIFORM_BUFFER_BINDINGS, 0},
+	//		{GL_MAX_VERTEX_ATTRIB_BINDINGS, 0},
+	//		{GL_PIXEL_PACK_BUFFER_BINDING, 0},
+	//		{GL_PIXEL_UNPACK_BUFFER_BINDING, 0},
+	//		{GL_PROGRAM_PIPELINE_BINDING, 0},
+	//		{GL_READ_FRAMEBUFFER_BINDING, 0},
+	//		{GL_RENDERBUFFER_BINDING, 0},
+	//		{GL_SAMPLER_BINDING, 0},
+	//		{GL_SHADER_STORAGE_BUFFER_BINDING, 0},
+	//		{GL_TEXTURE_BINDING_1D, 0},
+	//		{GL_TEXTURE_BINDING_1D_ARRAY, 0},
+	//		{GL_TEXTURE_BINDING_2D, 0},
+	//		{GL_TEXTURE_BINDING_2D_ARRAY, 0},
+	//		{GL_TEXTURE_BINDING_2D_MULTISAMPLE, 0},
+	//		{GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY, 0},
+	//		{GL_TEXTURE_BINDING_3D, 0},
+	//		{GL_TEXTURE_BINDING_BUFFER, 0},
+	//		{GL_TEXTURE_BINDING_CUBE_MAP, 0},
+	//		{GL_TEXTURE_BINDING_RECTANGLE, 0},
+	//		{GL_TRANSFORM_FEEDBACK_BUFFER_BINDING, 0},
+	//		{GL_UNIFORM_BUFFER_BINDING, 0},
+	//		{GL_VERTEX_BINDING_BUFFER, 0},
+	//		{GL_VERTEX_BINDING_DIVISOR, 0},
+	//		{GL_VERTEX_BINDING_OFFSET, 0},
+	//		{GL_VERTEX_BINDING_STRIDE, 0},
+	//		{GL_ACTIVE_PROGRAM, 0},
+		})
+	{
+	}
+	std::map<GLenum, int> mState;
+};
 std::basic_ostream<char> &operator<<(std::basic_ostream<char> &stream,
 									 const std::map<GLenum, int> &map)
 {
@@ -141,21 +173,38 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 
 BOOST_AUTO_TEST_CASE(TestBindings)
 {
-	auto initialState = getGlBindings();
+	GLContextState& stateProvider = GLContextState::instance();
+	auto initialState = stateProvider.updateState();
+	auto vs = std::make_shared<GLVertexShader>();
+	auto fs = std::make_shared<GLFragmentShader>();
+	auto prog = std::make_shared<GLProgram>();
+	BOOST_REQUIRE((vs->compile(std::string(vertexShaderSource, sizeof(vertexShaderSource)))));
+	BOOST_REQUIRE((fs->compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)))));
+	BOOST_REQUIRE((prog->link(*vs,*fs)));
+
+
 	std::vector<std::shared_ptr<GLObject>> objects = {
 		std::make_shared<GLVertexArray>(),
 		std::make_shared<GLArrayBuffer>(),
 		std::make_shared<GLElementArrayBuffer>(),
+		prog,
 	};
 	for (auto obj : objects) {
-		BOOST_TEST(initialState == getGlBindings());
+
+		BOOST_TEST(initialState == stateProvider.updateState());
+		std::cout << std::string(stateProvider) << std::endl;
 		{
+
 			GlObjectBinder bind(*obj);
-			BOOST_TEST(initialState != getGlBindings());
+			BOOST_TEST(initialState != stateProvider.updateState());
+			std::cout << std::string(stateProvider) << std::endl;
 		}
-		BOOST_TEST(initialState == getGlBindings());
+
+		BOOST_TEST(initialState == stateProvider.updateState());
+		std::cout << std::string(stateProvider) << std::endl << std::endl;
 	}
 }
+
 class TestGLProgram : public GLProgram
 {
 public:

@@ -1,10 +1,10 @@
 #pragma once
 #include <glad/glad.h>
 
+#include <GLDefinitions.hpp>
 #include <GLObject.hpp>
 #include <GLObjectBinder.hpp>
 #include <GLShader.hpp>
-#include <GLDefinitions.hpp>
 
 namespace glwrapper
 {
@@ -53,21 +53,22 @@ public:
 		GL_THROW_ON_ERROR();
 	}
 
-#define UNIFORM_SETTER(tp, type, dim) \
-	template<class... VarueArgs> \
-	void setUniform##dim(const std::string& var, type v1, const VarueArgs&... val) \
-	{ \
-		GLint location = glGetUniformLocation(mObjectId, var.c_str()); \
-		GL_THROW_ON_ERROR(); \
-		glUniform##dim##tp(location, v1, val...); \
-		GL_THROW_ON_ERROR(); \
+#define UNIFORM_SETTER(tp, type, dim)                                          \
+	template <class... VarueArgs>                                              \
+	void setUniform##dim(const std::string &var, type v1,                      \
+						 const VarueArgs &...val)                              \
+	{                                                                          \
+		GLint location = glGetUniformLocation(mObjectId, var.c_str());         \
+		GL_THROW_ON_ERROR();                                                   \
+		glUniform##dim##tp(location, v1, val...);                              \
+		GL_THROW_ON_ERROR();                                                   \
 	}
 
-#define UNIFORM_SETTER_API(tp, type) \
-	UNIFORM_SETTER(tp, type, 1) \
-	UNIFORM_SETTER(tp, type, 2) \
-	UNIFORM_SETTER(tp, type, 3) \
-	UNIFORM_SETTER(tp, type, 4) \
+#define UNIFORM_SETTER_API(tp, type)                                           \
+	UNIFORM_SETTER(tp, type, 1)                                                \
+	UNIFORM_SETTER(tp, type, 2)                                                \
+	UNIFORM_SETTER(tp, type, 3)                                                \
+	UNIFORM_SETTER(tp, type, 4)
 
 	UNIFORM_SETTER_API(f, float)
 	UNIFORM_SETTER_API(i, int)

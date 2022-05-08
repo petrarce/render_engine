@@ -9,16 +9,22 @@ GLProgram::GLProgram(const std::string &name)
 	mObjectId = glCreateProgram();
 	GL_THROW_ON_ERROR();
 };
-GLProgram::~GLProgram() { glDeleteProgram(mObjectId); }
+GLProgram::~GLProgram()
+{
+	glDeleteProgram(mObjectId);
+	GL_THROW_ON_ERROR();
+}
 
 void GLProgram::bind()
 {
-	glGetIntegerv(GL_ACTIVE_PROGRAM, &mObjectBeforeBinding);
+	glGetIntegerv(GL_CURRENT_PROGRAM, &mObjectBeforeBinding);
 	GL_THROW_ON_ERROR();
 	glUseProgram(mObjectId);
+	GL_THROW_ON_ERROR();
 }
 
-void GLProgram::unbind() {
+void GLProgram::unbind()
+{
 	glUseProgram(mObjectBeforeBinding);
 	GL_THROW_ON_ERROR();
 }
