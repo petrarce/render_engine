@@ -3,10 +3,7 @@ add_library(opengl-wrapper-core STATIC
 	GLObjectBinder.cpp
 	GLObject.hpp
 	GLBuffer.hpp
-	GLBuffer.cpp
-	GLArrayBuffer.hpp
 	GLVertexArray.hpp
-	GLElementArrayBuffer.hpp
 	GLProgram.hpp
 	GLProgram.cpp
 	GLShader.hpp
