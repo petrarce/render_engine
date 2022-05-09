@@ -2,6 +2,7 @@
 #include <GLWrapperCore>
 #include <GLFW/glfw3.h>
 #include <boost/test/included/unit_test.hpp>
+#include <GL/osmesa.h>
 #include <iostream>
 
 using namespace glwrapper::core;
@@ -11,41 +12,33 @@ class TestFixture
 public:
 	TestFixture()
 	{
-		BOOST_TEST_MESSAGE("Setup opengl");
-
-		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-		// glfw window creation
-		// --------------------
-		GLFWwindow *window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-		if (window == nullptr) {
-			glfwTerminate();
-			throw std::runtime_error("Failed to create GLFW window");
-		}
-		glfwMakeContextCurrent(window);
-		glfwSetFramebufferSizeCallback(
-			window, [](GLFWwindow *window, int width, int height) {
-				// make sure the viewport matches the new window dimensions;
-				// note that width and height will be significantly larger than
-				// specified on retina displays.
-				glViewport(0, 0, width, height);
-			});
-
-		// glad: load all OpenGL function pointers
-		// ---------------------------------------
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			glfwTerminate();
-			throw std::runtime_error("Failed to initialize GLAD");
-		}
+		unsigned int width = 1000;
+		unsigned int height = 1000;
+		
+		ctx = OSMesaCreateContext(OSMESA_RGBA, nullptr);
+		if(!ctx)
+			throw std::runtime_error("Failed to create OSMesa context");
+		
+		buffer = new char[width * height * 4 * sizeof(GLubyte)];
+		if(!buffer)
+			throw std::runtime_error("Failed to allocate buffer");
+		
+		if (!OSMesaMakeCurrent( ctx, buffer, GL_UNSIGNED_BYTE, width, height))
+			throw std::runtime_error("OSMesaMakeCurrent failed!\n");
+		
+		if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(OSMesaGetProcAddress)))
+			throw std::runtime_error("Failed to load opengl functions");
 	}
 	~TestFixture()
 	{
-		BOOST_TEST_MESSAGE("Teardown opengl");
-		glfwTerminate();
+		OSMesaDestroyContext(ctx);
+		delete[] buffer;
 	}
+	
+	char* buffer = nullptr;
+	char* filename = nullptr;
+	OSMesaContext ctx;
+	
 };
 
 class GLContextState
@@ -127,14 +120,14 @@ std::basic_ostream<char> &operator<<(std::basic_ostream<char> &stream,
 
 BOOST_FIXTURE_TEST_SUITE(OpengFLWrapperFixture, TestFixture)
 const char vertexShaderSource[] =
-	"#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
+	"#version 140\n"
+	"in vec3 aPos;\n"
 	"void main()\n"
 	"{\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
 const char fragmentShaderSource[] =
-	"#version 330 core\n"
+	"#version 140\n"
 	"out vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
@@ -149,23 +142,23 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 	GLFragmentShader fs;
 	BOOST_TEST(!fs.compileStatus());
 
-	GLGeometryShader gs;
-	BOOST_TEST(!gs.compileStatus());
+//	GLGeometryShader gs;
+//	BOOST_TEST(!gs.compileStatus());
 
 	GLProgram program;
 	BOOST_TEST(!program.linkStatus());
 
 	vs.compile(std::string(vertexShaderSource, sizeof(vertexShaderSource)));
-	BOOST_TEST(vs.compileStatus());
+	BOOST_TEST(vs.compileStatus(), vs.compilationLog().c_str());
 
 	fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
-	BOOST_TEST(fs.compileStatus());
+	BOOST_TEST(fs.compileStatus(), fs.compilationLog().c_str());
 
-	gs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
-	BOOST_TEST(gs.compileStatus());
+//	gs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
+//	BOOST_TEST(gs.compileStatus());
 
 	program.link(vs, fs);
-	BOOST_TEST(program.linkStatus());
+	BOOST_TEST(program.linkStatus(), program.linkageLog().c_str());
 }
 
 BOOST_AUTO_TEST_CASE(TestBindings)
@@ -217,7 +210,7 @@ public:
 BOOST_AUTO_TEST_CASE(TestUniforms)
 {
 	std::string vsCode =
-		"#version 330 core\n"
+		"#version 140\n"
 		"uniform int i1;\n"
 		"uniform ivec2 i2;\n"
 		"uniform ivec3 i3;\n"
