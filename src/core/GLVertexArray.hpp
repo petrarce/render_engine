@@ -16,7 +16,7 @@ public:
 		GLint components{1};
 		GLuint location{0};
 		bool normalize;
-		const void *offset;
+		size_t offset;
 		GLsizei stride;
 		GLenum type;
 	};
@@ -57,7 +57,8 @@ protected:
 		GL_THROW_ON_ERROR();
 
 		glVertexAttribPointer(spec.location, spec.components, spec.type,
-							  spec.normalize, spec.stride, spec.offset);
+							  spec.normalize, spec.stride,
+							  reinterpret_cast<const void *>(spec.offset));
 		GL_THROW_ON_ERROR();
 		glEnableVertexAttribArray(spec.location);
 		GL_THROW_ON_ERROR();

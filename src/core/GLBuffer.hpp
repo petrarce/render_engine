@@ -13,8 +13,7 @@ template <GLenum BufferType, GLenum BufferBindingType>
 class GLBuffer : public GLObject
 {
 public:
-	enum ImmutableStorageType
-	{
+	enum ImmutableStorageType {
 		Read = GL_MAP_READ_BIT,
 		Write = GL_MAP_WRITE_BIT,
 		Dynamic = GL_DYNAMIC_STORAGE_BIT,
@@ -23,8 +22,7 @@ public:
 		ClientStorage = GL_CLIENT_STORAGE_BIT,
 	};
 
-	enum MutableStorageType
-	{
+	enum MutableStorageType {
 		StaticDraw = GL_STATIC_DRAW,
 		StaticCopy = GL_STATIC_COPY,
 		StaticRead = GL_STATIC_READ,
@@ -52,7 +50,7 @@ public:
 	/// Create mutable storage for the buffer of specified type and deploy it
 	/// with data in buff
 	template <class T>
-	void create(std::vector<T> &buff, GLenum type)
+	void create(const std::vector<T> &buff, GLenum type)
 	{
 		GlObjectBinder bind(*this);
 		glBufferData(BufferType, buff.size() * sizeof(T), buff.data(), type);
@@ -72,7 +70,7 @@ public:
 	 * thus all operations are performed on the same location
 	 */
 	template <class T>
-	void createImmutable(std::vector<T> &buff, GLenum type)
+	void createImmutable(const std::vector<T> &buff, GLenum type)
 	{
 		GlObjectBinder bind(*this);
 		glBufferStorage(BufferType, buff.size() * sizeof(T), buff.data(), type);
