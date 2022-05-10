@@ -577,6 +577,7 @@ static std::string glEnumString(GLenum enumVal)
 		enumStringTuple(GL_SINGLE_COLOR),
 		enumStringTuple(GL_SEPARATE_SPECULAR_COLOR),
 		enumStringTuple(GL_ALIASED_POINT_SIZE_RANGE),
+		enumStringTuple(GL_TEXTURE0),
 		enumStringTuple(GL_TEXTURE1),
 		enumStringTuple(GL_TEXTURE2),
 		enumStringTuple(GL_TEXTURE3),
