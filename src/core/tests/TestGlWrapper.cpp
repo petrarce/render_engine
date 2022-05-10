@@ -14,19 +14,20 @@ public:
 	{
 		unsigned int width = 1000;
 		unsigned int height = 1000;
-		
+
 		ctx = OSMesaCreateContext(OSMESA_RGBA, nullptr);
-		if(!ctx)
+		if (!ctx)
 			throw std::runtime_error("Failed to create OSMesa context");
-		
+
 		buffer = new char[width * height * 4 * sizeof(GLubyte)];
-		if(!buffer)
+		if (!buffer)
 			throw std::runtime_error("Failed to allocate buffer");
-		
-		if (!OSMesaMakeCurrent( ctx, buffer, GL_UNSIGNED_BYTE, width, height))
+
+		if (!OSMesaMakeCurrent(ctx, buffer, GL_UNSIGNED_BYTE, width, height))
 			throw std::runtime_error("OSMesaMakeCurrent failed!\n");
-		
-		if(!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(OSMesaGetProcAddress)))
+
+		if (!gladLoadGLLoader(
+				reinterpret_cast<GLADloadproc>(OSMesaGetProcAddress)))
 			throw std::runtime_error("Failed to load opengl functions");
 	}
 	~TestFixture()
@@ -34,11 +35,10 @@ public:
 		OSMesaDestroyContext(ctx);
 		delete[] buffer;
 	}
-	
-	char* buffer = nullptr;
-	char* filename = nullptr;
+
+	char *buffer = nullptr;
+	char *filename = nullptr;
 	OSMesaContext ctx;
-	
 };
 
 class GLContextState
@@ -86,6 +86,7 @@ private:
 			  {GL_TEXTURE_BINDING_BUFFER, 0},
 			  {GL_TEXTURE_BINDING_CUBE_MAP, 0},
 			  {GL_TEXTURE_BINDING_RECTANGLE, 0},
+			  {GL_ACTIVE_TEXTURE, 0}
 			  //		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
 			  //		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
 			  //		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
@@ -142,9 +143,6 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 	GLFragmentShader fs;
 	BOOST_TEST(!fs.compileStatus());
 
-//	GLGeometryShader gs;
-//	BOOST_TEST(!gs.compileStatus());
-
 	GLProgram program;
 	BOOST_TEST(!program.linkStatus());
 
@@ -153,9 +151,6 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 
 	fs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
 	BOOST_TEST(fs.compileStatus(), fs.compilationLog().c_str());
-
-//	gs.compile(std::string(fragmentShaderSource, sizeof(fragmentShaderSource)));
-//	BOOST_TEST(gs.compileStatus());
 
 	program.link(vs, fs);
 	BOOST_TEST(program.linkStatus(), program.linkageLog().c_str());
@@ -175,9 +170,15 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 	BOOST_REQUIRE((prog->link(*vs, *fs)));
 
 	std::vector<std::shared_ptr<GLObject>> objects = {
-		std::make_shared<GLVertexArray>(), std::make_shared<GLArrayBuffer>(),
-		std::make_shared<GLElementArrayBuffer>(), prog,
-		std::make_shared<GLTexture2D>()};
+		std::make_shared<GLVertexArray>(),
+		std::make_shared<GLArrayBuffer>(),
+		std::make_shared<GLElementArrayBuffer>(),
+		prog,
+		std::make_shared<GLTexture2D>(),
+		std::make_shared<GLTextureUnit>(GL_TEXTURE1),
+		std::make_shared<GLTextureUnit>(GL_TEXTURE2),
+		std::make_shared<GLTextureUnit>(GL_TEXTURE3),
+	};
 	for (auto obj : objects) {
 
 		BOOST_TEST(initialState == stateProvider.updateState());

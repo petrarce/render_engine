@@ -10,6 +10,7 @@ add_library(opengl-wrapper-core STATIC
 	GLWrapperCore
 	GLDefinitions.hpp
 	GLTexture.hpp
+	GLTextureUnit.hpp
 )
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)
