@@ -6,7 +6,7 @@
 	url = https://github.com/petrarce/molecular-gfx.git
 [submodule "molecular-programgenerator"]
 	path = molecular-programgenerator
-	url = git@github.com:petrarce/molecular-programgenerator.git
+	url = https://github.com/petrarce/molecular-programgenerator.git
 [submodule "molecular-util"]
 	path = molecular-util
 	url = https://github.com/cmdrf/molecular-util.git
@@ -15,4 +15,4 @@
 	url = https://github.com/cmdrf/molecular-meshfile.git
 [submodule "apps/LearnOpenGL"]
 	path = apps/LearnOpenGL
-	url = git@github.com:petrarce/LearnOpenGL.git
+	url = https://github.com/petrarce/LearnOpenGL.git
