@@ -311,4 +311,31 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	BOOST_TEST((ui4[0] == uci4[0] && ui4[1] == uci4[1] && ui4[2] == uci4[2] &&
 				ui4[3] == uci4[3]));
 }
+
+BOOST_AUTO_TEST_CASE(TextureParameterSetter)
+{
+	GLTexture2D texture;
+	texture.create<2>(
+		0, GLTexture2D::InternalFormat::Rgba, GLTexture2D::DataFormat::DRgba,
+		GLTexture2D::DataType::UByte, std::array<size_t, 2>({10, 10}));
+	texture.setParameter(GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
+	texture.setParameter(GLTexture2D::ValueMagFilter::MagNearest);
+	texture.setParameter(GLTexture2D::ValueWrapS::MirrorClampToEdgeS);
+	texture.setParameter(GLTexture2D::ValueWrapT::MirrorClampToEdgeT);
+
+	BOOST_TEST(
+		texture
+			.getParameter<GLTexture2D::TextureParameters::TextureMinFilter>() ==
+		GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
+	BOOST_TEST(
+		texture
+			.getParameter<GLTexture2D::TextureParameters::TextureMagFilter>() ==
+		GLTexture2D::ValueMagFilter::MagNearest);
+	BOOST_TEST(
+		texture.getParameter<GLTexture2D::TextureParameters::TextureWrapS>() ==
+		GLTexture2D::ValueWrapS::MirrorClampToEdgeS);
+	BOOST_TEST(
+		texture.getParameter<GLTexture2D::TextureParameters::TextureWrapT>() ==
+		GLTexture2D::ValueWrapT::MirrorClampToEdgeT);
+}
 BOOST_AUTO_TEST_SUITE_END()
