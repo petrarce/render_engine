@@ -8,6 +8,7 @@ add_library(opengl-wrapper-core STATIC
 	GLProgram.cpp
 	GLShader.hpp
 	GLWrapperCore
+	GLDefinitions.cpp
 	GLDefinitions.hpp
 	GLTexture.hpp
 	GLTextureUnit.hpp
