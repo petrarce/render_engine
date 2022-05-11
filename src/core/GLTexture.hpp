@@ -18,13 +18,11 @@ public:
 		: GLObject(name)
 	{
 		glGenTextures(1, &mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	~GLTexture() override
 	{
 		glDeleteTextures(1, &mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	enum InternalFormat {
@@ -234,7 +232,6 @@ public:
 			glTexImage3D(TextureType, level, intForm, dim[0], dim[1], dim[2], 0,
 						 dataFormat, dataType,
 						 reinterpret_cast<const void *>(buff.data()));
-		GL_THROW_ON_ERROR();
 	}
 
 	/// create mutable storage for buffer without storing data there
@@ -254,7 +251,6 @@ public:
 		if (Dimentions == 3)
 			glTexImage3D(TextureType, level, intForm, dim[0], dim[1], dim[2], 0,
 						 dataFormat, dataType, nullptr);
-		GL_THROW_ON_ERROR();
 	}
 
 	/// Create immutable storage for the buffer
@@ -276,7 +272,6 @@ public:
 	{                                                                          \
 		GlObjectBinder bind(*this);                                            \
 		glTexParameteri(TextureType, Parameter, val);                          \
-		GL_THROW_ON_ERROR();                                                   \
 	}
 
 	PARAMETER_SETTER(TextureParameters::TextureWrapS, ValueWrapS)
@@ -291,7 +286,6 @@ public:
 		GlObjectBinder bind(*this);
 		GLint val;
 		glGetTexParameteriv(TextureType, static_cast<GLenum>(Param), &val);
-		GL_THROW_ON_ERROR();
 		return val;
 	}
 
@@ -305,15 +299,12 @@ protected:
 	void bind() override
 	{
 		glGetIntegerv(TextureBindingType, &mObjectBeforeBinding);
-		GL_THROW_ON_ERROR();
 		glBindTexture(TextureType, mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	void unbind() override
 	{
 		glBindTexture(TextureType, mObjectBeforeBinding);
-		GL_THROW_ON_ERROR();
 	}
 };
 

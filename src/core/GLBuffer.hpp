@@ -38,13 +38,11 @@ public:
 		: GLObject(name)
 	{
 		glGenBuffers(1, &mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	~GLBuffer() override
 	{
 		glDeleteBuffers(1, &mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	/// Create mutable storage for the buffer of specified type and deploy it
@@ -54,7 +52,6 @@ public:
 	{
 		GlObjectBinder bind(*this);
 		glBufferData(BufferType, buff.size() * sizeof(T), buff.data(), type);
-		GL_THROW_ON_ERROR();
 	}
 
 	/// create mutable storage for buffer without storing data there
@@ -62,7 +59,6 @@ public:
 	{
 		GlObjectBinder bind(*this);
 		glBufferData(BufferType, size, nullptr, type);
-		GL_THROW_ON_ERROR();
 	}
 
 	/// Create immutable storage for the buffer
@@ -74,7 +70,6 @@ public:
 	{
 		GlObjectBinder bind(*this);
 		glBufferStorage(BufferType, buff.size() * sizeof(T), buff.data(), type);
-		GL_THROW_ON_ERROR();
 	}
 
 	/// Create immutable storage without initialisation
@@ -82,21 +77,17 @@ public:
 	{
 		GlObjectBinder bind(*this);
 		glBufferStorage(BufferType, size, nullptr, type);
-		GL_THROW_ON_ERROR();
 	}
 
 protected:
 	void bind() override
 	{
 		glGetIntegerv(BufferBindingType, &mObjectBeforeBinding);
-		GL_THROW_ON_ERROR();
 		glBindBuffer(BufferType, mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 	void unbind() override
 	{
 		glBindBuffer(BufferType, mObjectBeforeBinding);
-		GL_THROW_ON_ERROR();
 	}
 };
 

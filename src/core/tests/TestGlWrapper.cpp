@@ -86,7 +86,7 @@ private:
 			  {GL_TEXTURE_BINDING_BUFFER, 0},
 			  {GL_TEXTURE_BINDING_CUBE_MAP, 0},
 			  {GL_TEXTURE_BINDING_RECTANGLE, 0},
-			  {GL_ACTIVE_TEXTURE, 0}
+			  {GL_ACTIVE_TEXTURE, 0},
 			  //		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
 			  //		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
 			  //		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
@@ -322,6 +322,7 @@ BOOST_AUTO_TEST_CASE(TextureParameterSetter)
 	texture.setParameter(GLTexture2D::ValueMagFilter::MagNearest);
 	texture.setParameter(GLTexture2D::ValueWrapS::MirrorClampToEdgeS);
 	texture.setParameter(GLTexture2D::ValueWrapT::MirrorClampToEdgeT);
+	texture.generateMipMaps();
 
 	BOOST_TEST(
 		texture

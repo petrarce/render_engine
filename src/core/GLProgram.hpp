@@ -21,7 +21,6 @@ public:
 	bool link(Shader &shader, Shaders &...shaders)
 	{
 		glAttachShader(mObjectId, shader.mObjectId);
-		GL_THROW_ON_ERROR();
 		return link(shaders...);
 	}
 
@@ -29,7 +28,6 @@ public:
 	{
 		int success;
 		glGetProgramiv(mObjectId, GL_LINK_STATUS, &success);
-		GL_THROW_ON_ERROR();
 		return success;
 	}
 	std::string linkageLog()
@@ -40,7 +38,6 @@ public:
 			glGetProgramInfoLog(
 				mObjectId, log.size(), &finalSize,
 				reinterpret_cast<GLchar *>(const_cast<char *>(log.data())));
-			GL_THROW_ON_ERROR();
 			log.resize(finalSize);
 			return log;
 		}
@@ -50,7 +47,6 @@ public:
 	void use()
 	{
 		glUseProgram(mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 #define UNIFORM_SETTER(tp, type, dim)                                          \
@@ -59,9 +55,7 @@ public:
 						 const VarueArgs &...val)                              \
 	{                                                                          \
 		GLint location = glGetUniformLocation(mObjectId, var.c_str());         \
-		GL_THROW_ON_ERROR();                                                   \
 		glUniform##dim##tp(location, v1, val...);                              \
-		GL_THROW_ON_ERROR();                                                   \
 	}
 
 #define UNIFORM_SETTER_API(tp, type)                                           \
@@ -78,7 +72,6 @@ protected:
 	bool link()
 	{
 		glLinkProgram(mObjectId);
-		GL_THROW_ON_ERROR();
 		return linkStatus();
 	}
 
