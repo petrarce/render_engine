@@ -21,12 +21,10 @@ public:
 		: GLObject(name)
 	{
 		mObjectId = glCreateShader(ShaderType);
-		GL_THROW_ON_ERROR();
 	};
 	virtual ~GLShader()
 	{
 		glDeleteShader(mObjectId);
-		GL_THROW_ON_ERROR();
 	}
 
 	bool compile(const std::string &source)
@@ -34,9 +32,7 @@ public:
 		int size = source.size();
 		const GLchar *dataPtr = reinterpret_cast<const GLchar *>(source.data());
 		glShaderSource(mObjectId, 1, &dataPtr, &size);
-		GL_THROW_ON_ERROR();
 		glCompileShader(mObjectId);
-		GL_THROW_ON_ERROR();
 
 		return compileStatus();
 	}
@@ -59,7 +55,6 @@ public:
 	{
 		int success;
 		glGetShaderiv(mObjectId, GL_COMPILE_STATUS, &success);
-		GL_THROW_ON_ERROR();
 		return success;
 	}
 
@@ -72,7 +67,6 @@ public:
 			glGetShaderInfoLog(mObjectId, compileLog.size(), &logSize,
 							   reinterpret_cast<GLchar *>(
 								   const_cast<char *>(compileLog.data())));
-			GL_THROW_ON_ERROR();
 			compileLog.resize(logSize);
 			return compileLog;
 		}
