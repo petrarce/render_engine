@@ -210,26 +210,27 @@ public:
 
 BOOST_AUTO_TEST_CASE(TestUniforms)
 {
-	std::string vsCode =
-		"#version 140\n"
-		"uniform int i1;\n"
-		"uniform ivec2 i2;\n"
-		"uniform ivec3 i3;\n"
-		"uniform ivec4 i4;\n"
-		"uniform float fi1;\n"
-		"uniform vec2 fi2;\n"
-		"uniform vec3 fi3;\n"
-		"uniform vec4 fi4;\n"
-		"uniform uint ui1;\n"
-		"uniform uvec2 ui2;\n"
-		"uniform uvec3 ui3;\n"
-		"uniform uvec4 ui4;\n"
+	std::string vsCode = "#version 140\n"
+						 "uniform int i1;\n"
+						 "uniform ivec2 i2;\n"
+						 "uniform ivec3 i3;\n"
+						 "uniform ivec4 i4;\n"
+						 "uniform float fi1;\n"
+						 "uniform vec2 fi2;\n"
+						 "uniform vec3 fi3;\n"
+						 "uniform vec4 fi4;\n"
+						 "uniform uint ui1;\n"
+						 "uniform uvec2 ui2;\n"
+						 "uniform uvec3 ui3;\n"
+						 "uniform uvec4 ui4;\n"
+						 "uniform mat4 matrix4;\n"
 
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4((i1 + i2.x + i3.x + i4.x), (fi1 + fi2.x + fi3.x "
-		"+ fi4.x), (ui1 + ui2.x + ui3.x + ui4.x), 1.0);\n"
-		"}\0";
+						 "void main()\n"
+						 "{\n"
+						 "   gl_Position = vec4((i1 + i2.x + i3.x + i4.x + "
+						 "matrix4[0][0]), (fi1 + fi2.x + fi3.x "
+						 "+ fi4.x), (ui1 + ui2.x + ui3.x + ui4.x), 1.0);\n"
+						 "}\0";
 
 	GLVertexShader vs;
 	BOOST_REQUIRE(vs.compile(vsCode));
@@ -248,6 +249,11 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	unsigned int ui1 = 0, ui2[] = {0, 0}, ui3[] = {0, 0, 0},
 				 ui4[] = {0, 0, 0, 0};
 	unsigned int uci4[]{1, 2, 3, 4};
+	Eigen::Matrix4f mat4, mat4Check = Eigen::Matrix4f::Zero();
+	mat4 <<	1, 4, 2, 5,
+			3, 2, 1, 6,
+			7, 3, 8 ,2,
+			1, 6, 5, 3;
 
 	prog.use();
 	prog.setUniform1("i1", ci4[0]);
@@ -262,6 +268,7 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	prog.setUniform2("ui2", uci4[0], uci4[1]);
 	prog.setUniform3("ui3", uci4[0], uci4[1], uci4[2]);
 	prog.setUniform4("ui4", uci4[0], uci4[1], uci4[2], uci4[3]);
+	prog.setMatrix("matrix4", mat4);
 
 	GLint i1l = glGetUniformLocation(prog.objectId(), "i1");
 	GLint i2l = glGetUniformLocation(prog.objectId(), "i2");
@@ -277,6 +284,7 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	GLint ui2l = glGetUniformLocation(prog.objectId(), "ui2");
 	GLint ui3l = glGetUniformLocation(prog.objectId(), "ui3");
 	GLint ui4l = glGetUniformLocation(prog.objectId(), "ui4");
+	GLint mat4l = glGetUniformLocation(prog.objectId(), "matrix4");
 
 	glGetUniformiv(prog.objectId(), i1l, &i1);
 	glGetUniformiv(prog.objectId(), i2l, i2);
@@ -292,6 +300,8 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	glGetUniformuiv(prog.objectId(), ui2l, ui2);
 	glGetUniformuiv(prog.objectId(), ui3l, ui3);
 	glGetUniformuiv(prog.objectId(), ui4l, ui4);
+
+	glGetUniformfv(prog.objectId(), mat4l, mat4Check.data());
 
 	BOOST_TEST(i1 == ci4[0]);
 	BOOST_TEST((i2[0] == ci4[0] && i2[1] == ci4[1]));
@@ -310,6 +320,10 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	BOOST_TEST((ui3[0] == uci4[0] && ui3[1] == uci4[1] && ui3[2] == uci4[2]));
 	BOOST_TEST((ui4[0] == uci4[0] && ui4[1] == uci4[1] && ui4[2] == uci4[2] &&
 				ui4[3] == uci4[3]));
+
+	for (int i = 0; i < mat4.rows(); i++)
+		for (int j = 0; j < mat4.cols(); j++)
+			BOOST_TEST(mat4(i, j) == mat4Check(i, j));
 }
 
 BOOST_AUTO_TEST_CASE(TextureParameterSetter)
