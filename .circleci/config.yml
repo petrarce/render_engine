@@ -5,7 +5,7 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-test:
+  test-asan:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -17,13 +17,42 @@ jobs:
       - run: git submodule init
       - run: git submodule update
       - run: mkdir build
-      - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON ../
-      - run: cd build && cmake --build . --target all -- -j4
-      - run: cd build && cmake --build . --target test
+      - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON ../ && 
+                cmake --build . --target all -- -j4 && 
+                cmake --build . --target test
+  test-lsan:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    docker:
+      - image: petrarce/render_engine:latest
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run: git submodule init
+      - run: git submodule update
+      - run: mkdir build
+      - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=ReleaseLsan -DBUILD_TESTING=ON ../ && 
+                cmake --build . --target all -- -j4 &&
+                cmake --build . --target test
+  test-tsan:
+    docker:
+      - image: petrarce/render_engine:latest
+    steps:
+      - checkout
+      - run: git submodule init
+      - run: git submodule update
+      - run: mkdir build
+      - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=ReleaseTsan -DBUILD_TESTING=ON ../ && 
+                cmake --build . --target all -- -j4 &&
+                cmake --build . --target test
+
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build-test-workflow:
     jobs:
-      - build-test
+      - test-asan
+      - test-lsan
+      - test-tsan
