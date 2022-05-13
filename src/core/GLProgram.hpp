@@ -73,10 +73,10 @@ public:
 	UNIFORM_SETTER_API(ui, unsigned int)
 
 	template <int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-	void setMatrix(
-		const std::string &name,
-		Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows, _MaxCols> &mat,
-		bool transpose = false)
+	void setMatrix(const std::string &name,
+				   const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
+									   _MaxCols> &mat,
+				   bool transpose = false)
 	{
 		typedef void (*GlMatrixSetter)(GLint location, GLsizei count,
 									   GLboolean transpose,
@@ -112,6 +112,21 @@ protected:
 
 	void bind() override;
 	virtual void unbind() override;
+};
+
+class GLShaderProgram : public GLProgram
+{
+public:
+	explicit GLShaderProgram(const std::string &name = "GLShaderProgram")
+		: GLProgram(name)
+	{
+	}
+
+	void prepare(const std::string &vertexShaderText,
+				 const std::string &fragmentShaderText);
+
+	void prepareFiles(const std::string &vertexShaderPath,
+					  const std::string &fragmentShaderPath);
 };
 
 } // namespace core
