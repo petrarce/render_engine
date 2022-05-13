@@ -8,25 +8,39 @@ namespace camera
 
 Eigen::Matrix4f GLCamera::transform() const
 {
-	Eigen::Translation3f translation(pivot);
+	Eigen::Vector3f cameraViewAxis;
+	cameraViewAxis << upAxis.cross(rightAxis);
+
 	Eigen::AngleAxisf rotationZ(angleZ, upAxis);
 	Eigen::AngleAxisf rotationX(angleX, rightAxis);
-	Eigen::Translation3f offset(Eigen::Vector3f(0, 0, distance));
-	Eigen::Matrix4f transform;
-	transform.block<3, 3>(0, 0) = (rotationX * rotationZ).matrix();
-	transform.block<4, 1>(0, 3) =
-		(offset * rotationX * rotationZ * translation).matrix() *
-		Eigen::Vector4f(0, 0, 0, 1);
+	Eigen::Matrix3f rotation = (rotationZ * rotationX).matrix();
+
+	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+	transform.block<3, 3>(0, 0) = rotation;
+	transform.block<3, 1>(0, 3)
+		<< pivot + rotation * cameraViewAxis * (-distance);
 	return transform;
 }
 
 Eigen::Matrix4f GLCamera::toViewTransform() const
 {
 	auto viewSpaceTransform = transform();
-	viewSpaceTransform.block<0, 0>(3, 3).transposeInPlace();
+	viewSpaceTransform.block<3, 3>(0, 0).transposeInPlace();
 	viewSpaceTransform.block<3, 1>(0, 3)
-		<< -viewSpaceTransform.block<3, 1>(0, 3);
+		<< -1 * viewSpaceTransform.block<3, 3>(0, 0) *
+			   viewSpaceTransform.block<3, 1>(0, 3);
 	return viewSpaceTransform;
+}
+
+Eigen::Matrix3f GLCamera::rotation() const
+{
+	Eigen::Matrix4f transform = this->transform();
+	return transform.block<3, 3>(0, 0);
+}
+
+Eigen::Vector3f GLCamera::translation() const
+{
+	return transform().block<3, 1>(0, 3);
 }
 
 } // namespace camera
