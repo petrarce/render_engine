@@ -5,14 +5,14 @@
 #include <GL/osmesa.h>
 #include <iostream>
 
-using namespace glwrapper::core;
+using namespace dream::glwrapper;
 
 class TestFixture
 {
 public:
 	TestFixture()
 	{
-		unsigned int width = 1000;
+		unsigned int width	= 1000;
 		unsigned int height = 1000;
 
 		ctx = OSMesaCreateContext(OSMESA_RGBA, nullptr);
@@ -36,7 +36,7 @@ public:
 		delete[] buffer;
 	}
 
-	char *buffer = nullptr;
+	char *buffer   = nullptr;
 	char *filename = nullptr;
 	OSMesaContext ctx;
 };
@@ -72,21 +72,21 @@ public:
 private:
 	GLContextState()
 		: mState({
-			  {GL_ARRAY_BUFFER_BINDING, 0},
-			  {GL_ELEMENT_ARRAY_BUFFER_BINDING, 0},
-			  {GL_CURRENT_PROGRAM, 0},
-			  {GL_VERTEX_ARRAY_BINDING, 0},
-			  {GL_TEXTURE_BINDING_1D, 0},
-			  {GL_TEXTURE_BINDING_1D_ARRAY, 0},
-			  {GL_TEXTURE_BINDING_2D, 0},
-			  {GL_TEXTURE_BINDING_2D_ARRAY, 0},
-			  {GL_TEXTURE_BINDING_2D_MULTISAMPLE, 0},
-			  {GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY, 0},
-			  {GL_TEXTURE_BINDING_3D, 0},
-			  {GL_TEXTURE_BINDING_BUFFER, 0},
-			  {GL_TEXTURE_BINDING_CUBE_MAP, 0},
-			  {GL_TEXTURE_BINDING_RECTANGLE, 0},
-			  {GL_ACTIVE_TEXTURE, 0},
+			  { GL_ARRAY_BUFFER_BINDING, 0 },
+			  { GL_ELEMENT_ARRAY_BUFFER_BINDING, 0 },
+			  { GL_CURRENT_PROGRAM, 0 },
+			  { GL_VERTEX_ARRAY_BINDING, 0 },
+			  { GL_TEXTURE_BINDING_1D, 0 },
+			  { GL_TEXTURE_BINDING_1D_ARRAY, 0 },
+			  { GL_TEXTURE_BINDING_2D, 0 },
+			  { GL_TEXTURE_BINDING_2D_ARRAY, 0 },
+			  { GL_TEXTURE_BINDING_2D_MULTISAMPLE, 0 },
+			  { GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY, 0 },
+			  { GL_TEXTURE_BINDING_3D, 0 },
+			  { GL_TEXTURE_BINDING_BUFFER, 0 },
+			  { GL_TEXTURE_BINDING_CUBE_MAP, 0 },
+			  { GL_TEXTURE_BINDING_RECTANGLE, 0 },
+			  { GL_ACTIVE_TEXTURE, 0 },
 			  //		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
 			  //		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
 			  //		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
@@ -163,10 +163,10 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 BOOST_AUTO_TEST_CASE(TestBindings)
 {
 	GLContextState &stateProvider = GLContextState::instance();
-	auto initialState = stateProvider.updateState();
-	auto vs = std::make_shared<GLVertexShader>();
-	auto fs = std::make_shared<GLFragmentShader>();
-	auto prog = std::make_shared<GLProgram>();
+	auto initialState			  = stateProvider.updateState();
+	auto vs						  = std::make_shared<GLVertexShader>();
+	auto fs						  = std::make_shared<GLFragmentShader>();
+	auto prog					  = std::make_shared<GLProgram>();
 	BOOST_REQUIRE((vs->compile(
 		std::string(vertexShaderSource, sizeof(vertexShaderSource)))));
 	BOOST_REQUIRE((fs->compile(
@@ -183,7 +183,8 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 		std::make_shared<GLTextureUnit>(GL_TEXTURE2),
 		std::make_shared<GLTextureUnit>(GL_TEXTURE3),
 	};
-	for (auto obj : objects) {
+	for (auto obj : objects)
+	{
 
 		BOOST_TEST(initialState == stateProvider.updateState());
 		std::cout << std::string(stateProvider) << std::endl;
@@ -246,18 +247,16 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	TestGLProgram prog;
 	BOOST_REQUIRE(prog.link(vs, fs));
 
-	int i1 = 0, i2[] = {0, 0}, i3[] = {0, 0, 0}, i4[] = {0, 0, 0, 0};
-	int ci4[]{1, 2, 3, 4};
-	float fi1 = 0, fi2[] = {0, 0}, fi3[] = {0, 0, 0}, fi4[] = {0, 0, 0, 0};
-	float fci4[]{1, 2, 3, 4};
-	unsigned int ui1 = 0, ui2[] = {0, 0}, ui3[] = {0, 0, 0},
-				 ui4[] = {0, 0, 0, 0};
-	unsigned int uci4[]{1, 2, 3, 4};
+	int i1 = 0, i2[] = { 0, 0 }, i3[] = { 0, 0, 0 }, i4[] = { 0, 0, 0, 0 };
+	int ci4[]{ 1, 2, 3, 4 };
+	float fi1 = 0, fi2[] = { 0, 0 }, fi3[] = { 0, 0, 0 },
+		  fi4[] = { 0, 0, 0, 0 };
+	float fci4[]{ 1, 2, 3, 4 };
+	unsigned int ui1 = 0, ui2[] = { 0, 0 }, ui3[] = { 0, 0, 0 },
+				 ui4[] = { 0, 0, 0, 0 };
+	unsigned int uci4[]{ 1, 2, 3, 4 };
 	Eigen::Matrix4f mat4, mat4Check = Eigen::Matrix4f::Zero();
-	mat4 <<	1, 4, 2, 5,
-			3, 2, 1, 6,
-			7, 3, 8 ,2,
-			1, 6, 5, 3;
+	mat4 << 1, 4, 2, 5, 3, 2, 1, 6, 7, 3, 8, 2, 1, 6, 5, 3;
 
 	prog.use();
 	prog.setUniform1("i1", ci4[0]);
@@ -284,10 +283,10 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	GLint fi3l = glGetUniformLocation(prog.objectId(), "fi3");
 	GLint fi4l = glGetUniformLocation(prog.objectId(), "fi4");
 
-	GLint ui1l = glGetUniformLocation(prog.objectId(), "ui1");
-	GLint ui2l = glGetUniformLocation(prog.objectId(), "ui2");
-	GLint ui3l = glGetUniformLocation(prog.objectId(), "ui3");
-	GLint ui4l = glGetUniformLocation(prog.objectId(), "ui4");
+	GLint ui1l	= glGetUniformLocation(prog.objectId(), "ui1");
+	GLint ui2l	= glGetUniformLocation(prog.objectId(), "ui2");
+	GLint ui3l	= glGetUniformLocation(prog.objectId(), "ui3");
+	GLint ui4l	= glGetUniformLocation(prog.objectId(), "ui4");
 	GLint mat4l = glGetUniformLocation(prog.objectId(), "matrix4");
 
 	glGetUniformiv(prog.objectId(), i1l, &i1);
@@ -335,7 +334,7 @@ BOOST_AUTO_TEST_CASE(TextureParameterSetter)
 	GLTexture2D texture;
 	texture.create<2>(
 		0, GLTexture2D::InternalFormat::Rgba, GLTexture2D::DataFormat::DRgba,
-		GLTexture2D::DataType::UByte, std::array<size_t, 2>({10, 10}));
+		GLTexture2D::DataType::UByte, std::array<size_t, 2>({ 10, 10 }));
 	texture.setParameter(GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
 	texture.setParameter(GLTexture2D::ValueMagFilter::MagNearest);
 	texture.setParameter(GLTexture2D::ValueWrapS::MirrorClampToEdgeS);

@@ -1,9 +1,9 @@
 #pragma once
 #include <GLObject.hpp>
 
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 class GlObjectBinder
 {
@@ -15,5 +15,5 @@ private:
 	GLObject &mGlObject;
 };
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

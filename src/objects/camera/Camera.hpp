@@ -1,8 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
-namespace object
+namespace dream
 {
-namespace camera
+namespace geometry
 {
 
 class GLCamera
@@ -22,12 +22,12 @@ public:
 	Eigen::Vector3f translation() const;
 
 	Eigen::Vector3f pivot = Eigen::Vector3f(0, 0, 0);
-	float angleX{0};
-	float angleZ{0};
-	float distance{10};
-	Eigen::Vector3f upAxis = Eigen::Vector3f(0, 1, 0);
+	float angleX{ 0 };
+	float angleZ{ 0 };
+	float distance{ 10 };
+	Eigen::Vector3f upAxis	  = Eigen::Vector3f(0, 1, 0);
 	Eigen::Vector3f rightAxis = Eigen::Vector3f(1, 0, 0);
 };
 
-} // namespace camera
-} // namespace object
+} // namespace geometry
+} // namespace dream

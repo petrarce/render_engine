@@ -2,15 +2,13 @@
 #include <string>
 #include <iostream>
 
-namespace glcontext
+namespace dream
 {
 
-namespace creators
+namespace glcontext
 {
-GLGlfwContextCreator::GLGlfwContextCreator(
-		int width,
-		int height,
-		const std::string& name)
+GLGlfwContextCreator::GLGlfwContextCreator(int width, int height,
+										   const std::string &name)
 	: GLContextCreator(name)
 	, mWindowWidth(width)
 	, mWindowHeight(height)
@@ -43,9 +41,8 @@ void GLGlfwContextCreator::createContext()
 
 	glfwMakeContextCurrent(mWindow);
 	glfwSetFramebufferSizeCallback(
-		mWindow, [](GLFWwindow * /*window*/, int width, int height) {
-			glViewport(0, 0, width, height);
-		});
+		mWindow, [](GLFWwindow * /*window*/, int width, int height)
+		{ glViewport(0, 0, width, height); });
 
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -57,6 +54,6 @@ void GLGlfwContextCreator::destroyContext()
 	glfwDestroyWindow(mWindow);
 }
 
-} // namespace creators
-
 } // namespace glcontext
+
+} // namespace dream
