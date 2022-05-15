@@ -1,0 +1,7 @@
+function(return_if)
+	if( ${ARGV} )
+		string(REPLACE ";" " " OUTMSG "${ARGV}")
+		message("${OUTMSG}")
+		return()
+	endif()
+endfunction()

@@ -14,7 +14,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
 
-include(default.cmake)
 
 # project version
 set(VERSION_MAJOR 1)
@@ -22,6 +21,9 @@ set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" CACHE PATH "Path to cmake modules")
+
+include(default.cmake)
+include(cmake/modules/HelperMacros.cmake)
 
 include_directories(AFTER .)
 include_directories(AFTER molecular-programgenerator)
@@ -42,7 +44,4 @@ add_subdirectory(molecular-meshfile)
 add_subdirectory(molecular-gfx)
 add_subdirectory(src)
 add_subdirectory(apps/LearnOpenGL/)
-
-
-
-
+add_subdirectory(apps/demos)
