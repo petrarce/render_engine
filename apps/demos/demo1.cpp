@@ -184,7 +184,7 @@ int main()
 		glClearColor(0.2345f, 0.492f, 0.717f, 1.f);
 		//		glClearDepth(1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		//===============Rendering loop=====================
 		int width, height;
 		glfwContext.processWindow<void, int *, int *>(
 			std::function<void(GLFWwindow *, int *, int *)>(glfwGetWindowSize),
@@ -200,6 +200,7 @@ int main()
 		GlObjectBinder bindBuf(va);
 		glDrawArrays(GL_TRIANGLES, 0, 6 * 6);
 
+		//=============== End Rendering loop=====================
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse
 		// moved etc.)
 		// -------------------------------------------------------------------------------
