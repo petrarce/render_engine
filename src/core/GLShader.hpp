@@ -7,9 +7,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 class GLProgram;
 
@@ -29,7 +29,7 @@ public:
 
 	bool compile(const std::string &source)
 	{
-		int size = source.size();
+		int size			  = source.size();
 		const GLchar *dataPtr = reinterpret_cast<const GLchar *>(source.data());
 		glShaderSource(mObjectId, 1, &dataPtr, &size);
 		glCompileShader(mObjectId);
@@ -60,7 +60,8 @@ public:
 
 	std::string compilationLog()
 	{
-		if (compileStatus() == GL_FALSE) {
+		if (compileStatus() == GL_FALSE)
+		{
 			std::string compileLog;
 			int logSize = 0;
 			compileLog.resize(65536, 0);
@@ -85,10 +86,10 @@ protected:
 	}
 };
 
-using GLVertexShader = GLShader<GL_VERTEX_SHADER>;
+using GLVertexShader   = GLShader<GL_VERTEX_SHADER>;
 using GLFragmentShader = GLShader<GL_FRAGMENT_SHADER>;
 using GLGeometryShader = GLShader<GL_GEOMETRY_SHADER>;
-using GLComputeShader = GLShader<GL_COMPUTE_SHADER>;
+using GLComputeShader  = GLShader<GL_COMPUTE_SHADER>;
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

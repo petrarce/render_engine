@@ -4,10 +4,10 @@
 #include <iostream>
 #include "GLContextCreator.hpp"
 #include <functional>
-namespace glcontext
+namespace dream
 {
 
-namespace creators
+namespace glcontext
 {
 class GLGlfwContextCreator : public GLContextCreator
 {
@@ -39,8 +39,8 @@ public:
 		glfwWindowHint(hint, value);
 	}
 
-	int mWindowWidth{0};
-	int mWindowHeight{0};
+	int mWindowWidth{ 0 };
+	int mWindowHeight{ 0 };
 
 private:
 	void createContext() final;
@@ -49,6 +49,6 @@ private:
 	GLFWwindow *mWindow;
 };
 
-} // namespace creators
-
 } // namespace glcontext
+
+} // namespace dream

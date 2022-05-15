@@ -2,9 +2,9 @@
 #include <Eigen/Dense>
 #include "Camera.hpp"
 #include <iostream>
-namespace object
+namespace dream
 {
-namespace camera
+namespace geometry
 {
 class GLCameraController
 {
@@ -16,5 +16,5 @@ public:
 	GLCamera camera;
 };
 
-} // namespace camera
-} // namespace object
+} // namespace geometry
+} // namespace dream

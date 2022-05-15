@@ -1,7 +1,7 @@
 #include <GLProgram.hpp>
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 GLProgram::GLProgram(const std::string &name)
 	: GLObject(name)
@@ -54,5 +54,5 @@ void GLShaderProgram::prepareFiles(const std::string &vertexShaderPath,
 		throw std::runtime_error("Link error:\n" + linkageLog());
 }
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

@@ -1,8 +1,8 @@
 #include <Eigen/Dense>
 #include "CameraController.hpp"
-namespace object
+namespace dream
 {
-namespace camera
+namespace geometry
 {
 void GLCameraController::cameraMove(const Eigen::Vector3f &camSpaceOffset)
 {
@@ -15,5 +15,5 @@ void GLCameraController::cameraRotate(float angleXOffset, float andleZOffset)
 	camera.angleZ += andleZOffset;
 }
 
-} // namespace camera
-} // namespace object
+} // namespace geometry
+} // namespace dream

@@ -1,9 +1,9 @@
 #include "GLObjectBinder.hpp"
 
 #include <iostream>
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 GlObjectBinder::GlObjectBinder(GLObject &object)
 	: mGlObject(object)
@@ -16,5 +16,5 @@ GlObjectBinder::~GlObjectBinder()
 	mGlObject.unbind();
 }
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream
