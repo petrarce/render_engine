@@ -15,6 +15,7 @@ public:
 	struct AttributeSpecification
 	{
 		GLint components{ 1 };
+		GLint instanceLevel{ 0 };
 		GLuint location{ 0 };
 		bool normalize;
 		size_t offset;
@@ -57,6 +58,7 @@ protected:
 							  spec.normalize, spec.stride,
 							  reinterpret_cast<const void *>(spec.offset));
 		glEnableVertexAttribArray(spec.location);
+		glVertexBindingDivisor(spec.location, spec.instanceLevel);
 	}
 
 	void bind() override

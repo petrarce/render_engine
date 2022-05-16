@@ -11,14 +11,14 @@ std::string vertexShader	= "\
 	#version 330 core\n \
 	layout (location = 0) in vec3 aPos;\n \
 	layout (location = 1) in vec3 aColor;\n \
+	layout (location = 2) in vec3 aOffset;\n \
 	 \
 	uniform mat4 projection;\n									\
 	uniform mat4 view;\n \
-	uniform mat4 model;\n \
 	out vec3 ourColor;\n \
 	void main()\n \
 	{\n \
-		gl_Position = projection * view * model * vec4(aPos, 1.0);\
+		gl_Position = projection * view * vec4(aPos + aOffset, 1.0);\
 		ourColor = aColor;\n\
 	}\n\
 	";
@@ -65,6 +65,7 @@ std::vector<float> vertices = {
 	0.34,  0.96,  0.24,	 -0.5f, 0.5f,  -0.5f, 0.34,	 0.96,	0.24,
 };
 
+std::vector<Eigen::Vector3f> models;
 dream::geometry::GLCameraController controller;
 
 int main()
@@ -156,8 +157,16 @@ int main()
 	//===================initialize opengl objects =========
 	GLShaderProgram prog;
 	prog.prepare(vertexShader, fragmentShader);
+
+	for (int i = 0; i < 20; i++)
+	{
+		Eigen::Vector3f offset(i % 3, (i * i) % 6, (i * i * i) % 9);
+		models.push_back(offset);
+	}
 	GLArrayBuffer buf;
+	GLArrayBuffer instBuf;
 	buf.create(vertices, GL_STATIC_DRAW);
+	instBuf.create(models, GL_STATIC_DRAW);
 	GLVertexArray va;
 	GLVertexArray::AttributeSpecification vertSpec = {
 		.components = 3,
@@ -172,6 +181,17 @@ int main()
 	colorSpec.offset   = 3 * sizeof(float);
 	va.createAttribute(vertSpec, buf);
 	va.createAttribute(colorSpec, buf);
+
+	GLVertexArray::AttributeSpecification instanceSpec = {
+		.components	   = 3,
+		.instanceLevel = 1,
+		.location	   = 2,
+		.normalize	   = false,
+		.offset		   = 0,
+		.stride		   = 3 * sizeof(float),
+		.type		   = GL_FLOAT,
+	};
+	va.createAttribute(instanceSpec, instBuf);
 
 	prog.use();
 	prog.setMatrix("model", Eigen::Matrix4f(Eigen::Matrix4f::Identity()));
@@ -198,7 +218,7 @@ int main()
 		// input
 		// -----
 		GlObjectBinder bindBuf(va);
-		glDrawArrays(GL_TRIANGLES, 0, 6 * 6);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * 6, models.size());
 
 		//=============== End Rendering loop=====================
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse
