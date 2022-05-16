@@ -7,3 +7,4 @@
 #include <GLObject.hpp>
 #include <GLTexture.hpp>
 #include <GLTextureUnit.hpp>
+#include <GLDefinitions.hpp>

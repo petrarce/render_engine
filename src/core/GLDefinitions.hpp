@@ -6,7 +6,9 @@
 #include <map>
 #include <sstream>
 
-extern int init_gl_callbacks_var;
+volatile extern int init_gl_callbacks_var;
+static const volatile int duplicate_init_gl_callbacks_var =
+	init_gl_callbacks_var;
 std::string glEnumString(GLenum enumVal);
 
 #endif // GLDEFINITIONS_HPP

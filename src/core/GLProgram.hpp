@@ -10,9 +10,9 @@
 #include <vector>
 #include <utility>
 
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 class GLProgram : public GLObject
 {
@@ -36,7 +36,8 @@ public:
 	}
 	std::string linkageLog()
 	{
-		if (!linkStatus()) {
+		if (!linkStatus())
+		{
 			std::string log(65542, 0);
 			int finalSize = 0;
 			glGetProgramInfoLog(
@@ -86,17 +87,17 @@ public:
 			throw std::runtime_error("invalid matrix size");
 
 		static std::map<std::pair<int, int>, GlMatrixSetter> functions = {
-			{std::make_pair(2, 2), glUniformMatrix2fv},
-			{std::make_pair(2, 3), glUniformMatrix2x3fv},
-			{std::make_pair(2, 4), glUniformMatrix2x4fv},
+			{ std::make_pair(2, 2), glUniformMatrix2fv },
+			{ std::make_pair(2, 3), glUniformMatrix2x3fv },
+			{ std::make_pair(2, 4), glUniformMatrix2x4fv },
 
-			{std::make_pair(3, 2), glUniformMatrix3x2fv},
-			{std::make_pair(3, 3), glUniformMatrix3fv},
-			{std::make_pair(3, 4), glUniformMatrix3x4fv},
+			{ std::make_pair(3, 2), glUniformMatrix3x2fv },
+			{ std::make_pair(3, 3), glUniformMatrix3fv },
+			{ std::make_pair(3, 4), glUniformMatrix3x4fv },
 
-			{std::make_pair(4, 2), glUniformMatrix4x2fv},
-			{std::make_pair(4, 3), glUniformMatrix4x3fv},
-			{std::make_pair(4, 4), glUniformMatrix4fv},
+			{ std::make_pair(4, 2), glUniformMatrix4x2fv },
+			{ std::make_pair(4, 3), glUniformMatrix4x3fv },
+			{ std::make_pair(4, 4), glUniformMatrix4fv },
 		};
 		GLint location = glGetUniformLocation(mObjectId, name.c_str());
 		functions.find(std::make_pair(mat.rows(), mat.cols()))
@@ -129,5 +130,5 @@ public:
 					  const std::string &fragmentShaderPath);
 };
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

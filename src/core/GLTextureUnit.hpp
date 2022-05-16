@@ -4,9 +4,9 @@
 #include <GLDefinitions.hpp>
 #include <string>
 #include <cassert>
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 class GlObjectBinder;
 
@@ -17,7 +17,7 @@ public:
 		: GLObject(name)
 	{
 
-		mObjectId = unitNumber;
+		mObjectId			  = unitNumber;
 		GLuint maxUnitsNumber = 0;
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
 					  reinterpret_cast<GLint *>(&maxUnitsNumber));
@@ -40,5 +40,5 @@ protected:
 	}
 };
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

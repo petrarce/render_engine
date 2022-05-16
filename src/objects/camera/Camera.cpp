@@ -1,9 +1,9 @@
 #include "Camera.hpp"
 #include <Eigen/Geometry>
 #include <iostream>
-namespace object
+namespace dream
 {
-namespace camera
+namespace geometry
 {
 
 Eigen::Matrix4f GLCamera::transform() const
@@ -15,7 +15,7 @@ Eigen::Matrix4f GLCamera::transform() const
 	Eigen::AngleAxisf rotationX(angleX, rightAxis);
 	Eigen::Matrix3f rotation = (rotationZ * rotationX).matrix();
 
-	Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+	Eigen::Matrix4f transform	= Eigen::Matrix4f::Identity();
 	transform.block<3, 3>(0, 0) = rotation;
 	transform.block<3, 1>(0, 3)
 		<< pivot + rotation * cameraViewAxis * (-distance);
@@ -43,5 +43,5 @@ Eigen::Vector3f GLCamera::translation() const
 	return transform().block<3, 1>(0, 3);
 }
 
-} // namespace camera
-} // namespace object
+} // namespace geometry
+} // namespace dream

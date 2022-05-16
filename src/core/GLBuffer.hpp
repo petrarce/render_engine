@@ -5,33 +5,35 @@
 #include <GLObject.hpp>
 #include <GLObjectBinder.hpp>
 #include <vector>
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 template <GLenum BufferType, GLenum BufferBindingType>
 class GLBuffer : public GLObject
 {
 public:
-	enum ImmutableStorageType {
-		Read = GL_MAP_READ_BIT,
-		Write = GL_MAP_WRITE_BIT,
-		Dynamic = GL_DYNAMIC_STORAGE_BIT,
-		Persistent = GL_MAP_PERSISTENT_BIT,
-		Coherent = GL_MAP_COHERENT_BIT,
+	enum ImmutableStorageType
+	{
+		Read		  = GL_MAP_READ_BIT,
+		Write		  = GL_MAP_WRITE_BIT,
+		Dynamic		  = GL_DYNAMIC_STORAGE_BIT,
+		Persistent	  = GL_MAP_PERSISTENT_BIT,
+		Coherent	  = GL_MAP_COHERENT_BIT,
 		ClientStorage = GL_CLIENT_STORAGE_BIT,
 	};
 
-	enum MutableStorageType {
-		StaticDraw = GL_STATIC_DRAW,
-		StaticCopy = GL_STATIC_COPY,
-		StaticRead = GL_STATIC_READ,
+	enum MutableStorageType
+	{
+		StaticDraw	= GL_STATIC_DRAW,
+		StaticCopy	= GL_STATIC_COPY,
+		StaticRead	= GL_STATIC_READ,
 		DynamicDraw = GL_DYNAMIC_DRAW,
 		DynamicCopy = GL_DYNAMIC_COPY,
 		DynamicRead = GL_DYNAMIC_READ,
-		StreamDraw = GL_STREAM_DRAW,
-		StreamCopy = GL_STREAM_COPY,
-		StreamRead = GL_STREAM_READ,
+		StreamDraw	= GL_STREAM_DRAW,
+		StreamCopy	= GL_STREAM_COPY,
+		StreamRead	= GL_STREAM_READ,
 	};
 
 	GLBuffer(const std::string &name = "GLBuffer")
@@ -95,5 +97,5 @@ using GLArrayBuffer = GLBuffer<GL_ARRAY_BUFFER, GL_ARRAY_BUFFER_BINDING>;
 using GLElementArrayBuffer =
 	GLBuffer<GL_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER_BINDING>;
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream

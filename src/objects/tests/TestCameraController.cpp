@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 
-using namespace object::camera;
+using namespace dream::geometry;
 
 BOOST_AUTO_TEST_CASE(TestCamera)
 {
@@ -20,10 +20,10 @@ BOOST_AUTO_TEST_CASE(TestCamera)
 					  .squaredNorm() -
 				  1) < 1e-6);
 
-	controller.camera.pivot = Eigen::Vector3f(0, 0, 0);
+	controller.camera.pivot	   = Eigen::Vector3f(0, 0, 0);
 	controller.camera.distance = 10;
-	controller.camera.angleX = 0;
-	controller.camera.angleZ = 0;
+	controller.camera.angleX   = 0;
+	controller.camera.angleZ   = 0;
 	Eigen::Vector3f translation =
 		Eigen::Vector3f(0, 0, 10) -
 		controller.camera.transform().block<3, 1>(0, 3);
@@ -55,11 +55,11 @@ BOOST_AUTO_TEST_CASE(TestCamera)
 	BOOST_TEST((original - controller.camera.translation()).squaredNorm() <
 			   1e-6);
 
-	Eigen::Vector4f origin = Eigen::Vector4f(1, 2, 4, 1);
-	controller.camera.pivot = Eigen::Vector3f(15, 5, 6);
+	Eigen::Vector4f origin	 = Eigen::Vector4f(1, 2, 4, 1);
+	controller.camera.pivot	 = Eigen::Vector3f(15, 5, 6);
 	controller.camera.angleX = -0.256;
 	controller.camera.angleZ = -1.176;
-	origin = controller.camera.transform() * origin;
-	origin = controller.camera.toViewTransform() * origin;
+	origin					 = controller.camera.transform() * origin;
+	origin					 = controller.camera.toViewTransform() * origin;
 	BOOST_CHECK((origin - Eigen::Vector4f(1, 2, 4, 1)).squaredNorm() < 1e-6);
 }

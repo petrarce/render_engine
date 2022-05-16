@@ -5,16 +5,18 @@
 #include <GLObjectBinder.hpp>
 #include <iostream>
 
-namespace glwrapper
+namespace dream
 {
-namespace core
+namespace glwrapper
 {
 class GLVertexArray : public GLObject
 {
 public:
-	struct AttributeSpecification {
-		GLint components{1};
-		GLuint location{0};
+	struct AttributeSpecification
+	{
+		GLint components{ 1 };
+		GLint instanceLevel{ 0 };
+		GLuint location{ 0 };
 		bool normalize;
 		size_t offset;
 		GLsizei stride;
@@ -56,6 +58,7 @@ protected:
 							  spec.normalize, spec.stride,
 							  reinterpret_cast<const void *>(spec.offset));
 		glEnableVertexAttribArray(spec.location);
+		glVertexBindingDivisor(spec.location, spec.instanceLevel);
 	}
 
 	void bind() override
@@ -69,5 +72,5 @@ protected:
 	}
 };
 
-} // namespace core
 } // namespace glwrapper
+} // namespace dream
