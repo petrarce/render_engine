@@ -1,30 +1,33 @@
 #include <GLDefinitions.hpp>
 #include <glad/glad.h>
 #include <sstream>
+#include <random>
 
 int setup_gl_callbacks();
 
-int init_gl_callbacks_var = 0;
-
 #ifdef GL_ENABLE_THROW_ON_ERROR
-static int init_glad_calback_functions = setup_gl_callbacks();
+volatile int init_gl_callbacks_var = setup_gl_callbacks();
 #else
-static int init_glad_calback_functions = 0;
+volatile int init_gl_callbacks_var = 0;
 #endif
 
 inline void gl_throw_on_error(const char *name, void *funcptr, int len_args,
 							  ...)
 {
-	try {
+	try
+	{
 		int err = glad_glGetError();
-		if (err != GL_NO_ERROR) {
+		if (err != GL_NO_ERROR)
+		{
 			std::stringstream ss;
 			ss << "[" + std::string(name) << ":" << std::hex << funcptr
 			   << "] opengl call failed with error: " << glEnumString(err)
 			   << std::endl;
 			throw std::runtime_error(ss.str());
 		}
-	} catch (const std::exception &e) {
+	}
+	catch (const std::exception &e)
+	{
 		throw std::runtime_error(e.what());
 	}
 }
