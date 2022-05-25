@@ -247,6 +247,8 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	TestGLProgram prog;
 	BOOST_REQUIRE(prog.link(vs, fs));
 
+	BOOST_REQUIRE(prog.getActiveUniforms().size() == 13);
+
 	int i1 = 0, i2[] = { 0, 0 }, i3[] = { 0, 0, 0 }, i4[] = { 0, 0, 0, 0 };
 	int ci4[]{ 1, 2, 3, 4 };
 	float fi1 = 0, fi2[] = { 0, 0 }, fi3[] = { 0, 0, 0 },

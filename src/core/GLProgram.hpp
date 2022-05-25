@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <utility>
+#include <set>
 
 namespace dream
 {
@@ -102,6 +103,23 @@ public:
 		GLint location = glGetUniformLocation(mObjectId, name.c_str());
 		functions.find(std::make_pair(mat.rows(), mat.cols()))
 			->second(location, 1, transpose, mat.data());
+	}
+
+	std::set<std::string> getActiveUniforms()
+	{
+		GLint uniforms;
+		glGetProgramiv(mObjectId, GL_ACTIVE_UNIFORMS, &uniforms);
+		std::set<std::string> uniformNames;
+		for (std::size_t i = 0; i < uniforms; i++)
+		{
+			char name[256];
+			GLsizei length;
+			GLsizei size;
+			GLenum type;
+			glGetActiveUniform(mObjectId, i, 256, &length, &size, &type, name);
+			uniformNames.insert(std::string(name, &name[length]));
+		}
+		return uniformNames;
 	}
 
 protected:
