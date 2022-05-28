@@ -194,7 +194,7 @@ int main()
 	va.createAttribute(instanceSpec, instBuf);
 
 	prog.use();
-	prog.setMatrix("model", Eigen::Matrix4f(Eigen::Matrix4f::Identity()));
+	prog.setUniform("model", Eigen::Matrix4f(Eigen::Matrix4f::Identity()));
 	//==================end opengl state initialization===================
 
 	// glfw: initialize and configure
@@ -212,8 +212,8 @@ int main()
 		glm::mat4 p = glm::perspective(
 			glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
 		Eigen::Matrix4f projectionE(&p[0][0]);
-		prog.setMatrix("projection", projectionE);
-		prog.setMatrix("view", controller.camera.toViewTransform());
+		prog.setUniform("projection", projectionE);
+		prog.setUniform("view", controller.camera.toViewTransform());
 
 		// input
 		// -----

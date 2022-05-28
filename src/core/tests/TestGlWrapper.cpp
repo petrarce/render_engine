@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	prog.setUniform2("ui2", uci4[0], uci4[1]);
 	prog.setUniform3("ui3", uci4[0], uci4[1], uci4[2]);
 	prog.setUniform4("ui4", uci4[0], uci4[1], uci4[2], uci4[3]);
-	prog.setMatrix("matrix4", mat4);
+	prog.setUniform("matrix4", mat4);
 
 	GLint i1l = glGetUniformLocation(prog.objectId(), "i1");
 	GLint i2l = glGetUniformLocation(prog.objectId(), "i2");

@@ -1,0 +1,15 @@
+vertex
+out vec4 gl_Position()
+{
+@src
+	gl_Position = vec4(0, 0, 0, 0);
+@endsrc
+}
+
+fragment
+out vec4 fragColor()
+{
+@src
+	fragColor = vec4(0, 0, 0, 0);
+@endsrc
+}
