@@ -75,10 +75,10 @@ public:
 	UNIFORM_SETTER_API(ui, unsigned int)
 
 	template <int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-	void setMatrix(const std::string &name,
-				   const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
-									   _MaxCols> &mat,
-				   bool transpose = false)
+	void setUniform(const std::string &name,
+					const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
+										_MaxCols> &mat,
+					bool transpose = false)
 	{
 		typedef void (*GlMatrixSetter)(GLint location, GLsizei count,
 									   GLboolean transpose,
@@ -122,6 +122,19 @@ public:
 		return uniformNames;
 	}
 
+	void setUniform(const std::string &name, int val);
+	void setUniform(const std::string &name, float val);
+	void setUniform(const std::string &name, unsigned int val);
+	void setUniform(const std::string &name, std::array<int, 2> val);
+	void setUniform(const std::string &name, std::array<float, 2> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 2> val);
+	void setUniform(const std::string &name, std::array<int, 3> val);
+	void setUniform(const std::string &name, std::array<float, 3> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 3> val);
+	void setUniform(const std::string &name, std::array<int, 4> val);
+	void setUniform(const std::string &name, std::array<float, 4> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 4> val);
+
 protected:
 	bool link()
 	{
@@ -146,6 +159,8 @@ public:
 
 	void prepareFiles(const std::string &vertexShaderPath,
 					  const std::string &fragmentShaderPath);
+
+	static std::string getWokingGlslVersionString();
 };
 
 } // namespace glwrapper
