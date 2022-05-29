@@ -7,6 +7,7 @@ namespace components
 
 GLTriangleDrawer::GLTriangleDrawer()
 	: GLRenderFunction()
+	, mProgram()
 {
 	std::vector<float> vertices = {
 		-1, 0, 0, 0, 1, 0, 1, 0, 0,

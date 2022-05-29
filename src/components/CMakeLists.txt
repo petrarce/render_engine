@@ -4,6 +4,7 @@ add_library(gl-components STATIC
 	GLProgramGenerator.hpp
 	GLProgramGenerator.cpp
 	GLRenderFunction.hpp
+	GLRenderFunction.cpp
 	GLArrayBufferDrawer.hpp
 	GLArrayBufferDrawer.cpp
 	Variable.hpp

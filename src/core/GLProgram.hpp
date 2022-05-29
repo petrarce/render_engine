@@ -110,7 +110,7 @@ public:
 		GLint uniforms;
 		glGetProgramiv(mObjectId, GL_ACTIVE_UNIFORMS, &uniforms);
 		std::set<std::string> uniformNames;
-		for (std::size_t i = 0; i < uniforms; i++)
+		for (int i = 0; i < uniforms; i++)
 		{
 			char name[256];
 			GLsizei length;
