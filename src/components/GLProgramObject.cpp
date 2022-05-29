@@ -37,6 +37,7 @@ void GLProgramContainer::generateProgram(const Scope &scp)
 	size_t scopeHash = std::hash<std::set<molecular::util::Hash>>{}(variables);
 	if (scopeHash == mProgramHash)
 		return;
+	mProgramHash = scopeHash;
 
 	ProgramGenerator &generator = GLProgramGenerator::instance();
 	ProgramGenerator::ProgramText text =

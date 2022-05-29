@@ -3,3 +3,6 @@
 #include <Variable.hpp>
 #include <GLProgramGenerator.hpp>
 #include <GLProgramObject.hpp>
+#include <GLRenderFunction.hpp>
+#include <GLProgramObject.hpp>
+#include <GLArrayBufferDrawer.hpp>

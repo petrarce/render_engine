@@ -105,7 +105,9 @@ void GLShaderProgram::prepare(const std::string &vertexShaderText,
 		throw std::runtime_error("Fragment compilation failed:\n " +
 								 fs.compilationLog());
 	if (!link(vs, fs))
-		throw std::runtime_error("Link error:\n" + linkageLog());
+		throw std::runtime_error("Link error:\n" + linkageLog() +
+								 "Vertex Shader:\n " + vertexShaderText +
+								 "Fragment Shader:\n" + fragmentShaderText);
 }
 
 void GLShaderProgram::prepareFiles(const std::string &vertexShaderPath,
@@ -133,14 +135,14 @@ std::string GLShaderProgram::getWokingGlslVersionString()
 										"	gl_Position = vec4(1,2,3,0.3);"
 										"}";
 	std::vector<std::string> versions = {
-		std::string("#version 460\n"),	  std::string("#version 440\n"),
-		std::string("#version 450\n"),	  std::string("#version 430\n"),
-		std::string("#version 420\n"),	  std::string("#version 410\n"),
-		std::string("#version 400\n"),	  std::string("#version 330\n"),
-		std::string("#version 150\n"),	  std::string("#version 140\n"),
-		std::string("#version 130\n"),	  std::string("#version 120\n"),
-		std::string("#version 110\n"),	  std::string("#version 100\n"),
-		std::string("#version 320 es\n"), std::string("#version 310 es\n"),
+		std::string("#version 330 core\n"), std::string("#version 460 core\n"),
+		std::string("#version 440 core\n"), std::string("#version 450 core\n"),
+		std::string("#version 430 core\n"), std::string("#version 420 core\n"),
+		std::string("#version 410 core\n"), std::string("#version 400 core\n"),
+		std::string("#version 150 core\n"), std::string("#version 140 core\n"),
+		std::string("#version 130 core\n"), std::string("#version 120 core\n"),
+		std::string("#version 110 core\n"), std::string("#version 100\n"),
+		std::string("#version 320 es\n"),	std::string("#version 310 es\n"),
 		std::string("#version 300 es\n"),
 	};
 

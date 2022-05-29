@@ -1,6 +1,5 @@
 #pragma once
 #include <GLWrapperCore>
-#include <GLProgramObject.hpp>
 
 namespace dream
 {
@@ -17,6 +16,10 @@ public:
 	}
 	virtual void apply(const std::string &name,
 					   glwrapper::GLShaderProgram &program) const = 0;
+	virtual Variable &operator=(const Variable &other)
+	{
+		return *this;
+	}
 };
 
 template <class T>
@@ -33,6 +36,15 @@ public:
 			   glwrapper::GLShaderProgram &program) const final
 	{
 		program.setUniform(name, mValue);
+	}
+	Variable &operator=(const Variable &other) override
+	{
+		const Uniform<T> *otherUniform =
+			reinterpret_cast<const Uniform<T> *>(&other);
+		if (otherUniform)
+			mValue = otherUniform->mValue;
+
+		return *this;
 	}
 
 private:

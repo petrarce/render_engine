@@ -9,7 +9,7 @@ namespace dream
 namespace components
 {
 
-using Scope = molecular::util::Scope<Variable>;
+typedef molecular::util::Scope<dream::components::Variable> Scope;
 
 class GLProgramContainer : public glwrapper::GLShaderProgram
 {

@@ -1,15 +1,20 @@
-include_directories(.)
 add_library(gl-components STATIC
 	GLProgramObject.hpp
 	GLProgramObject.cpp
-	Variable.hpp
 	GLProgramGenerator.hpp
 	GLProgramGenerator.cpp
+	GLRenderFunction.hpp
+	GLArrayBufferDrawer.hpp
+	GLArrayBufferDrawer.cpp
+	Variable.hpp
 	Singleton.hpp
 	GLComponents
 )
 
+target_include_directories(gl-components PUBLIC .)
+
 target_link_libraries(gl-components PUBLIC
+	glad
 	molecular-util
 	molecular-gfx
 	opengl-wrapper-core)
