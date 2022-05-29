@@ -34,7 +34,7 @@ public:
 	{
 		std::ifstream inpFile(file, std::ios_base::in);
 		if (!inpFile.is_open())
-			throw("Cannot open file for reading: " + file);
+			throw std::runtime_error("Cannot open file for reading: " + file);
 		std::stringstream ss;
 		ss << inpFile.rdbuf();
 		deploy(ss.str());
