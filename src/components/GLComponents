@@ -1,5 +1,4 @@
 #pragma once
-#include <Singleton.hpp>
 #include <Variable.hpp>
 #include <GLProgramGenerator.hpp>
 #include <GLProgramObject.hpp>
