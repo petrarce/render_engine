@@ -229,7 +229,7 @@ public:
 	{
 		static_assert(Dimentions > 0 && Dimentions <= 3,
 					  "Dimentionality error");
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		if (Dimentions == 1)
 			glTexImage1D(TextureType, level, intForm, dim[0], 0, dataFormat,
 						 dataType, reinterpret_cast<const void *>(buff.data()));
@@ -250,7 +250,7 @@ public:
 	{
 		static_assert(Dimentions > 0 && Dimentions <= 3,
 					  "Dimentionality error");
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		if (Dimentions == 1)
 			glTexImage1D(TextureType, level, intForm, dim[0], 0, dataFormat,
 						 dataType, nullptr);
@@ -279,7 +279,7 @@ public:
 #define PARAMETER_SETTER(Parameter, ParamValueType)                            \
 	void setParameter(ParamValueType val)                                      \
 	{                                                                          \
-		GlObjectBinder bind(*this);                                            \
+		GLObjectBinder bind(*this);                                            \
 		glTexParameteri(TextureType, Parameter, val);                          \
 	}
 
@@ -292,7 +292,7 @@ public:
 	template <TextureParameters Param>
 	GLint getParameter()
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		GLint val;
 		glGetTexParameteriv(TextureType, static_cast<GLenum>(Param), &val);
 		return val;
@@ -300,7 +300,7 @@ public:
 
 	void generateMipMaps()
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		glGenerateMipmap(TextureType);
 	}
 

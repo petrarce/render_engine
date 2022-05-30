@@ -193,7 +193,7 @@ int main()
 	};
 	va.createAttribute(instanceSpec, instBuf);
 
-	prog.use();
+	dream::glwrapper::GLObjectBinder bindProgram(prog);
 	prog.setUniform("model", Eigen::Matrix4f(Eigen::Matrix4f::Identity()));
 	//==================end opengl state initialization===================
 
@@ -217,7 +217,7 @@ int main()
 
 		// input
 		// -----
-		GlObjectBinder bindBuf(va);
+		GLObjectBinder bindBuf(va);
 		glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * 6, models.size());
 
 		//=============== End Rendering loop=====================

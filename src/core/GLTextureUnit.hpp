@@ -8,7 +8,7 @@ namespace dream
 {
 namespace glwrapper
 {
-class GlObjectBinder;
+class GLObjectBinder;
 
 class GLTextureUnit : public GLObject
 {

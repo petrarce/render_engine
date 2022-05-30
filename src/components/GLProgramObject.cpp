@@ -67,7 +67,7 @@ void GLProgramContainer::generateProgram(const Scope &scp)
 
 void GLProgramContainer::prepareProgram(const Scope &scp)
 {
-	glwrapper::GlObjectBinder bind(*this);
+	glwrapper::GLObjectBinder bind(*this);
 	for (const auto &u : mUniforms)
 	{
 		if (scp.Has(u.first))

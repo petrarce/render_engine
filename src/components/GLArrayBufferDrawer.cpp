@@ -38,9 +38,9 @@ void GLTriangleDrawer::draw(const Scope &parentScope)
 	mProgram.generateProgram(currentScope);
 	mProgram.prepareProgram(currentScope);
 
-	mProgram.use();
+	dream::glwrapper::GLObjectBinder bindProgram(mProgram);
 	//	glwrapper::GlObjectBinder bindProgram(mProgram);
-	glwrapper::GlObjectBinder bindVAO(mVAO);
+	glwrapper::GLObjectBinder bindVAO(mVAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
