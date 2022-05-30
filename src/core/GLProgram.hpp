@@ -122,6 +122,14 @@ public:
 				   std::array<ArgT, sizeof...(vals) + 1>({ val1, vals... }));
 	}
 
+	void prepare(const std::string &vertexShaderText,
+				 const std::string &fragmentShaderText);
+
+	void prepareFiles(const std::string &vertexShaderPath,
+					  const std::string &fragmentShaderPath);
+
+	static std::string getWokingGlslVersionString();
+
 protected:
 	bool link()
 	{
@@ -131,23 +139,6 @@ protected:
 
 	void bind() override;
 	virtual void unbind() override;
-};
-
-class GLShaderProgram : public GLProgram
-{
-public:
-	explicit GLShaderProgram(const std::string &name = "GLShaderProgram")
-		: GLProgram(name)
-	{
-	}
-
-	void prepare(const std::string &vertexShaderText,
-				 const std::string &fragmentShaderText);
-
-	void prepareFiles(const std::string &vertexShaderPath,
-					  const std::string &fragmentShaderPath);
-
-	static std::string getWokingGlslVersionString();
 };
 
 } // namespace glwrapper
