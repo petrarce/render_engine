@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # project name and supported languages
 project(graphics CXX C)
+include(default.cmake)
+include(cmake/modules/HelperMacros.cmake)
 
 # detect operating system and host processor
 message(STATUS "We are on a ${CMAKE_SYSTEM_NAME} system")
@@ -24,8 +26,6 @@ set(VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" CACHE PATH "Path to cmake modules")
 
-include(default.cmake)
-include(cmake/modules/HelperMacros.cmake)
 
 include_directories(AFTER .)
 include_directories(AFTER molecular-programgenerator)
