@@ -9,19 +9,19 @@ namespace dream
 {
 namespace components
 {
-class GLProgramGenerator
+class GLMolecularProgramGenerator
 	: public molecular::programgenerator::ProgramGenerator
-	, public Singleton<GLProgramGenerator>
+	, public Singleton<GLMolecularProgramGenerator>
 {
 public:
-	friend class Singleton<GLProgramGenerator>;
+	friend class Singleton<GLMolecularProgramGenerator>;
 
 	void deploy(std::string program);
 
 	void deployFile(std::string file);
 
 private:
-	GLProgramGenerator();
+	GLMolecularProgramGenerator();
 };
 
 } // namespace components

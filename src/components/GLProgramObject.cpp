@@ -39,7 +39,7 @@ void GLMolecularProgram::generateProgram(const Scope &scp)
 		return;
 	mProgramHash = scopeHash;
 
-	ProgramGenerator &generator = GLProgramGenerator::instance();
+	ProgramGenerator &generator = GLMolecularProgramGenerator::instance();
 	ProgramGenerator::ProgramText text =
 		generator.GenerateProgram(variables.begin(), variables.end());
 	text.vertexShader =
