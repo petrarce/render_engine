@@ -1,7 +1,6 @@
 #pragma once
 #include <Variable.hpp>
-#include <GLProgramGenerator.hpp>
-#include <GLProgramObject.hpp>
+#include <GLMolecularProgramGenerator.hpp>
+#include <GLMolecularProgram.hpp>
 #include <GLRenderFunction.hpp>
-#include <GLProgramObject.hpp>
 #include <GLArrayBufferDrawer.hpp>
