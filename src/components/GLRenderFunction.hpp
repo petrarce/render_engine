@@ -1,5 +1,5 @@
 #pragma once
-#include "GLProgramObject.hpp"
+#include "GLMolecularProgram.hpp"
 
 namespace dream
 {

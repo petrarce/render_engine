@@ -2,8 +2,8 @@
 #include <molecular/programgenerator/ProgramGenerator.h>
 #include <molecular/util/Hash.h>
 #include <GLWrapperCore>
-#include "GLProgramGenerator.hpp"
-#include "GLProgramObject.hpp"
+#include "GLMolecularProgramGenerator.hpp"
+#include "GLMolecularProgram.hpp"
 #include "Variable.hpp"
 
 using namespace molecular::programgenerator;

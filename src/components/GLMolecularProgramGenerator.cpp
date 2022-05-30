@@ -1,4 +1,4 @@
-#include "GLProgramGenerator.hpp"
+#include "GLMolecularProgramGenerator.hpp"
 
 namespace dream
 {

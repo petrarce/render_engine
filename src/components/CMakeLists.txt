@@ -1,8 +1,8 @@
 add_library(gl-components STATIC
-	GLProgramObject.hpp
-	GLProgramObject.cpp
-	GLProgramGenerator.hpp
-	GLProgramGenerator.cpp
+	GLMolecularProgram.hpp
+	GLMolecularProgram.cpp
+	GLMolecularProgramGenerator.hpp
+	GLMolecularProgramGenerator.cpp
 	GLRenderFunction.hpp
 	GLRenderFunction.cpp
 	GLArrayBufferDrawer.hpp
