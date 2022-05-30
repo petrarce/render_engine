@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(TestProgramGenerator)
 
 	GLProgramGenerator &generator = GLProgramGenerator::instance();
 	generator.deploy(program);
-	GLProgramContainer progContainer;
+	GLMolecularProgram progContainer;
 	progContainer.generateProgram(rootScope);
 	progContainer.prepareProgram(rootScope);
 }
