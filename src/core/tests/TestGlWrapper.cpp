@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 		std::cout << std::string(stateProvider) << std::endl;
 		{
 
-			GlObjectBinder bind(*obj);
+			GLObjectBinder bind(*obj);
 			BOOST_TEST(initialState != stateProvider.updateState());
 			std::cout << std::string(stateProvider) << std::endl;
 		}
@@ -260,19 +260,19 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 	Eigen::Matrix4f mat4, mat4Check = Eigen::Matrix4f::Zero();
 	mat4 << 1, 4, 2, 5, 3, 2, 1, 6, 7, 3, 8, 2, 1, 6, 5, 3;
 
-	prog.use();
-	prog.setUniform1("i1", ci4[0]);
-	prog.setUniform2("i2", ci4[0], ci4[1]);
-	prog.setUniform3("i3", ci4[0], ci4[1], ci4[2]);
-	prog.setUniform4("i4", ci4[0], ci4[1], ci4[2], ci4[3]);
-	prog.setUniform1("fi1", fci4[0]);
-	prog.setUniform2("fi2", fci4[0], fci4[1]);
-	prog.setUniform3("fi3", fci4[0], fci4[1], fci4[2]);
-	prog.setUniform4("fi4", fci4[0], fci4[1], fci4[2], fci4[3]);
-	prog.setUniform1("ui1", uci4[0]);
-	prog.setUniform2("ui2", uci4[0], uci4[1]);
-	prog.setUniform3("ui3", uci4[0], uci4[1], uci4[2]);
-	prog.setUniform4("ui4", uci4[0], uci4[1], uci4[2], uci4[3]);
+	dream::glwrapper::GLObjectBinder bindProgram(prog);
+	prog.setUniform("i1", ci4[0]);
+	prog.setUniform("i2", ci4[0], ci4[1]);
+	prog.setUniform("i3", ci4[0], ci4[1], ci4[2]);
+	prog.setUniform("i4", ci4[0], ci4[1], ci4[2], ci4[3]);
+	prog.setUniform("fi1", fci4[0]);
+	prog.setUniform("fi2", fci4[0], fci4[1]);
+	prog.setUniform("fi3", fci4[0], fci4[1], fci4[2]);
+	prog.setUniform("fi4", fci4[0], fci4[1], fci4[2], fci4[3]);
+	prog.setUniform("ui1", uci4[0]);
+	prog.setUniform("ui2", uci4[0], uci4[1]);
+	prog.setUniform("ui3", uci4[0], uci4[1], uci4[2]);
+	prog.setUniform("ui4", uci4[0], uci4[1], uci4[2], uci4[3]);
 	prog.setUniform("matrix4", mat4);
 
 	GLint i1l = glGetUniformLocation(prog.objectId(), "i1");

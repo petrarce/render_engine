@@ -5,11 +5,11 @@ namespace dream
 {
 namespace glwrapper
 {
-class GlObjectBinder
+class GLObjectBinder
 {
 public:
-	GlObjectBinder(GLObject &object);
-	~GlObjectBinder();
+	GLObjectBinder(GLObject &object);
+	~GLObjectBinder();
 
 private:
 	GLObject &mGlObject;

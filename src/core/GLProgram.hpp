@@ -50,30 +50,6 @@ public:
 		return "Success";
 	}
 
-	void use()
-	{
-		glUseProgram(mObjectId);
-	}
-
-#define UNIFORM_SETTER(tp, type, dim)                                          \
-	template <class... VarueArgs>                                              \
-	void setUniform##dim(const std::string &var, type v1,                      \
-						 const VarueArgs &...val)                              \
-	{                                                                          \
-		GLint location = glGetUniformLocation(mObjectId, var.c_str());         \
-		glUniform##dim##tp(location, v1, val...);                              \
-	}
-
-#define UNIFORM_SETTER_API(tp, type)                                           \
-	UNIFORM_SETTER(tp, type, 1)                                                \
-	UNIFORM_SETTER(tp, type, 2)                                                \
-	UNIFORM_SETTER(tp, type, 3)                                                \
-	UNIFORM_SETTER(tp, type, 4)
-
-	UNIFORM_SETTER_API(f, float)
-	UNIFORM_SETTER_API(i, int)
-	UNIFORM_SETTER_API(ui, unsigned int)
-
 	template <int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 	void setUniform(const std::string &name,
 					const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
@@ -134,6 +110,17 @@ public:
 	void setUniform(const std::string &name, std::array<int, 4> val);
 	void setUniform(const std::string &name, std::array<float, 4> val);
 	void setUniform(const std::string &name, std::array<unsigned int, 4> val);
+
+	template <class ArgT, class... Args,
+			  // only for integers and floats
+			  std::enable_if_t<std::is_integral<ArgT>::value ||
+								   std::is_floating_point<ArgT>::value,
+							   bool> = true>
+	void setUniform(const std::string &name, ArgT val1, const Args... vals)
+	{
+		setUniform(name,
+				   std::array<ArgT, sizeof...(vals) + 1>({ val1, vals... }));
+	}
 
 protected:
 	bool link()

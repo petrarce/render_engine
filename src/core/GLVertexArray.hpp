@@ -37,7 +37,7 @@ public:
 	void createAttribute(const AttributeSpecification &spec, Buffer &buffer,
 						 Buffers &...args)
 	{
-		GlObjectBinder binder(buffer);
+		GLObjectBinder binder(buffer);
 		createAttribute(spec, args...);
 	}
 
@@ -49,7 +49,7 @@ protected:
 		// of ElementArrayObject which is refferenced by VertexArray
 		GLint eob;
 		glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &eob);
-		GlObjectBinder binder(*this);
+		GLObjectBinder binder(*this);
 
 		// now bind ElementArrayBuffer that was intended for VertexArray
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eob);

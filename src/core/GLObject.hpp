@@ -6,7 +6,7 @@ namespace dream
 {
 namespace glwrapper
 {
-class GlObjectBinder;
+class GLObjectBinder;
 
 class GLObject
 {
@@ -21,7 +21,7 @@ public:
 	const GLObject &operator=(const GLObject &) = delete;
 	GLObject &operator=(GLObject &&)			= delete;
 
-	friend class GlObjectBinder;
+	friend class GLObjectBinder;
 
 	std::string mName{ "GLObject" };
 
