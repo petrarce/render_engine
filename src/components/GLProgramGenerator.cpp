@@ -5,7 +5,7 @@ namespace dream
 namespace components
 {
 
-void GLProgramGenerator::deploy(std::string program)
+void GLMolecularProgramGenerator::deploy(std::string program)
 {
 	char *str = const_cast<char *>(program.c_str());
 	molecular::programgenerator::ProgramFile file(str,
@@ -18,7 +18,7 @@ void GLProgramGenerator::deploy(std::string program)
 	for (const auto &func : functions) AddFunction(func);
 }
 
-void GLProgramGenerator::deployFile(std::string file)
+void GLMolecularProgramGenerator::deployFile(std::string file)
 {
 	std::ifstream inpFile(file, std::ios_base::in);
 	if (!inpFile.is_open())
@@ -28,9 +28,9 @@ void GLProgramGenerator::deployFile(std::string file)
 	deploy(ss.str());
 }
 
-GLProgramGenerator::GLProgramGenerator()
+GLMolecularProgramGenerator::GLMolecularProgramGenerator()
 	: molecular::programgenerator::ProgramGenerator()
-	, Singleton<GLProgramGenerator>()
+	, Singleton<GLMolecularProgramGenerator>()
 {
 	try
 	{

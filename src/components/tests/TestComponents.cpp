@@ -71,7 +71,8 @@ BOOST_AUTO_TEST_CASE(TestProgramGenerator)
 	rootScope.Set("fragColor"_H, Output());
 	rootScope.Set("gl_Position"_H, Output());
 
-	GLProgramGenerator &generator = GLProgramGenerator::instance();
+	GLMolecularProgramGenerator &generator =
+		GLMolecularProgramGenerator::instance();
 	generator.deploy(program);
 	GLMolecularProgram progContainer;
 	progContainer.generateProgram(rootScope);
