@@ -15,7 +15,7 @@ public:
 	{
 	}
 	virtual void apply(const std::string &name,
-					   glwrapper::GLShaderProgram &program) const = 0;
+					   glwrapper::GLProgram &program) const = 0;
 	virtual Variable &operator=(const Variable &other)
 	{
 		return *this;
@@ -33,7 +33,7 @@ public:
 	}
 	virtual ~Uniform(){};
 	void apply(const std::string &name,
-			   glwrapper::GLShaderProgram &program) const final
+			   glwrapper::GLProgram &program) const final
 	{
 		program.setUniform(name, mValue);
 	}
@@ -64,7 +64,7 @@ public:
 	}
 
 	void apply(const std::string &name,
-			   glwrapper::GLShaderProgram &program) const final
+			   glwrapper::GLProgram &program) const final
 	{
 		// Do nothing
 	}
@@ -81,7 +81,7 @@ public:
 	{
 	}
 	void apply(const std::string &name,
-			   glwrapper::GLShaderProgram &program) const override
+			   glwrapper::GLProgram &program) const override
 	{
 	}
 };

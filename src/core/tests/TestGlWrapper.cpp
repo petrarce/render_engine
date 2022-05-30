@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(TestShaders)
 	program.link(vs, fs);
 	BOOST_TEST(program.linkStatus(), program.linkageLog().c_str());
 
-	GLShaderProgram fullProgram;
+	GLProgram fullProgram;
 	fullProgram.prepare(vertexShaderSource, fragmentShaderSource);
 	BOOST_TEST(fullProgram.linkStatus());
 }

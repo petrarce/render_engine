@@ -93,8 +93,8 @@ void GLProgram::setUniform(const std::string &name,
 	glUniform4ui(loc, val[0], val[1], val[2], val[3]);
 }
 
-void GLShaderProgram::prepare(const std::string &vertexShaderText,
-							  const std::string &fragmentShaderText)
+void GLProgram::prepare(const std::string &vertexShaderText,
+						const std::string &fragmentShaderText)
 {
 	GLVertexShader vs;
 	GLFragmentShader fs;
@@ -110,22 +110,28 @@ void GLShaderProgram::prepare(const std::string &vertexShaderText,
 								 "Fragment Shader:\n" + fragmentShaderText);
 }
 
-void GLShaderProgram::prepareFiles(const std::string &vertexShaderPath,
-								   const std::string &fragmentShaderPath)
+void GLProgram::prepareFiles(const std::string &vertexShaderPath,
+							 const std::string &fragmentShaderPath)
 {
+	std::ofstream vsFile(vertexShaderPath, std::ios::in);
+	std::ofstream fsFile(vertexShaderPath, std::ios::in);
+
+	if (!vsFile.is_open() || !fsFile.is_open())
+		throw std::runtime_error(
+			std::string("Failed to open shader file: ") +
+			(vsFile.is_open() ? vertexShaderPath : fragmentShaderPath));
+
 	GLVertexShader vs;
 	GLFragmentShader fs;
-	if (!vs.compileFile(vertexShaderPath))
-		throw std::runtime_error("Vertex compilation failed:\n " +
-								 vs.compilationLog());
-	if (!fs.compileFile(fragmentShaderPath))
-		throw std::runtime_error("Fragment compilation failed:\n " +
-								 vs.compilationLog());
-	if (!link(vs, fs))
-		throw std::runtime_error("Link error:\n" + linkageLog());
+	std::stringstream vsStream;
+	vsStream << vsFile.rdbuf();
+	std::stringstream fsStream;
+	fsStream << fsFile.rdbuf();
+
+	prepare(vsStream.str(), fsStream.str());
 }
 
-std::string GLShaderProgram::getWokingGlslVersionString()
+std::string GLProgram::getWokingGlslVersionString()
 {
 	static std::string currentVersion = "";
 

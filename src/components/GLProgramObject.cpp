@@ -43,11 +43,9 @@ void GLProgramContainer::generateProgram(const Scope &scp)
 	ProgramGenerator::ProgramText text =
 		generator.GenerateProgram(variables.begin(), variables.end());
 	text.vertexShader =
-		glwrapper::GLShaderProgram::getWokingGlslVersionString() +
-		text.vertexShader;
-	text.fragmentShader =
-		glwrapper::GLShaderProgram::getWokingGlslVersionString() +
-		text.fragmentShader;
+		glwrapper::GLProgram::getWokingGlslVersionString() + text.vertexShader;
+	text.fragmentShader = glwrapper::GLProgram::getWokingGlslVersionString() +
+						  text.fragmentShader;
 	try
 	{
 		prepare(text.vertexShader, text.fragmentShader);

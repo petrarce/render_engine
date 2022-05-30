@@ -155,7 +155,7 @@ int main()
 	//===================end callbacks======================
 
 	//===================initialize opengl objects =========
-	GLShaderProgram prog;
+	GLProgram prog;
 	prog.prepare(vertexShader, fragmentShader);
 
 	for (int i = 0; i < 20; i++)
