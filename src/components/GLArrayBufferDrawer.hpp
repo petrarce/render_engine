@@ -16,7 +16,7 @@ public:
 private:
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVAB;
-	GLProgramContainer mProgram;
+	GLMolecularProgram mProgram;
 };
 
 } // namespace components

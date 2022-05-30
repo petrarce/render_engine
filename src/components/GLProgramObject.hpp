@@ -11,10 +11,10 @@ namespace components
 
 typedef molecular::util::Scope<dream::components::Variable> Scope;
 
-class GLProgramContainer : public glwrapper::GLProgram
+class GLMolecularProgram : public glwrapper::GLProgram
 {
 public:
-	GLProgramContainer()
+	GLMolecularProgram()
 		: glwrapper::GLProgram()
 	{
 	}
