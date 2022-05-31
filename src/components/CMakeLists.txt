@@ -7,6 +7,8 @@ add_library(gl-components STATIC
 	GLRenderFunction.cpp
 	GLArrayBufferDrawer.hpp
 	GLArrayBufferDrawer.cpp
+	GLCubeStripRenderFunction.hpp
+	GLCubeStripRenderFunction.cpp
 	Variable.hpp
 	Singleton.hpp
 	GLComponents
