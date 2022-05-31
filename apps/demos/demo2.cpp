@@ -14,7 +14,10 @@ int main()
 	DemoInfrastructure &infra = DemoInfrastructure::instance();
 
 	//===================initialize opengl objects =========
-	dream::components::GLTriangleDrawer triangle;
+	dream::components::GLMultipleCaleeRenderFunction multipleDraws({
+		std::make_shared<dream::components::GLTriangleDrawer>(),
+		std::make_shared<dream::components::GLCubeStripRenderFunction>(),
+	});
 	dream::components::Scope rootScope;
 	{
 		using namespace dream::components;
@@ -45,7 +48,7 @@ int main()
 			"uView"_H,
 			Uniform<Eigen::Matrix4f>(controller.camera.toViewTransform()));
 		std::cerr << controller.camera.toViewTransform() << std::endl;
-		triangle.draw(rootScope);
+		multipleDraws.draw(rootScope);
 	};
 	infra.run(std::ref(renderRoutine));
 

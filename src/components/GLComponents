@@ -4,3 +4,4 @@
 #include <GLMolecularProgram.hpp>
 #include <GLRenderFunction.hpp>
 #include <GLArrayBufferDrawer.hpp>
+#include <GLCubeStripRenderFunction.hpp>
