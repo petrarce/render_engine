@@ -18,7 +18,7 @@ jobs:
       - run: git submodule update
       - run: mkdir build
       - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON ../ && 
-                cmake --build . --target all -- -j4 && 
+                cmake --build . --target all -- -j2 && 
                 cmake --build . --target test
   test-lsan:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -33,7 +33,7 @@ jobs:
       - run: git submodule update
       - run: mkdir build
       - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=ReleaseLsan -DBUILD_TESTING=ON ../ && 
-                cmake --build . --target all -- -j4 &&
+                cmake --build . --target all -- -j2 &&
                 cmake --build . --target test
   test-tsan:
     docker:
@@ -44,7 +44,7 @@ jobs:
       - run: git submodule update
       - run: mkdir build
       - run: cd build && cmake -GNinja -DCMAKE_BUILD_TYPE=ReleaseTsan -DBUILD_TESTING=ON ../ && 
-                cmake --build . --target all -- -j4 &&
+                cmake --build . --target all -- -j2 &&
                 cmake --build . --target test
 
 
