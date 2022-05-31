@@ -5,6 +5,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include <iostream>
 #include <GL/osmesa.h>
+#include <molecular/util/Hash.h>
 
 using namespace dream::glwrapper;
 using namespace dream::components;
@@ -64,12 +65,15 @@ std::string program =
 BOOST_AUTO_TEST_CASE(TestProgramGenerator)
 {
 	dream::components::Scope rootScope;
-	rootScope.Set("val1"_H, Uniform<int>(10));
-	rootScope.Set("val2"_H,
+	rootScope.Set(molecular::util::HashUtils::MakeHash("val1"),
+				  Uniform<int>(10));
+	rootScope.Set(molecular::util::HashUtils::MakeHash("val2"),
 				  Uniform<Eigen::Matrix4f>(Eigen::Matrix4f::Identity()));
-	rootScope.Set("val3"_H, Uniform<float>(15.f));
-	rootScope.Set("fragColor"_H, Output());
-	rootScope.Set("gl_Position"_H, Output());
+	rootScope.Set(molecular::util::HashUtils::MakeHash("val3"),
+				  Uniform<float>(15.f));
+	rootScope.Set(molecular::util::HashUtils::MakeHash("fragColor"), Output());
+	rootScope.Set(molecular::util::HashUtils::MakeHash("gl_Position"),
+				  Output());
 
 	GLMolecularProgramGenerator &generator =
 		GLMolecularProgramGenerator::instance();

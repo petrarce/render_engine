@@ -12,6 +12,9 @@ add_library(opengl-wrapper-core STATIC
 	GLDefinitions.hpp
 	GLTexture.hpp
 	GLTextureUnit.hpp
+	GLFrameBufferObject.hpp
+	GLFrameBufferObject.cpp
+	GLRenderBuffer.hpp
 )
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)
