@@ -8,3 +8,5 @@
 #include <GLTexture.hpp>
 #include <GLTextureUnit.hpp>
 #include <GLDefinitions.hpp>
+#include <GLFrameBufferObject.hpp>
+#include <GLRenderBuffer.hpp>

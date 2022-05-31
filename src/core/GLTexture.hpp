@@ -225,7 +225,7 @@ public:
 	template <class T, int Dimentions>
 	void create(std::vector<T> &buff, GLint level, InternalFormat intForm,
 				DataFormat dataFormat, DataType dataType,
-				const std::array<size_t, Dimentions> &dim)
+				const std::array<std::size_t, Dimentions> &dim)
 	{
 		static_assert(Dimentions > 0 && Dimentions <= 3,
 					  "Dimentionality error");
@@ -245,21 +245,21 @@ public:
 
 	/// create mutable storage for buffer without storing data there
 	template <int Dimentions>
-	void create(GLint level, InternalFormat intForm, DataFormat dataFormat,
-				DataType dataType, const std::array<size_t, Dimentions> &dim)
+	void create(GLint level, InternalFormat intForm,
+				const std::array<std::size_t, Dimentions> &dim)
 	{
 		static_assert(Dimentions > 0 && Dimentions <= 3,
 					  "Dimentionality error");
 		GLObjectBinder bind(*this);
 		if (Dimentions == 1)
-			glTexImage1D(TextureType, level, intForm, dim[0], 0, dataFormat,
-						 dataType, nullptr);
+			glTexImage1D(TextureType, level, intForm, dim[0], 0,
+						 DataFormat::DRed, DataType::UByte, nullptr);
 		if (Dimentions == 2)
 			glTexImage2D(TextureType, level, intForm, dim[0], dim[1], 0,
-						 dataFormat, dataType, nullptr);
+						 DataFormat::DRed, DataType::UByte, nullptr);
 		if (Dimentions == 3)
 			glTexImage3D(TextureType, level, intForm, dim[0], dim[1], dim[2], 0,
-						 dataFormat, dataType, nullptr);
+						 DataFormat::DRed, DataType::UByte, nullptr);
 	}
 
 	/// Create immutable storage for the buffer

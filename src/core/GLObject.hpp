@@ -25,6 +25,11 @@ public:
 
 	std::string mName{ "GLObject" };
 
+	GLuint getId() const
+	{
+		return mObjectId;
+	}
+
 protected:
 	virtual void bind()	  = 0;
 	virtual void unbind() = 0;

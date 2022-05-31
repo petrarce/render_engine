@@ -6,7 +6,9 @@
 #include <iostream>
 
 using namespace dream::glwrapper;
-
+#ifndef GL_ENABLE_THROW_ON_ERROR
+#error GL_ENABLE_THROW_ON_ERROR is disabled
+#endif
 class TestFixture
 {
 public:
@@ -334,9 +336,8 @@ BOOST_AUTO_TEST_CASE(TestUniforms)
 BOOST_AUTO_TEST_CASE(TextureParameterSetter)
 {
 	GLTexture2D texture;
-	texture.create<2>(
-		0, GLTexture2D::InternalFormat::Rgba, GLTexture2D::DataFormat::DRgba,
-		GLTexture2D::DataType::UByte, std::array<size_t, 2>({ 10, 10 }));
+	texture.create<2>(0, GLTexture2D::InternalFormat::Rgba,
+					  std::array<std::size_t, 2>({ 10, 10 }));
 	texture.setParameter(GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
 	texture.setParameter(GLTexture2D::ValueMagFilter::MagNearest);
 	texture.setParameter(GLTexture2D::ValueWrapS::MirrorClampToEdgeS);
@@ -357,5 +358,24 @@ BOOST_AUTO_TEST_CASE(TextureParameterSetter)
 	BOOST_TEST(
 		texture.getParameter<GLTexture2D::TextureParameters::TextureWrapT>() ==
 		GLTexture2D::ValueWrapT::MirrorClampToEdgeT);
+}
+
+BOOST_AUTO_TEST_CASE(TestFramebuffer)
+{
+	GLFrameBufferObject fbo;
+
+	BOOST_TEST(!fbo.isComplete());
+
+	GLTexture2D texture;
+	texture.create<2>(0, GLTexture2D::InternalFormat::Rgba,
+					  std::array<std::size_t, 2>({ 100, 100 }));
+	fbo.attach(GLFrameBufferObject::AttachmentPoint::Color0, texture);
+	GLRenderBuffer rbo;
+	rbo.create(100, 100, GL_DEPTH24_STENCIL8);
+	fbo.attach(GLFrameBufferObject::AttachmentPoint::DepthStencil, rbo);
+
+	BOOST_TEST(fbo.isComplete());
+
+	GLReadDrawFramebufferBinder bindFBO(fbo);
 }
 BOOST_AUTO_TEST_SUITE_END()
