@@ -1,0 +1,32 @@
+vertex
+out vec4 gl_Position()
+{
+@src
+	gl_Position = vec4(0, 0, 0, 0);
+@endsrc
+}
+
+fragment
+out vec4 fragColor()
+{
+@src
+	fragColor = vec4(0, 0, 0, 0);
+@endsrc
+}
+
+vertex
+out vec4 gl_Position(attr vec3 aVerPos, mat4 uModel, mat4 uView, mat4 uProjection)
+{
+@src
+	gl_Position = uProjection * uView * uModel * vec4(aVerPos, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor(vec4 uColor)
+{
+@src
+	fragColor = uColor;
+@endsrc
+}
+

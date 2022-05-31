@@ -17,9 +17,9 @@ public:
 	virtual ~GLGlfwContextCreator();
 
 	template <class RetType, class... Args>
-	RetType
-	processWindow(std::function<RetType(GLFWwindow *, Args...)> processor,
-				  Args... args)
+	RetType processWindow(
+		const std::function<RetType(GLFWwindow *, Args...)> &processor,
+		Args... args)
 	{
 		if (!processor || !mWindow)
 			throw std::runtime_error("Cannot process current window");
@@ -27,7 +27,7 @@ public:
 	}
 
 	template <class RetType>
-	RetType processWindow(std::function<RetType(GLFWwindow *)> processor)
+	RetType processWindow(const std::function<RetType(GLFWwindow *)> &processor)
 	{
 		if (!processor || !mWindow)
 			throw std::runtime_error("Cannot process current window");

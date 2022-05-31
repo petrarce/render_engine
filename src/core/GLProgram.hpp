@@ -50,35 +50,11 @@ public:
 		return "Success";
 	}
 
-	void use()
-	{
-		glUseProgram(mObjectId);
-	}
-
-#define UNIFORM_SETTER(tp, type, dim)                                          \
-	template <class... VarueArgs>                                              \
-	void setUniform##dim(const std::string &var, type v1,                      \
-						 const VarueArgs &...val)                              \
-	{                                                                          \
-		GLint location = glGetUniformLocation(mObjectId, var.c_str());         \
-		glUniform##dim##tp(location, v1, val...);                              \
-	}
-
-#define UNIFORM_SETTER_API(tp, type)                                           \
-	UNIFORM_SETTER(tp, type, 1)                                                \
-	UNIFORM_SETTER(tp, type, 2)                                                \
-	UNIFORM_SETTER(tp, type, 3)                                                \
-	UNIFORM_SETTER(tp, type, 4)
-
-	UNIFORM_SETTER_API(f, float)
-	UNIFORM_SETTER_API(i, int)
-	UNIFORM_SETTER_API(ui, unsigned int)
-
 	template <int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-	void setMatrix(const std::string &name,
-				   const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
-									   _MaxCols> &mat,
-				   bool transpose = false)
+	void setUniform(const std::string &name,
+					const Eigen::Matrix<float, _Rows, _Cols, _Options, _MaxRows,
+										_MaxCols> &mat,
+					bool transpose = false)
 	{
 		typedef void (*GlMatrixSetter)(GLint location, GLsizei count,
 									   GLboolean transpose,
@@ -110,7 +86,7 @@ public:
 		GLint uniforms;
 		glGetProgramiv(mObjectId, GL_ACTIVE_UNIFORMS, &uniforms);
 		std::set<std::string> uniformNames;
-		for (std::size_t i = 0; i < uniforms; i++)
+		for (int i = 0; i < uniforms; i++)
 		{
 			char name[256];
 			GLsizei length;
@@ -122,6 +98,38 @@ public:
 		return uniformNames;
 	}
 
+	void setUniform(const std::string &name, int val);
+	void setUniform(const std::string &name, float val);
+	void setUniform(const std::string &name, unsigned int val);
+	void setUniform(const std::string &name, std::array<int, 2> val);
+	void setUniform(const std::string &name, std::array<float, 2> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 2> val);
+	void setUniform(const std::string &name, std::array<int, 3> val);
+	void setUniform(const std::string &name, std::array<float, 3> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 3> val);
+	void setUniform(const std::string &name, std::array<int, 4> val);
+	void setUniform(const std::string &name, std::array<float, 4> val);
+	void setUniform(const std::string &name, std::array<unsigned int, 4> val);
+
+	template <class ArgT, class... Args,
+			  // only for integers and floats
+			  std::enable_if_t<std::is_integral<ArgT>::value ||
+								   std::is_floating_point<ArgT>::value,
+							   bool> = true>
+	void setUniform(const std::string &name, ArgT val1, const Args... vals)
+	{
+		setUniform(name,
+				   std::array<ArgT, sizeof...(vals) + 1>({ val1, vals... }));
+	}
+
+	void prepare(const std::string &vertexShaderText,
+				 const std::string &fragmentShaderText);
+
+	void prepareFiles(const std::string &vertexShaderPath,
+					  const std::string &fragmentShaderPath);
+
+	static std::string getWokingGlslVersionString();
+
 protected:
 	bool link()
 	{
@@ -131,21 +139,6 @@ protected:
 
 	void bind() override;
 	virtual void unbind() override;
-};
-
-class GLShaderProgram : public GLProgram
-{
-public:
-	explicit GLShaderProgram(const std::string &name = "GLShaderProgram")
-		: GLProgram(name)
-	{
-	}
-
-	void prepare(const std::string &vertexShaderText,
-				 const std::string &fragmentShaderText);
-
-	void prepareFiles(const std::string &vertexShaderPath,
-					  const std::string &fragmentShaderPath);
 };
 
 } // namespace glwrapper

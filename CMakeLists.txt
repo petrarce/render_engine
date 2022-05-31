@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 # project name and supported languages
 project(graphics CXX C)
+include(default.cmake)
+include(cmake/modules/HelperMacros.cmake)
 
 # detect operating system and host processor
 message(STATUS "We are on a ${CMAKE_SYSTEM_NAME} system")
@@ -13,6 +15,8 @@ include(GNUInstallDirs)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_ASSETS_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_ASSETSDIR}"
+	CACHE STRING "Assets output directory")
 
 
 # project version
@@ -22,8 +26,6 @@ set(VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" CACHE PATH "Path to cmake modules")
 
-include(default.cmake)
-include(cmake/modules/HelperMacros.cmake)
 
 include_directories(AFTER .)
 include_directories(AFTER molecular-programgenerator)

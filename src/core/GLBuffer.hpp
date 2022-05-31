@@ -52,14 +52,14 @@ public:
 	template <class T>
 	void create(const std::vector<T> &buff, GLenum type)
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		glBufferData(BufferType, buff.size() * sizeof(T), buff.data(), type);
 	}
 
 	/// create mutable storage for buffer without storing data there
 	void create(GLuint size, GLenum type)
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		glBufferData(BufferType, size, nullptr, type);
 	}
 
@@ -70,14 +70,14 @@ public:
 	template <class T>
 	void createImmutable(const std::vector<T> &buff, GLenum type)
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		glBufferStorage(BufferType, buff.size() * sizeof(T), buff.data(), type);
 	}
 
 	/// Create immutable storage without initialisation
 	void createImmutable(size_t size, GLenum type)
 	{
-		GlObjectBinder bind(*this);
+		GLObjectBinder bind(*this);
 		glBufferStorage(BufferType, size, nullptr, type);
 	}
 

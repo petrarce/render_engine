@@ -5,13 +5,13 @@ namespace dream
 {
 namespace glwrapper
 {
-GlObjectBinder::GlObjectBinder(GLObject &object)
+GLObjectBinder::GLObjectBinder(GLObject &object)
 	: mGlObject(object)
 {
 	mGlObject.bind();
 }
 
-GlObjectBinder::~GlObjectBinder()
+GLObjectBinder::~GLObjectBinder()
 {
 	mGlObject.unbind();
 }
