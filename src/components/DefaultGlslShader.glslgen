@@ -14,7 +14,15 @@ out vec4 fragColor()
 @endsrc
 }
 
-vertex
+vertex prio=1
+out vec4 gl_Position(attr vec3 aVerPos)
+{
+@src
+	gl_Position = uProjection * uView * uModel * vec4(aVerPos, 1.f);
+@endsrc
+}
+
+vertex prio=0
 out vec4 gl_Position(attr vec3 aVerPos, mat4 uModel, mat4 uView, mat4 uProjection)
 {
 @src
@@ -22,7 +30,7 @@ out vec4 gl_Position(attr vec3 aVerPos, mat4 uModel, mat4 uView, mat4 uProjectio
 @endsrc
 }
 
-fragment
+fragment prio = 1
 out vec4 fragColor(vec4 uColor)
 {
 @src
@@ -30,3 +38,8 @@ out vec4 fragColor(vec4 uColor)
 @endsrc
 }
 
+fragment prio = 0
+out fragColor(sampler2D uScreenTexture)
+{
+	fragColor = texture(uScreenTexture, vec2(gl_FragCoord.x, gl_FragCoord.y));
+}

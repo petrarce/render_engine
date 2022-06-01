@@ -35,8 +35,8 @@ void GLTriangleDrawer::draw(const Scope &parentScope)
 					 Uniform<Eigen::Matrix4f>(Eigen::Matrix4f::Identity()));
 	currentScope.Set("uColor"_H,
 					 Uniform<std::array<float, 4>>({ 0.8f, 0.5f, 0.f, 1.f }));
-	mProgram.generateProgram(currentScope);
-	mProgram.prepareProgram(currentScope);
+	mProgram.generate(currentScope);
+	mProgram.prepare(currentScope);
 
 	dream::glwrapper::GLObjectBinder bindProgram(mProgram);
 	//	glwrapper::GlObjectBinder bindProgram(mProgram);

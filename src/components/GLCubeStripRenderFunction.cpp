@@ -54,8 +54,8 @@ void GLCubeStripRenderFunction::draw(const dream::components::Scope &scp)
 	currentScope.Set("uColor"_H,
 					 Uniform<std::array<float, 4>>({ 0.f, 0.5f, 0.2f, 1.f }));
 
-	mProg.generateProgram(currentScope);
-	mProg.prepareProgram(currentScope);
+	mProg.generate(currentScope);
+	mProg.prepare(currentScope);
 
 	dream::glwrapper::GLObjectBinder bindVAO(mVAO);
 	dream::glwrapper::GLObjectBinder bindProg(mProg);
