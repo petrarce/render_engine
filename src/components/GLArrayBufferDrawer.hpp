@@ -13,7 +13,7 @@ public:
 
 	void draw(const Scope &parentScope) override;
 
-private:
+protected:
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVAB;
 	GLMolecularProgram mProgram;

@@ -19,8 +19,8 @@ public:
 	{
 	}
 
-	void generateProgram(const Scope &scp);
-	void prepareProgram(const Scope &scp);
+	void generate(const Scope &scp);
+	void prepare(const Scope &scp);
 
 protected:
 	size_t mProgramHash = 0;

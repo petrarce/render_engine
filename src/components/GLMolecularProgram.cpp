@@ -29,7 +29,7 @@ namespace dream
 namespace components
 {
 
-void GLMolecularProgram::generateProgram(const Scope &scp)
+void GLMolecularProgram::generate(const Scope &scp)
 {
 	std::set<molecular::util::Hash> variables;
 	auto scomeMap = scp.ToMap();
@@ -48,7 +48,7 @@ void GLMolecularProgram::generateProgram(const Scope &scp)
 						  text.fragmentShader;
 	try
 	{
-		prepare(text.vertexShader, text.fragmentShader);
+		glwrapper::GLProgram::prepare(text.vertexShader, text.fragmentShader);
 	}
 	catch (const std::exception &e)
 	{
@@ -63,7 +63,7 @@ void GLMolecularProgram::generateProgram(const Scope &scp)
 		mUniforms.insert({ molecular::util::HashUtils::MakeHash(u), u });
 }
 
-void GLMolecularProgram::prepareProgram(const Scope &scp)
+void GLMolecularProgram::prepare(const Scope &scp)
 {
 	glwrapper::GLObjectBinder bind(*this);
 	for (const auto &u : mUniforms)
