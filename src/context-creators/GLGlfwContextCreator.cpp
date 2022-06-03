@@ -24,9 +24,11 @@ void GLGlfwContextCreator::createContext()
 {
 	// glfw: initialize and configure
 	// ------------------------------
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// enable vertical sync
+	glfwSwapInterval(1);
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -48,6 +50,10 @@ void GLGlfwContextCreator::createContext()
 	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		throw std::runtime_error("Failed to initialize GLAD");
+
+	const char *version =
+		reinterpret_cast<const char *>(glGetString(GL_VERSION));
+	std::cerr << "Using next OpenGL version: " << version << std::endl;
 }
 void GLGlfwContextCreator::destroyContext()
 {
