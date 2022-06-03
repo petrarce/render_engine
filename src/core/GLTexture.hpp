@@ -4,6 +4,7 @@
 #include <GLDefinitions.hpp>
 #include <GLObject.hpp>
 #include <GLObjectBinder.hpp>
+#include <GLTextureUnit.hpp>
 #include <vector>
 #include <array>
 namespace dream
@@ -276,6 +277,24 @@ public:
 	{
 	}
 
+	void attach(GLenum unit)
+	{
+		char bufTexBinder[sizeof(GLObjectBinder)];
+		char bufUnitBinder[sizeof(GLObjectBinder)];
+
+		GLTextureUnit texUnit(unit);
+
+		// bind texture after texture unit
+		// and unbind in same order to leave preserve texture attachment to this
+		// unit
+		GLObjectBinder *textureUnitBinder = new (bufUnitBinder)
+			GLObjectBinder(texUnit);
+		GLObjectBinder *textureBinder = new (bufTexBinder)
+			GLObjectBinder(*this);
+
+		textureUnitBinder->~GLObjectBinder();
+		textureBinder->~GLObjectBinder();
+	}
 #define PARAMETER_SETTER(Parameter, ParamValueType)                            \
 	void setParameter(ParamValueType val)                                      \
 	{                                                                          \
@@ -307,13 +326,15 @@ public:
 protected:
 	void bind() override
 	{
-		glGetIntegerv(TextureBindingType, &mObjectBeforeBinding);
+		mObjectsBeforeBinding.push_back(0);
+		glGetIntegerv(TextureBindingType, &mObjectsBeforeBinding.back());
 		glBindTexture(TextureType, mObjectId);
 	}
 
 	void unbind() override
 	{
-		glBindTexture(TextureType, mObjectBeforeBinding);
+		glBindTexture(TextureType, mObjectsBeforeBinding.back());
+		mObjectsBeforeBinding.pop_back();
 	}
 };
 

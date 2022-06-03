@@ -8,8 +8,10 @@ add_library(geometry-primitives STATIC
 
 target_include_directories(geometry-primitives PUBLIC . camera)
 
-add_executable(test-geometry-primitives
-	tests/TestCameraController.cpp)
+if(BUILD_TESTING)
+	add_executable(test-geometry-primitives
+		tests/TestCameraController.cpp)
 
-target_link_libraries(test-geometry-primitives PUBLIC geometry-primitives)
-add_test(NAME test-geometry-promitives COMMAND test-geometry-primitives)
+	target_link_libraries(test-geometry-primitives PUBLIC geometry-primitives)
+	add_test(NAME test-geometry-promitives COMMAND test-geometry-primitives)
+endif()

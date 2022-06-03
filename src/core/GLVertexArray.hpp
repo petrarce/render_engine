@@ -63,12 +63,14 @@ protected:
 
 	void bind() override
 	{
-		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &mObjectBeforeBinding);
+		mObjectsBeforeBinding.push_back(0);
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &mObjectsBeforeBinding.back());
 		glBindVertexArray(mObjectId);
 	}
 	void unbind() override
 	{
-		glBindVertexArray(mObjectBeforeBinding);
+		glBindVertexArray(mObjectsBeforeBinding.back());
+		mObjectsBeforeBinding.pop_back();
 	}
 };
 

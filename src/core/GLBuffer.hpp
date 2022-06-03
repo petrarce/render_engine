@@ -84,12 +84,14 @@ public:
 protected:
 	void bind() override
 	{
-		glGetIntegerv(BufferBindingType, &mObjectBeforeBinding);
+		mObjectsBeforeBinding.push_back(0);
+		glGetIntegerv(BufferBindingType, &mObjectsBeforeBinding.back());
 		glBindBuffer(BufferType, mObjectId);
 	}
 	void unbind() override
 	{
-		glBindBuffer(BufferType, mObjectBeforeBinding);
+		glBindBuffer(BufferType, mObjectsBeforeBinding.back());
+		mObjectsBeforeBinding.pop_back();
 	}
 };
 

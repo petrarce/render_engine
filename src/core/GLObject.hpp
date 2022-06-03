@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 
 #include <string>
+#include <vector>
 namespace dream
 {
 namespace glwrapper
@@ -12,7 +13,10 @@ class GLObject
 {
 public:
 	GLObject(const std::string &name = "")
-		: mName(name){};
+		: mName(name)
+	{
+		mObjectsBeforeBinding.reserve(10);
+	};
 	virtual ~GLObject() = default;
 
 	// make GL opject noncopyable and nonmovable
@@ -35,7 +39,7 @@ protected:
 	virtual void unbind() = 0;
 
 	GLuint mObjectId{ 0 };
-	GLint mObjectBeforeBinding{ 0 };
+	std::vector<GLint> mObjectsBeforeBinding;
 };
 
 } // namespace glwrapper

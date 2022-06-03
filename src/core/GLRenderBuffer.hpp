@@ -34,13 +34,15 @@ public:
 private:
 	void bind() override
 	{
-		glGetIntegerv(GL_RENDERBUFFER_BINDING, &mObjectBeforeBinding);
+		mObjectsBeforeBinding.push_back(0);
+		glGetIntegerv(GL_RENDERBUFFER_BINDING, &mObjectsBeforeBinding.back());
 		glBindRenderbuffer(GL_RENDERBUFFER, mObjectId);
 	}
 
 	void unbind() override
 	{
-		glBindRenderbuffer(GL_RENDERBUFFER, mObjectBeforeBinding);
+		glBindRenderbuffer(GL_RENDERBUFFER, mObjectsBeforeBinding.back());
+		mObjectsBeforeBinding.pop_back();
 	}
 };
 } // namespace glwrapper

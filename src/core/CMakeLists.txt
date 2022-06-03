@@ -19,18 +19,19 @@ add_library(opengl-wrapper-core STATIC
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)
 target_include_directories(opengl-wrapper-core PUBLIC .)
+if(BUILD_TESTING)
+	# Unit tests for opengl wrapper
+	find_package(OSMesa REQUIRED)
+	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+	add_executable(test-opengl-wrapper-core
+		tests/TestGlWrapper.cpp
+	)
 
-# Unit tests for opengl wrapper
-find_package(OSMesa REQUIRED)
-set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
-add_executable(test-opengl-wrapper-core
-	tests/TestGlWrapper.cpp
-)
+	target_link_libraries(test-opengl-wrapper-core PUBLIC
+		boost_unit_test_framework
+		OSMesa
+		opengl-wrapper-core
+	)
 
-target_link_libraries(test-opengl-wrapper-core PUBLIC
-	boost_unit_test_framework
-	OSMesa
-	opengl-wrapper-core
-)
-
-add_test(NAME test-opengl-wrapper-core COMMAND test-opengl-wrapper-core)
+	add_test(NAME test-opengl-wrapper-core COMMAND test-opengl-wrapper-core)
+endif()
