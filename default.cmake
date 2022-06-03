@@ -12,8 +12,8 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
 	CACHE STRING "Additional flags for CXX RelWIdhDebInfo" FORCE)
 
 set(CMAKE_CXX_FLAGS_RELEASELSAN
-	"-fsanitize=leak -g -O2" CACHE STRING "Releas with debug information with leak sanatizer")
+	"-fsanitize=leak -g -O2 -DGL_ENABLE_THROW_ON_ERROR" CACHE STRING "Releas with debug information with leak sanatizer")
 set(CMAKE_CXX_FLAGS_RELEASETSAN
-	"-fsanitize=thread -g -O2" CACHE STRING "Releas with debug information with thread sanatizer")
+	"-fsanitize=thread -g -O2 -DGL_ENABLE_THROW_ON_ERROR" CACHE STRING "Releas with debug information with thread sanatizer")
 
 set(CMAKE_INSTALL_ASSETSDIR "assets" CACHE STRING "directory where all assets are deployed")
