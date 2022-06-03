@@ -13,6 +13,10 @@ class GLObjectBinder;
 class GLTextureUnit : public GLObject
 {
 public:
+	enum TextureUnit
+	{
+		Texture0 = GL_TEXTURE0,
+	};
 	GLTextureUnit(GLenum unitNumber, const std::string &name = "")
 		: GLObject(name)
 	{
@@ -31,12 +35,14 @@ public:
 protected:
 	void bind() override
 	{
-		glGetIntegerv(GL_ACTIVE_TEXTURE, &mObjectBeforeBinding);
+		mObjectsBeforeBinding.push_back(0);
+		glGetIntegerv(GL_ACTIVE_TEXTURE, &mObjectsBeforeBinding.back());
 		glActiveTexture(mObjectId);
 	}
 	void unbind() override
 	{
-		glActiveTexture(mObjectBeforeBinding);
+		glActiveTexture(mObjectsBeforeBinding.back());
+		mObjectsBeforeBinding.pop_back();
 	}
 };
 

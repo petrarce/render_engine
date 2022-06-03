@@ -32,8 +32,6 @@ public:
 	void attach(AttachmentPoint attachment, GLTexture2D &texture,
 				int mipmapLevel = 0);
 	void attach(AttachmentPoint attachment, GLRenderBuffer &renderBuffer);
-	bool isComplete();
-
 	GLint getId() const
 	{
 		return mObjectId;
@@ -42,20 +40,43 @@ public:
 private:
 	void bind() override;
 	void unbind() override;
+	struct FramebufferBindings
+	{
+		GLint draw;
+		GLint read;
+	};
 
-	GLint mDrawFBBinding{ 0 };
-	GLint mReadFBBinding{ 0 };
-	GLint mReadDrawFBBinding{ 0 };
+	std::vector<FramebufferBindings> mDrawReadFBsBeforeBinding;
 };
 
 template <GLenum BindingType>
 class GLFramebufferBinder : public GLObjectBinder
 {
 public:
+	enum FramebufferState
+	{
+		Complete			 = GL_FRAMEBUFFER_COMPLETE,
+		Undefined			 = GL_FRAMEBUFFER_UNDEFINED,
+		IncompleteAttachment = GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT,
+		IncompleteMissingAttachment =
+			GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT,
+		IncompleteDrawBuffer   = GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER,
+		IncompleteReadBuffer   = GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER,
+		Insupporte			   = GL_FRAMEBUFFER_UNSUPPORTED,
+		IncompleteMultisample  = GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE,
+		IncompleteLayerTargets = GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS,
+	};
+
 	GLFramebufferBinder(GLFrameBufferObject &fbo)
 		: GLObjectBinder(fbo)
 	{
 		glBindFramebuffer(BindingType, fbo.getId());
+	}
+
+	FramebufferState state()
+	{
+		return static_cast<FramebufferState>(
+			glCheckFramebufferStatus(BindingType));
 	}
 };
 

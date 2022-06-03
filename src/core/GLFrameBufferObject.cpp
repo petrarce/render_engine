@@ -7,14 +7,20 @@ namespace glwrapper
 
 void GLFrameBufferObject::bind()
 {
-	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &mReadFBBinding);
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &mDrawFBBinding);
+	mDrawReadFBsBeforeBinding.push_back({ 0, 0 });
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING,
+				  &mDrawReadFBsBeforeBinding.back().read);
+	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING,
+				  &mDrawReadFBsBeforeBinding.back().draw);
 }
 
 void GLFrameBufferObject::unbind()
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mDrawFBBinding);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, mReadFBBinding);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,
+					  mDrawReadFBsBeforeBinding.back().draw);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER,
+					  mDrawReadFBsBeforeBinding.back().read);
+	mDrawReadFBsBeforeBinding.pop_back();
 }
 
 void GLFrameBufferObject::attach(AttachmentPoint attachment,
@@ -31,12 +37,8 @@ void GLFrameBufferObject::attach(AttachmentPoint attachment,
 {
 	GLObjectBinder bindRBO(renderBuffer);
 	GLDrawFramebufferBinder bindFBO(*this);
-}
-
-bool GLFrameBufferObject::isComplete()
-{
-	GLReadDrawFramebufferBinder bind(*this);
-	return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, attachment, GL_RENDERBUFFER,
+							  renderBuffer.getId());
 }
 
 } // namespace glwrapper

@@ -15,13 +15,15 @@ GLProgram::~GLProgram()
 
 void GLProgram::bind()
 {
-	glGetIntegerv(GL_CURRENT_PROGRAM, &mObjectBeforeBinding);
+	mObjectsBeforeBinding.push_back(0);
+	glGetIntegerv(GL_CURRENT_PROGRAM, &mObjectsBeforeBinding.back());
 	glUseProgram(mObjectId);
 }
 
 void GLProgram::unbind()
 {
-	glUseProgram(mObjectBeforeBinding);
+	glUseProgram(mObjectsBeforeBinding.back());
+	mObjectsBeforeBinding.pop_back();
 }
 
 void GLProgram::setUniform(const std::string &name, int val)

@@ -89,16 +89,17 @@ private:
 			  { GL_TEXTURE_BINDING_CUBE_MAP, 0 },
 			  { GL_TEXTURE_BINDING_RECTANGLE, 0 },
 			  { GL_ACTIVE_TEXTURE, 0 },
+			  { GL_FRAMEBUFFER_BINDING, 0 },
+			  { GL_READ_FRAMEBUFFER_BINDING, 0 },
+			  { GL_DRAW_FRAMEBUFFER_BINDING, 0 },
+			  { GL_RENDERBUFFER_BINDING, 0 },
 			  //		{GL_DISPATCH_INDIRECT_BUFFER_BINDING, 0},
-			  //		{GL_DRAW_FRAMEBUFFER_BINDING, 0},
 			  //		{GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, 0},
 			  //		{GL_MAX_UNIFORM_BUFFER_BINDINGS, 0},
 			  //		{GL_MAX_VERTEX_ATTRIB_BINDINGS, 0},
 			  //		{GL_PIXEL_PACK_BUFFER_BINDING, 0},
 			  //		{GL_PIXEL_UNPACK_BUFFER_BINDING, 0},
 			  //		{GL_PROGRAM_PIPELINE_BINDING, 0},
-			  //		{GL_READ_FRAMEBUFFER_BINDING, 0},
-			  //		{GL_RENDERBUFFER_BINDING, 0},
 			  //		{GL_SAMPLER_BINDING, 0},
 			  //		{GL_SHADER_STORAGE_BUFFER_BINDING, 0},
 			  //		{GL_TRANSFORM_FEEDBACK_BUFFER_BINDING, 0},
@@ -184,22 +185,53 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 		std::make_shared<GLTextureUnit>(GL_TEXTURE1),
 		std::make_shared<GLTextureUnit>(GL_TEXTURE2),
 		std::make_shared<GLTextureUnit>(GL_TEXTURE3),
+		std::make_shared<GLRenderBuffer>(),
 	};
 	for (auto obj : objects)
 	{
-
-		BOOST_TEST(initialState == stateProvider.updateState());
-		std::cout << std::string(stateProvider) << std::endl;
 		{
-
 			GLObjectBinder bind(*obj);
-			BOOST_TEST(initialState != stateProvider.updateState());
+			auto intermediateState = stateProvider.updateState();
+			BOOST_TEST(initialState != intermediateState);
+			{
+				GLObjectBinder bind2(*obj);
+				BOOST_TEST(intermediateState == stateProvider.updateState());
+			}
 			std::cout << std::string(stateProvider) << std::endl;
 		}
 
 		BOOST_TEST(initialState == stateProvider.updateState());
 		std::cout << std::string(stateProvider) << std::endl << std::endl;
 	}
+
+	GLFrameBufferObject fbo;
+	GLint readFB = 0;
+	GLint drawFB = 0;
+	BOOST_TEST(initialState == stateProvider.updateState());
+	{
+		GLReadDrawFramebufferBinder bind(fbo);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFB);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFB);
+		BOOST_TEST(initialState.at(GL_READ_FRAMEBUFFER_BINDING) != readFB);
+		BOOST_TEST(initialState.at(GL_DRAW_FRAMEBUFFER_BINDING) != drawFB);
+	}
+	BOOST_TEST(initialState == stateProvider.updateState());
+	{
+		GLDrawFramebufferBinder bind(fbo);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFB);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFB);
+		BOOST_TEST(initialState.at(GL_READ_FRAMEBUFFER_BINDING) == readFB);
+		BOOST_TEST(initialState.at(GL_DRAW_FRAMEBUFFER_BINDING) != drawFB);
+	}
+	BOOST_TEST(initialState == stateProvider.updateState());
+	{
+		GLReadFramebufferBinder bind(fbo);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readFB);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawFB);
+		BOOST_TEST(initialState.at(GL_READ_FRAMEBUFFER_BINDING) != readFB);
+		BOOST_TEST(initialState.at(GL_DRAW_FRAMEBUFFER_BINDING) == drawFB);
+	}
+	BOOST_TEST(initialState == stateProvider.updateState());
 }
 
 class TestGLProgram : public GLProgram
@@ -358,13 +390,18 @@ BOOST_AUTO_TEST_CASE(TextureParameterSetter)
 	BOOST_TEST(
 		texture.getParameter<GLTexture2D::TextureParameters::TextureWrapT>() ==
 		GLTexture2D::ValueWrapT::MirrorClampToEdgeT);
+
+	auto currentState = GLContextState::instance().updateState();
+	texture.attach(GL_TEXTURE3);
+	BOOST_TEST(currentState == GLContextState::instance().updateState());
 }
 
 BOOST_AUTO_TEST_CASE(TestFramebuffer)
 {
 	GLFrameBufferObject fbo;
+	GLReadDrawFramebufferBinder bindFBO(fbo);
 
-	BOOST_TEST(!fbo.isComplete());
+	BOOST_TEST(bindFBO.state() != GLReadDrawFramebufferBinder::Complete);
 
 	GLTexture2D texture;
 	texture.create<2>(0, GLTexture2D::InternalFormat::Rgba,
@@ -374,8 +411,6 @@ BOOST_AUTO_TEST_CASE(TestFramebuffer)
 	rbo.create(100, 100, GL_DEPTH24_STENCIL8);
 	fbo.attach(GLFrameBufferObject::AttachmentPoint::DepthStencil, rbo);
 
-	BOOST_TEST(fbo.isComplete());
-
-	GLReadDrawFramebufferBinder bindFBO(fbo);
+	BOOST_TEST(bindFBO.state() == GLReadDrawFramebufferBinder::Complete);
 }
 BOOST_AUTO_TEST_SUITE_END()
