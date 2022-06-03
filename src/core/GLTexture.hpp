@@ -285,7 +285,7 @@ public:
 		GLTextureUnit texUnit(unit);
 
 		// bind texture after texture unit
-		// and unbind in same order to leave preserve texture attachment to this
+		// and unbind in same order to preserve texture attachment to this
 		// unit
 		GLObjectBinder *textureUnitBinder = new (bufUnitBinder)
 			GLObjectBinder(texUnit);
