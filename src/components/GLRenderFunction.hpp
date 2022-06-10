@@ -32,10 +32,19 @@ public:
 	GLMultipleCaleeRenderFunction(const CaleeArray &calees);
 
 	void setCalees(const CaleeArray &calees);
+	void addCalee(CaleePtr calee)
+	{
+		mCalees.push_back(calee);
+	}
+	void removeCalee(CaleePtr calee)
+	{
+		std::remove_if(mCalees.begin(), mCalees.end(),
+					   [calee](CaleePtr item) { return item == calee; });
+	}
 
 	void draw(const Scope &parentScope);
 
-private:
+protected:
 	CaleeArray mCalees;
 };
 } // namespace components
