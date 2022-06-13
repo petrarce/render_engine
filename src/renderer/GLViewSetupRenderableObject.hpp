@@ -12,6 +12,13 @@ namespace components
 class GLViewSetupRenderFunction : public GLMultipleCaleeRenderFunction
 {
 public:
+	GLViewSetupRenderFunction()
+		: GLMultipleCaleeRenderFunction()
+	{
+	}
+	virtual ~GLViewSetupRenderFunction()
+	{
+	}
 	void draw(const Scope &parentScope) override
 	{
 		Scope viewScope(parentScope);
@@ -86,7 +93,7 @@ public:
 	}
 
 private:
-	void synchroniseSelf() override
+	void syncSelf() override
 	{
 		auto viewRenderFunction =
 			std::static_pointer_cast<components::GLViewSetupRenderFunction>(

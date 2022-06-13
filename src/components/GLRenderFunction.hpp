@@ -29,7 +29,10 @@ class GLMultipleCaleeRenderFunction : public GLRenderFunction
 public:
 	using CaleePtr	 = std::shared_ptr<GLRenderFunction>;
 	using CaleeArray = std::vector<CaleePtr>;
-	GLMultipleCaleeRenderFunction(const CaleeArray &calees);
+	GLMultipleCaleeRenderFunction(const CaleeArray &calees = {});
+	virtual ~GLMultipleCaleeRenderFunction()
+	{
+	}
 
 	void setCalees(const CaleeArray &calees);
 	void addCalee(CaleePtr calee)

@@ -8,6 +8,7 @@ set (LIBS
 	opengl-wrapper-core
 	geometry-primitives
 	gl-components
+	gl-renderer
 )
 add_executable(demo1
 	demo1.cpp)

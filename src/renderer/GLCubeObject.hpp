@@ -2,14 +2,16 @@
 #include <GLWrapperCore>
 #include <GLComponents>
 #include <GLRenderableObject.hpp>
+#include <GLTransformedObject.hpp>
 namespace dream
 {
 namespace components
 {
-class GLCubeRenderFunction : public GLMultipleCaleeRenderFunction
+class GLCubeRenderFunction : public GLTransformedRenderFunction
 {
+public:
 	GLCubeRenderFunction()
-		: GLMultipleCaleeRenderFunction({})
+		: GLTransformedRenderFunction()
 	{
 		mVAO.createAttribute(
 			glwrapper::GLVertexArray::AttributeSpecification{
@@ -23,14 +25,18 @@ class GLCubeRenderFunction : public GLMultipleCaleeRenderFunction
 			},
 			mVBO);
 	}
-	~GLCubeRenderFunction();
-	void draw(const Scope &parentScope)
+	virtual ~GLCubeRenderFunction()
+	{
+	}
+	void drawSelf(const Scope &parentScope)
 	{
 		Scope currentScope(parentScope);
 		currentScope.Set(molecular::util::HashUtils::MakeHash("aVerPos"),
 						 Attribute<Eigen::Vector3f>());
 		currentScope.Set(molecular::util::HashUtils::MakeHash("uColor"),
-						 Uniform<Eigen::Vector4f>(mColor));
+						 Uniform<std::array<float, 4>>(std::array<float, 4>(
+							 { mColor(0), mColor(1), mColor(2), mColor(3) })));
+
 		mProgram.generate(currentScope);
 		mProgram.prepare(currentScope);
 
@@ -64,7 +70,7 @@ private:
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVBO;
 	components::GLMolecularProgram mProgram;
-	Eigen::Vector3f mColor;
+	Eigen::Vector4f mColor{ 0.3, 0.4, 0.2, 0.5 };
 };
 } // namespace components
 } // namespace dream
@@ -73,15 +79,33 @@ namespace dream
 {
 namespace renderer
 {
-class GLCubeObject : protected GLRenderableObject
+class GLCubeObject : public GLTransformedObject
 {
+public:
 	GLCubeObject(const std::string &name = "GLCubeObject")
-		: GLRenderableObject(name)
+		: GLTransformedObject(name)
 	{
+		auto rf = std::make_shared<components::GLCubeRenderFunction>();
+		mRenderFunction =
+			std::static_pointer_cast<components::GLMultipleCaleeRenderFunction>(
+				rf);
+	}
+	void syncSelf() override
+	{
+		GLTransformedObject::syncSelf();
+		auto cubeRenderFunction =
+			std::static_pointer_cast<components::GLCubeRenderFunction>(
+				mRenderFunction);
+		if (mSizeUpdated)
+		{
+			cubeRenderFunction->updateCube(mSize);
+			mSizeUpdated = false;
+		}
 	}
 
 private:
-	Eigen::Vector3f mSize;
+	Eigen::Vector3f mSize{ 1, 1, 1 };
+	bool mSizeUpdated{ true };
 };
 } // namespace renderer
 } // namespace dream

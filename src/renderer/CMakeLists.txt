@@ -1,6 +1,9 @@
 add_library(gl-renderer STATIC
 	GLRenderableObject.hpp
-	GLViewSetupRenderableObject.hpp)
+	GLViewSetupRenderableObject.hpp
+	GLCubeObject.hpp
+	GLTransformedObject.hpp
+	GLRenderer)
 
 target_link_libraries(gl-renderer PUBLIC gl-components)
 target_include_directories(gl-renderer PUBLIC .)

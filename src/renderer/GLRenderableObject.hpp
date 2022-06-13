@@ -13,12 +13,12 @@ public:
 	GLRenderableObject(const std::string &name = "GLRenderableObject")
 		: mName(name)
 	{
+		mRenderFunction =
+			std::make_shared<components::GLMultipleCaleeRenderFunction>();
 	}
 	~GLRenderableObject()
 	{
-		std::cout << mName + " about to be destructed" << std::endl;
 		clearChildren();
-		std::cout << mName + " destructed" << std::endl;
 	}
 
 	const std::vector<std::shared_ptr<GLRenderableObject>> &children() const
@@ -34,13 +34,22 @@ public:
 		return mRenderFunction;
 	}
 
-	void synchronize()
+	virtual void sync()
 	{
-		synchroniseSelf();
-		for (auto c : mChildren) c->synchronize();
+		if (mSynchronized)
+			return;
+		syncSelf();
+		mSynchronized = true;
+		for (auto c : mChildren) c->sync();
 	}
 
-	virtual void synchroniseSelf(){};
+	void resetSync()
+	{
+		if (!mSynchronized)
+			return;
+		mSynchronized = false;
+		for (auto c : mChildren) c->resetSync();
+	}
 
 	void addChild(std::shared_ptr<GLRenderableObject> child)
 	{
@@ -72,9 +81,12 @@ public:
 	}
 
 protected:
+	virtual void syncSelf(){};
+
 	std::string mName;
 	std::vector<std::shared_ptr<GLRenderableObject>> mChildren;
 	std::shared_ptr<components::GLMultipleCaleeRenderFunction> mRenderFunction;
+	bool mSynchronized{ false };
 };
 
 } // namespace renderer

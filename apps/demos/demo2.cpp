@@ -1,6 +1,7 @@
 #include <GLWrapperCore>
 #include <GLGeometryObjects>
 #include <GLComponents>
+#include <GLRenderer>
 #include <GLGlfwContextCreator.hpp>
 #include "DemoInfrastructure.hpp"
 #include <string>
@@ -8,6 +9,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+using namespace dream::renderer;
+using namespace dream::components;
+using namespace dream::glwrapper;
 class DrawScreenRectangle
 {
 public:
@@ -77,10 +82,17 @@ int main()
 	DemoInfrastructure &infra = DemoInfrastructure::instance();
 
 	//===================initialize opengl objects =========
-	dream::components::GLMultipleCaleeRenderFunction multipleDraws({
-		std::make_shared<dream::components::GLTriangleDrawer>(),
-		std::make_shared<dream::components::GLCubeStripRenderFunction>(),
-	});
+	//	dream::components::GLMultipleCaleeRenderFunction multipleDraws({
+	//		std::make_shared<dream::components::GLTriangleDrawer>(),
+	//		std::make_shared<dream::components::GLCubeStripRenderFunction>(),
+	//	});
+	std::shared_ptr<GLViewSetupRenderableObject> view(
+		new GLViewSetupRenderableObject());
+	std::shared_ptr<GLRenderableObject> meshScene(
+		new GLRenderableObject("MeshSceneRenderObject"));
+	std::shared_ptr<GLCubeObject> cube(new GLCubeObject("CubeRenderObject"));
+	meshScene->addChild(std::static_pointer_cast<GLRenderableObject>(cube));
+	view->addChild(meshScene);
 	dream::components::Scope rootScope;
 	{
 		using namespace dream::components;
@@ -116,7 +128,11 @@ int main()
 				std::to_string(bindFBO.state()));
 	}
 
-	//==================end opengl state initialization===================
+	view->setFarPlane(1000.f);
+	view->setNearPlane(0.1f);
+	view->setFov(45.f);
+
+	//=================20=end opengl state initialization===================
 
 	// glfw: initialize and configure
 	// ------------------------------
@@ -132,20 +148,23 @@ int main()
 
 			glEnable(GL_DEPTH_TEST);
 			glViewport(0, 0, 2000, 2000);
+			view->setAspectRatio(2000 / 2000);
 			glClearColor(0.2345f, 0.492f, 0.717f, 1.f);
 			//		glClearDepth(1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//===============Rendering loop=====================
-
-			glm::mat4 p =
-				glm::perspective(glm::radians(45.0f), 1.f, 0.1f, 1000.0f);
-			Eigen::Matrix4f projectionE(&p[0][0]);
-			rootScope.Set<Uniform<Eigen::Matrix4f>>(
-				"uProjection"_H, Uniform<Eigen::Matrix4f>(projectionE));
-			rootScope.Set<Uniform<Eigen::Matrix4f>>(
-				"uView"_H,
-				Uniform<Eigen::Matrix4f>(controller.camera.toViewTransform()));
-			multipleDraws.draw(rootScope);
+			static int frame = 0;
+			frame++;
+			Eigen::Matrix4f cubeTransform = Eigen::Matrix4f::Identity();
+			cubeTransform.block<3, 3>(0, 0) =
+				Eigen::AngleAxisf(frame / 180.f * M_PI / 5.f,
+								  Eigen::Vector3f(0, 0, 1))
+					.matrix();
+			cube->setTransform(cubeTransform);
+			view->setCamera(controller.camera);
+			view->resetSync();
+			view->sync();
+			view->renderFunction()->draw(rootScope);
 		}
 		glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
 		glDisable(GL_DEPTH_TEST);
