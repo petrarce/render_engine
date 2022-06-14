@@ -48,20 +48,20 @@ public:
 	void updateCube(const Eigen::Vector3f &size)
 	{
 		std::vector<float> cubeStrip = {
-			-size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-top-left
-			 size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-top-right
-			-size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-bottom-left
-			 size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-bottom-right
-			 size(0)/2.f,	 size(1)/2.f,	-size(2)/2.f, // Back-bottom-right
-			 size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-top-right
-			 size(0)/2.f,	 size(1)/2.f,	-size(2)/2.f, // Back-top-right
-			-size(0)/2.f,	 size(1)/2.f,	 size(2)/2.f,  // Front-top-left
-			-size(0)/2.f,	 size(1)/2.f,	-size(2)/2.f, // Back-top-left
-			-size(0)/2.f,	-size(1)/2.f,	 size(2)/2.f,  // Front-bottom-left
-			-size(0)/2.f,	-size(1)/2.f,	-size(2)/2.f, // Back-bottom-left
-			 size(0)/2.f,	-size(1)/2.f,	-size(2)/2.f, // Back-bottom-right
-			-size(0)/2.f,	 size(1)/2.f,	-size(2)/2.f, // Back-top-left
-			 size(0)/2.f,	 size(1)/2.f,	-size(2)/2.f  // Back-top-right
+			-size(0)/2,	 size(1)/2,	 size(2)/2,     // Front-top-left
+			 size(0)/2,	 size(1)/2,	 size(2)/2,      // Front-top-right
+			-size(0)/2,	-size(1)/2,	 size(2)/2,    // Front-bottom-left
+			 size(0)/2,	-size(1)/2,	 size(2)/2,     // Front-bottom-right
+			 size(0)/2,	-size(1)/2,	-size(2)/2,    // Back-bottom-right
+			 size(0)/2,	 size(1)/2,	 size(2)/2,      // Front-top-right
+			 size(0)/2,	 size(1)/2,	-size(2)/2,     // Back-top-right
+			-size(0)/2,	 size(1)/2,	 size(2)/2,     // Front-top-left
+			-size(0)/2,	 size(1)/2,	-size(2)/2,    // Back-top-left
+			-size(0)/2,	-size(1)/2,	 size(2)/2,    // Front-bottom-left
+			-size(0)/2,	-size(1)/2,	-size(2)/2,   // Back-bottom-left
+			 size(0)/2,	-size(1)/2,	-size(2)/2,    // Back-bottom-right
+			-size(0)/2,	 size(1)/2,	-size(2)/2,    // Back-top-left
+			 size(0)/2,	 size(1)/2,	-size(2)/2      // Back-top-right		};
 		};
 		mVBO.create(cubeStrip, GL_STATIC_DRAW);
 	}

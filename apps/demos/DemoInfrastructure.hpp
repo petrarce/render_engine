@@ -5,6 +5,8 @@
 #include <Eigen/Dense>
 
 static dream::geometry::GLCameraController controller;
+static bool rotationEnabled	   = false;
+static bool lastPositionCached = false;
 
 class DemoInfrastructure
 	: public dream::components::Singleton<DemoInfrastructure>
@@ -50,7 +52,40 @@ private:
 				glfwSetScrollCallback),
 			[](GLFWwindow *window, double dx, double dy)
 			{ controller.camera.distance -= dy; });
-
+		glfwContext.processWindow<void, GLFWmousebuttonfun>(
+			std::function<void(GLFWwindow *, GLFWmousebuttonfun)>(
+				glfwSetMouseButtonCallback),
+			[](GLFWwindow *window, int button, int action, int mods)
+			{
+				std::map<int, std::function<void()>> pressActions = {
+					{ GLFW_MOUSE_BUTTON_1,
+					  []()
+					  {
+						  rotationEnabled	 = true;
+						  lastPositionCached = false;
+					  } }
+				};
+				std::map<int, std::function<void()>> releaseActins = {
+					{ GLFW_MOUSE_BUTTON_1,
+					  []()
+					  {
+						  rotationEnabled	 = false;
+						  lastPositionCached = false;
+					  } }
+				};
+				if (action == GLFW_PRESS)
+				{
+					if (pressActions.find(button) == pressActions.end())
+						return;
+					pressActions.at(button)();
+				}
+				if (action == GLFW_RELEASE)
+				{
+					if (releaseActins.find(button) == releaseActins.end())
+						return;
+					releaseActins.at(button)();
+				}
+			});
 		glfwContext.processWindow<void, GLFWkeyfun>(
 			std::function<void(GLFWwindow *, GLFWkeyfun)>(glfwSetKeyCallback),
 			[](GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -85,12 +120,28 @@ private:
 						[&cameraViewDirection]()
 						{ controller.cameraMove(-1.f * cameraViewDirection); },
 					},
+					{
+						GLFW_MOUSE_BUTTON_1,
+						[]() { rotationEnabled = true; },
+					}
+				};
+				std::map<int, std::function<void()>> releaseActins{ {
+					GLFW_MOUSE_BUTTON_1,
+					[]() { rotationEnabled = false; },
+				}
+
 				};
 				if (action == GLFW_PRESS)
 				{
 					if (pressActions.find(key) == pressActions.end())
 						return;
 					pressActions.at(key)();
+				}
+				if (action == GLFW_RELEASE)
+				{
+					if (releaseActins.find(key) == releaseActins.end())
+						return;
+					releaseActins.at(key)();
 				}
 			});
 		glfwContext.processWindow<void, GLFWcursorposfun>(
@@ -100,13 +151,14 @@ private:
 			{
 				static double lastPosX;
 				static double lastPosY;
-				static bool initialized = false;
+				if (!rotationEnabled)
+					return;
 
-				if (!initialized)
+				if (!lastPositionCached)
 				{
-					lastPosX	= posX;
-					lastPosY	= posY;
-					initialized = true;
+					lastPosX		   = posX;
+					lastPosY		   = posY;
+					lastPositionCached = true;
 				}
 
 				double dx = posX - lastPosX;
@@ -123,4 +175,5 @@ private:
 	dream::glcontext::GLGlfwContextCreator glfwContext;
 	std::function<void()> mRenderFunction;
 	dream::glcontext::GLContextBinder mContextBinder;
+	bool mRotateEnabled = false;
 };

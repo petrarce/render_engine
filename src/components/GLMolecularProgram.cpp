@@ -53,8 +53,6 @@ void GLMolecularProgram::generate(const Scope &scp)
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		std::cerr << "Vertex Shader:\n" << text.vertexShader << std::endl;
-		std::cerr << "Fragment Shader:\n" << text.fragmentShader << std::endl;
 	}
 
 	mUniforms.clear();

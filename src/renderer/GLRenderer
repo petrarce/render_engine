@@ -2,3 +2,6 @@
 #include <GLRenderableObject.hpp>
 #include <GLViewSetupRenderableObject.hpp>
 #include <GLCubeObject.hpp>
+#include <GLAssetManager.hpp>
+#include <GLScreenTextureRenderObject.hpp>
+#include <GLMaterial.hpp>

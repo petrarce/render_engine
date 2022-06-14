@@ -41,6 +41,26 @@ public:
 		createAttribute(spec, args...);
 	}
 
+	unsigned int size()
+	{
+		GLint bufSize = 0;
+		GLObjectBinder bind(*this);
+		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufSize);
+		return bufSize;
+	}
+
+	void enableAttribute(GLint location)
+	{
+		GLObjectBinder bind(*this);
+		glEnableVertexAttribArray(location);
+	}
+
+	void disableAttribute(GLint location)
+	{
+		GLObjectBinder bind(*this);
+		glDisableVertexAttribArray(location);
+	}
+
 protected:
 	void createAttribute(const AttributeSpecification &spec)
 	{

@@ -10,3 +10,5 @@ set(CMAKE_CXX_FLAGS_RELEASETSAN "-fsanitize=thread -g -O2 -DGL_ENABLE_THROW_ON_E
 set(CMAKE_CXX_FLAGS_DEBUGCOVERAGE "-g -O0 -DGL_ENABLE_THROW_ON_ERROR -fprofile-arcs -ftest-coverage"
 	CACHE STRING "Code coverage build configuration" FORCE)
 set(CMAKE_INSTALL_ASSETSDIR "assets" CACHE STRING "directory where all assets are deployed")
+
+set(CMAKE_CXX_STANDARD 17 CACHE INT "C++ standard version")

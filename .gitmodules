@@ -16,3 +16,6 @@
 [submodule "apps/LearnOpenGL"]
 	path = apps/LearnOpenGL
 	url = https://github.com/petrarce/LearnOpenGL.git
+[submodule "3rdparty/stb/stb_repo"]
+	path = 3rdparty/stb/stb_repo
+	url = https://github.com/nothings/stb.git
