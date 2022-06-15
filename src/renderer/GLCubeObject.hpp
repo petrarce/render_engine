@@ -28,17 +28,13 @@ public:
 	virtual ~GLCubeRenderFunction()
 	{
 	}
-	void drawSelf(const Scope &parentScope)
+	void draw(const Scope &parentScope) override
 	{
-		Scope currentScope(parentScope);
-		currentScope.Set(molecular::util::HashUtils::MakeHash("aVerPos"),
-						 Attribute<Eigen::Vector3f>());
-		currentScope.Set(molecular::util::HashUtils::MakeHash("uColor"),
-						 Uniform<std::array<float, 4>>(std::array<float, 4>(
-							 { mColor(0), mColor(1), mColor(2), mColor(3) })));
+		Scope scope(parentScope);
+		prepareScope(scope);
 
-		mProgram.generate(currentScope);
-		mProgram.prepare(currentScope);
+		mProgram.generate(scope);
+		mProgram.prepare(scope);
 
 		glwrapper::GLObjectBinder bindVAO(mVAO);
 		glwrapper::GLObjectBinder bindProgram(mProgram);
@@ -67,6 +63,15 @@ public:
 	}
 
 private:
+	void prepareScope(Scope &scope) override
+	{
+		GLTransformedRenderFunction::prepareScope(scope);
+		scope.Set(molecular::util::HashUtils::MakeHash("aVerPos"),
+				  Attribute<Eigen::Vector3f>());
+		scope.Set(molecular::util::HashUtils::MakeHash("uColor"),
+				  Uniform<std::array<float, 4>>(std::array<float, 4>(
+					  { mColor(0), mColor(1), mColor(2), mColor(3) })));
+	}
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVBO;
 	components::GLMolecularProgram mProgram;

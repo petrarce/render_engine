@@ -10,6 +10,11 @@ class GLRenderFunction
 {
 public:
 	virtual void draw(const Scope &parentScope) = 0;
+
+protected:
+	virtual void prepareScope(Scope &scope)
+	{
+	}
 };
 
 class GLSingleCaleeRenderFunction : public GLRenderFunction

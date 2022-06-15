@@ -61,7 +61,7 @@ public:
 				throw std::runtime_error(
 					"Failed to initialize screen renderbuffer target error: " +
 					std::to_string(bindFBO.state()));
-			for (auto c : mCalees) c->draw(scope);
+			GLMultipleCaleeRenderFunction::draw(scope);
 		}
 		mScreenRectangle.draw(scope);
 	}
@@ -93,7 +93,7 @@ public:
 	}
 
 private:
-	class DrawScreenRectangle
+	class DrawScreenRectangle : public GLRenderFunction
 	{
 	public:
 		DrawScreenRectangle()
@@ -133,18 +133,12 @@ private:
 				},
 				mVAB, mEAB);
 		}
-		void draw(const dream::components::Scope &scp)
+		void draw(const dream::components::Scope &scp) override
 		{
 			using namespace molecular::util;
 
 			dream::components::Scope myScope(scp);
-
-			myScope.Set("uScreenTexture"_H, dream::components::Uniform<int>(1));
-			myScope.Set("aVerPos"_H,
-						dream::components::Attribute<Eigen::Vector3f>());
-			myScope.Set("aTexCoord"_H,
-						dream::components::Attribute<Eigen::Vector2f>());
-
+			prepareScope(myScope);
 			auto screenTexture =
 				GLAssetManager<glwrapper::GLTexture2D>::getAsset(
 					"ScreenTexture"_H);
@@ -166,6 +160,17 @@ private:
 			dream::glwrapper::GLObjectBinder binVAO(mVAO);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		}
+
+	protected:
+		void prepareScope(components::Scope &scope) override
+		{
+			using namespace molecular::util;
+			scope.Set("uScreenTexture"_H, dream::components::Uniform<int>(1));
+			scope.Set("aVerPos"_H,
+					  dream::components::Attribute<Eigen::Vector3f>());
+			scope.Set("aTexCoord"_H,
+					  dream::components::Attribute<Eigen::Vector2f>());
 		}
 		dream::glwrapper::GLElementArrayBuffer mEAB;
 		dream::glwrapper::GLArrayBuffer mVAB;

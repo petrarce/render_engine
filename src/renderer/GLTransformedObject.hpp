@@ -22,19 +22,9 @@ public:
 
 	void draw(const Scope &parentScope) override
 	{
-		using namespace molecular::util;
 		Scope scope(parentScope);
-		if (scope.Has("uModel"_H))
-		{
-			auto transform = scope.Get<Uniform<Eigen::Matrix4f>>("uModel"_H);
-			transform.value() *= mTransform;
-			scope.Set<Uniform<Eigen::Matrix4f>>("uModel"_H, transform);
-		}
-		else
-			scope.Set<Uniform<Eigen::Matrix4f>>("uModel"_H, mTransform);
-
-		drawSelf(scope);
-		for (auto c : mCalees) c->draw(scope);
+		prepareScope(scope);
+		GLMultipleCaleeRenderFunction::draw(scope);
 	}
 
 	const Eigen::Matrix4f &transform() const
@@ -47,7 +37,19 @@ public:
 	}
 
 protected:
-	virtual void drawSelf(const Scope &currentScope){};
+	void prepareScope(Scope &scope) override
+	{
+		using namespace molecular::util;
+
+		if (scope.Has("uModel"_H))
+		{
+			auto transform = scope.Get<Uniform<Eigen::Matrix4f>>("uModel"_H);
+			transform.value() *= mTransform;
+			scope.Set<Uniform<Eigen::Matrix4f>>("uModel"_H, transform);
+		}
+		else
+			scope.Set<Uniform<Eigen::Matrix4f>>("uModel"_H, mTransform);
+	}
 	Eigen::Matrix4f mTransform{ Eigen::Matrix4f::Identity() };
 };
 } // namespace components

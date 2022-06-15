@@ -26,7 +26,7 @@ public:
 					  Uniform<Eigen::Matrix4f>(mViewMatrix));
 		viewScope.Set(molecular::util::HashUtils::MakeHash("uProjection"),
 					  Uniform<Eigen::Matrix4f>(mProjectionMatrix));
-		for (auto c : mCalees) c->draw(viewScope);
+		GLMultipleCaleeRenderFunction::draw(viewScope);
 	}
 	void setViewMatrix(Eigen::Matrix4f view)
 	{

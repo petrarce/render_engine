@@ -44,60 +44,11 @@ public:
 		mTextureEnabled = true;
 	}
 
-	void drawSelf(const components::Scope &parentScope) override
+	void draw(const components::Scope &parentScope) override
 	{
 		using namespace molecular::util;
 		components::Scope scope(parentScope);
-		scope.Set("aVerPos"_H, components::Attribute<Eigen::Vector3f>());
-
-		const Texture *textureName = std::get_if<Texture>(&mAmbientColor);
-		if (textureName && mTextureEnabled)
-		{
-			auto texture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
-				HashUtils::MakeHash(textureName->path));
-			if (texture)
-			{
-				texture->attach(glwrapper::GLTextureUnit::Texture0 + 1);
-				scope.Set("uAmbiantTexture"_H, components::Uniform<int>(1));
-				scope.Set("aTextureCoord"_H,
-						  components::Attribute<Eigen::Vector2f>());
-			}
-			else
-			{
-				std::array<float, 4> clr = {
-					mDefaultColor(0),
-					mDefaultColor(1),
-					mDefaultColor(2),
-					mDefaultColor(3),
-				};
-				scope.Set("uAmbiantColor"_H,
-						  components::Uniform<typeof clr>(clr));
-			}
-		}
-		else
-		{
-			const Eigen::Vector4f *color =
-				std::get_if<Eigen::Vector4f>(&mAmbientColor);
-			if (color)
-			{
-				std::array<float, 4> clr;
-				clr = { color->operator()(0), color->operator()(1),
-						color->operator()(2), color->operator()(3) };
-				scope.Set("uAmbiantColor"_H,
-						  components::Uniform<typeof clr>(clr));
-			}
-			else
-			{
-				std::array<float, 4> clr = {
-					mDefaultColor(0),
-					mDefaultColor(1),
-					mDefaultColor(2),
-					mDefaultColor(3),
-				};
-				scope.Set("uAmbiantColor"_H,
-						  components::Uniform<typeof clr>(clr));
-			}
-		}
+		prepareScope(scope);
 
 		mProgram.generate(scope);
 		mProgram.prepare(scope);
@@ -106,6 +57,8 @@ public:
 		glwrapper::GLObjectBinder bindProgram(mProgram);
 
 		glDrawArrays(GL_TRIANGLES, 0, mInstances);
+
+		GLTransformedRenderFunction::draw(parentScope);
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -191,7 +144,62 @@ public:
 		mVertexAttributesBuffer.create(vertexAttributeBuffer, GL_STATIC_DRAW);
 	}
 
-private:
+protected:
+	void prepareScope(components::Scope &scope) override
+	{
+		using namespace molecular::util;
+		GLTransformedRenderFunction::prepareScope(scope);
+		scope.Set("aVerPos"_H, components::Attribute<Eigen::Vector3f>());
+
+		const Texture *textureName = std::get_if<Texture>(&mAmbientColor);
+		if (textureName && mTextureEnabled)
+		{
+			auto texture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
+				HashUtils::MakeHash(textureName->path));
+			if (texture)
+			{
+				texture->attach(glwrapper::GLTextureUnit::Texture0 + 1);
+				scope.Set("uAmbiantTexture"_H, components::Uniform<int>(1));
+				scope.Set("aTextureCoord"_H,
+						  components::Attribute<Eigen::Vector2f>());
+			}
+			else
+			{
+				std::array<float, 4> clr = {
+					mDefaultColor(0),
+					mDefaultColor(1),
+					mDefaultColor(2),
+					mDefaultColor(3),
+				};
+				scope.Set("uAmbiantColor"_H,
+						  components::Uniform<typeof clr>(clr));
+			}
+		}
+		else
+		{
+			const Eigen::Vector4f *color =
+				std::get_if<Eigen::Vector4f>(&mAmbientColor);
+			if (color)
+			{
+				std::array<float, 4> clr;
+				clr = { color->operator()(0), color->operator()(1),
+						color->operator()(2), color->operator()(3) };
+				scope.Set("uAmbiantColor"_H,
+						  components::Uniform<typeof clr>(clr));
+			}
+			else
+			{
+				std::array<float, 4> clr = {
+					mDefaultColor(0),
+					mDefaultColor(1),
+					mDefaultColor(2),
+					mDefaultColor(3),
+				};
+				scope.Set("uAmbiantColor"_H,
+						  components::Uniform<typeof clr>(clr));
+			}
+		}
+	}
 	AmbientType mAmbientColor;
 	components::GLMolecularProgram mProgram;
 	unsigned int mInstances{ 0 };
