@@ -63,17 +63,6 @@ public:
 					std::to_string(bindFBO.state()));
 			for (auto c : mCalees) c->draw(scope);
 		}
-		glDisable(GL_DEPTH_TEST);
-		glClearColor(
-			1.0f, 1.0f, 1.0f,
-			1.0f); // set clear color to white (not really necessary actually,
-				   // since we won't be able to see behind the quad anyways)
-		glClear(GL_COLOR_BUFFER_BIT);
-		dream::glwrapper::GLTextureUnit textUnit(GL_TEXTURE0);
-		auto screenTexture =
-			GLAssetManager<glwrapper::GLTexture2D>::getAsset("ScreenTexture"_H);
-		screenTexture->attach(dream::glwrapper::GLTextureUnit::Texture0 + 1);
-		scope.Set("uScreenTexture"_H, dream::components::Uniform<int>(1));
 		mScreenRectangle.draw(scope);
 	}
 
@@ -149,13 +138,29 @@ private:
 			using namespace molecular::util;
 
 			dream::components::Scope myScope(scp);
+
+			myScope.Set("uScreenTexture"_H, dream::components::Uniform<int>(1));
 			myScope.Set("aVerPos"_H,
 						dream::components::Attribute<Eigen::Vector3f>());
 			myScope.Set("aTexCoord"_H,
 						dream::components::Attribute<Eigen::Vector2f>());
 
+			auto screenTexture =
+				GLAssetManager<glwrapper::GLTexture2D>::getAsset(
+					"ScreenTexture"_H);
+
+			screenTexture->attach(dream::glwrapper::GLTextureUnit::Texture0 +
+								  1);
+
 			mProgram.generate(myScope);
 			mProgram.prepare(myScope);
+
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(1.0f, 1.0f, 1.0f,
+						 1.0f); // set clear color to white (not really
+								// necessary actually, since we won't be able to
+								// see behind the quad anyways)
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			dream::glwrapper::GLObjectBinder bindProg(mProgram);
 			dream::glwrapper::GLObjectBinder binVAO(mVAO);
