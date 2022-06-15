@@ -50,11 +50,12 @@ public:
 		components::Scope scope(parentScope);
 		prepareScope(scope);
 
-		mProgram.generate(scope);
-		mProgram.prepare(scope);
+		auto program =
+			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
+		program->prepare(scope);
 
 		glwrapper::GLObjectBinder bindVAO(mVAO);
-		glwrapper::GLObjectBinder bindProgram(mProgram);
+		glwrapper::GLObjectBinder bindProgram(*program);
 
 		glDrawArrays(GL_TRIANGLES, 0, mInstances);
 
@@ -201,7 +202,6 @@ protected:
 		}
 	}
 	AmbientType mAmbientColor;
-	components::GLMolecularProgram mProgram;
 	unsigned int mInstances{ 0 };
 
 	glwrapper::GLArrayBuffer mVertexAttributesBuffer;

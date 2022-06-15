@@ -1,5 +1,6 @@
 #include <GLAssetManager.hpp>
 #include <GLWrapperCore>
+#include <GLMolecularProgram.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -44,6 +45,16 @@ GLAssetManager<glwrapper::GLTexture2D>::loadAsset(
 							 glwrapper::GLTexture2D::DataType::UByte, size);
 	texture->generateMipMaps();
 	return texture;
+}
+
+template <>
+std::shared_ptr<components::GLMolecularProgram>
+GLAssetManager<components::GLMolecularProgram>::loadAsset(
+	const components::Scope &scope)
+{
+	auto program = std::make_shared<components::GLMolecularProgram>();
+	program->generate(scope);
+	return program;
 }
 
 } // namespace renderer

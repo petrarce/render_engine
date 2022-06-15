@@ -3,6 +3,7 @@
 #include <GLComponents>
 #include <GLRenderableObject.hpp>
 #include <GLTransformedObject.hpp>
+#include <GLAssetManager.hpp>
 namespace dream
 {
 namespace components
@@ -33,11 +34,12 @@ public:
 		Scope scope(parentScope);
 		prepareScope(scope);
 
-		mProgram.generate(scope);
-		mProgram.prepare(scope);
+		auto program =
+			renderer::GLAssetManager<GLMolecularProgram>::addAsset(scope);
+		program->prepare(scope);
 
 		glwrapper::GLObjectBinder bindVAO(mVAO);
-		glwrapper::GLObjectBinder bindProgram(mProgram);
+		glwrapper::GLObjectBinder bindProgram(*program);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 42);
 	}
@@ -74,7 +76,6 @@ private:
 	}
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVBO;
-	components::GLMolecularProgram mProgram;
 	Eigen::Vector4f mColor{ 0.3, 0.4, 0.2, 0.5 };
 };
 } // namespace components

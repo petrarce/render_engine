@@ -8,8 +8,6 @@ namespace geometry
 
 Eigen::Matrix4f GLCamera::transform() const
 {
-	Eigen::Vector3f cameraViewAxis;
-	cameraViewAxis << upAxis.cross(rightAxis);
 
 	Eigen::AngleAxisf rotationZ(angleZ, upAxis);
 	Eigen::AngleAxisf rotationX(angleX, rightAxis);
@@ -18,7 +16,8 @@ Eigen::Matrix4f GLCamera::transform() const
 	Eigen::Matrix4f transform	= Eigen::Matrix4f::Identity();
 	transform.block<3, 3>(0, 0) = rotation;
 	transform.block<3, 1>(0, 3)
-		<< pivot + rotation * cameraViewAxis * (-distance);
+		<< pivot + rotation * /*OpenGL style*/ Eigen::Vector3f(0, 0, -1) *
+					   (-distance);
 	return transform;
 }
 

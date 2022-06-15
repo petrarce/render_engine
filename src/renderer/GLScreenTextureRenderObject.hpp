@@ -137,8 +137,8 @@ private:
 		{
 			using namespace molecular::util;
 
-			dream::components::Scope myScope(scp);
-			prepareScope(myScope);
+			dream::components::Scope scope(scp);
+			prepareScope(scope);
 			auto screenTexture =
 				GLAssetManager<glwrapper::GLTexture2D>::getAsset(
 					"ScreenTexture"_H);
@@ -146,8 +146,9 @@ private:
 			screenTexture->attach(dream::glwrapper::GLTextureUnit::Texture0 +
 								  1);
 
-			mProgram.generate(myScope);
-			mProgram.prepare(myScope);
+			auto program =
+				GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
+			program->prepare(scope);
 
 			glDisable(GL_DEPTH_TEST);
 			glClearColor(1.0f, 1.0f, 1.0f,
@@ -156,7 +157,7 @@ private:
 								// see behind the quad anyways)
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			dream::glwrapper::GLObjectBinder bindProg(mProgram);
+			dream::glwrapper::GLObjectBinder bindProg(*program);
 			dream::glwrapper::GLObjectBinder binVAO(mVAO);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -175,7 +176,6 @@ private:
 		dream::glwrapper::GLElementArrayBuffer mEAB;
 		dream::glwrapper::GLArrayBuffer mVAB;
 		dream::glwrapper::GLVertexArray mVAO;
-		dream::components::GLMolecularProgram mProgram;
 	};
 	std::array<int, 4> mViewport{ 0, 0, 1, 1 };
 	DrawScreenRectangle mScreenRectangle;

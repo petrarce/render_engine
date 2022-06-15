@@ -25,8 +25,8 @@ public:
 	float angleX{ 0 };
 	float angleZ{ 0 };
 	float distance{ 10 };
-	Eigen::Vector3f upAxis	  = Eigen::Vector3f(0, 1, 0);
-	Eigen::Vector3f rightAxis = Eigen::Vector3f(1, 0, 0);
+	Eigen::Vector3f upAxis;
+	Eigen::Vector3f rightAxis;
 };
 
 } // namespace geometry

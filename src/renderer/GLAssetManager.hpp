@@ -5,6 +5,7 @@
 #include <molecular/util/Hash.h>
 #include <Singleton.hpp>
 #include <GLWrapperCore>
+#include <GLMolecularProgram.hpp>
 
 namespace dream
 {
@@ -18,14 +19,15 @@ class GLAssetManager
 public:
 	using AssetPtr = std::shared_ptr<AssetT>;
 
-	template <class... Args>
-	static AssetPtr addAsset(const std::string &assetPath, const Args &...args)
+	template <class ItentifierT, class... Args>
+	static AssetPtr addAsset(const ItentifierT &assetIdentifier,
+							 const Args &...args)
 	{
 		auto &manager = GLAssetManager<AssetT>::instance();
-		auto id		  = molecular::util::HashUtils::MakeHash(assetPath);
+		auto id		  = molecular::util::HashUtils::MakeHash(assetIdentifier);
 		if (manager.mAssets.find(id) == manager.mAssets.end())
 		{
-			auto asset = loadAsset(assetPath, args...);
+			auto asset = loadAsset(assetIdentifier, args...);
 			if (!asset)
 				return nullptr;
 			manager.mAssets.insert({ id, asset });
@@ -64,9 +66,11 @@ public:
 	}
 
 private:
+	template <class... Args>
 	static AssetPtr loadAsset(const std::string &assetPath);
 	static AssetPtr loadAsset(const std::string &assetPath,
 							  glwrapper::GLTexture2D::InternalFormat format);
+	static AssetPtr loadAsset(const dream::components::Scope &scope);
 
 	std::map<molecular::util::Hash, AssetPtr> mAssets;
 };

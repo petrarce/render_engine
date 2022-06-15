@@ -41,10 +41,15 @@ private:
 		, mRenderFunction([]() { /*noop*/ })
 		, mContextBinder(glfwContext)
 	{
-		controller.camera.pivot	   = Eigen::Vector3f(0, 0, 0);
-		controller.camera.distance = 10;
-		controller.camera.angleX   = -0.25;
-		controller.camera.angleZ   = 0;
+		controller.camera = dream::geometry::GLCamera(Eigen::Vector3f(0, 0, 1),
+													  Eigen::Vector3f(1, 0, 0));
+		controller.camera.pivot		= Eigen::Vector3f(0, 0, 0);
+		controller.camera.distance	= 10;
+		controller.camera.angleX	= -0.25;
+		controller.camera.angleZ	= 0;
+		controller.camera.upAxis	= Eigen::Vector3f(0, 0, 1);
+		controller.camera.rightAxis = Eigen::Vector3f(1, 0, 0);
+
 		//===================Set up callbacks======================
 
 		glfwContext.processWindow<void, GLFWscrollfun>(
