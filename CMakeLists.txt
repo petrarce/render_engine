@@ -36,6 +36,7 @@ find_package(Threads)
 find_package(OpenGL)
 find_package(Eigen3)
 find_package(Boost 1.63 COMPONENTS unit_test_framework REQUIRED)
+find_package(Assimp)
 
 enable_testing()
 

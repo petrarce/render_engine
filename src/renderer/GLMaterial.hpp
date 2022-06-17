@@ -29,38 +29,27 @@ public:
 	GLMeshWithMaterialRenderFunction()
 		: components::GLTransformedRenderFunction()
 	{
-		mVertexAttributesBuffer.create(
-			std::vector<float>{ // vertex positions
-								0, 0, 0, 5, 0, 10, 10, 0, 10,
-								// texture coordinates
-								0, 0, 0.5, 1, 1, 0 },
-			GL_STATIC_DRAW);
-		mInstances = 3;
-		mVAO.createAttribute(verticesAttributeSpec, mVertexAttributesBuffer);
+		using namespace molecular::util;
+		mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
+			"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+		if (mMeshBuffers == nullptr)
+		{
+			mMeshBuffers = GLAssetManager<GLMeshObject>::createAsset(
+				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+			mMeshBuffers->VAB.create(
+				std::vector<float>{ // vertex positions
+									0, 0, 0, 5, 0, 10, 10, 0, 10,
+									// texture coordinates
+									0, 0, 0.5, 1, 1, 0 },
+				GL_STATIC_DRAW);
+			mMeshBuffers->availableComponents.textureCoordinates = true;
+			mMeshBuffers->numVertices							 = 3;
+		}
+		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
 
 		auto textureSpec   = textureAttributeSpec;
 		textureSpec.offset = sizeof(float) * 9;
-		mVAO.createAttribute(textureSpec, mVertexAttributesBuffer);
-		mTextureEnabled = true;
-	}
-
-	void drawImpl(const components::Scope &parentScope) override
-	{
-		using namespace molecular::util;
-		components::Scope scope(parentScope);
-		prepareScope(scope);
-
-		auto program =
-			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
-		program->prepare(scope);
-
-		glwrapper::GLObjectBinder bindVAO(mVAO);
-		glwrapper::GLObjectBinder bindProgram(*program);
-		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glDrawArrays(GL_TRIANGLES, 0, mInstances);
-		GLTransformedRenderFunction::drawImpl(parentScope);
+		mVAO.createAttribute(textureSpec, mMeshBuffers->VAB);
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -93,8 +82,9 @@ public:
 		assert(!textureCoordinates.has_value() ||
 			   textureCoordinates->size() % textureAttributeSpec.components ==
 				   0);
-		mInstances =
-			(indices.has_value() ? indices->size() : vertices.size() / 3);
+		mMeshBuffers			  = std::make_shared<GLMeshObject>();
+		mMeshBuffers->numVertices = vertices.size() / 3;
+		mMeshBuffers->numIndices  = indices->size();
 		size_t bufferSize =
 			vertices.size() + (normals.has_value() ? normals->size() : 0) +
 			(textureCoordinates.has_value() ? textureCoordinates->size() : 0);
@@ -114,13 +104,13 @@ public:
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 textureCoordinates->begin(),
 										 textureCoordinates->end());
-			mVAO.createAttribute(textureSpecs, mVertexAttributesBuffer);
-			mTextureEnabled = true;
+			mVAO.createAttribute(textureSpecs, mMeshBuffers->VAB);
+			mMeshBuffers->availableComponents.textureCoordinates = true;
 		}
 		else
 		{
 			mVAO.disableAttribute(textureAttributeSpec.location);
-			mTextureEnabled = false;
+			mMeshBuffers->availableComponents.textureCoordinates = false;
 		}
 
 		if (normals.has_value())
@@ -129,24 +119,54 @@ public:
 			normalSpecs.offset = sizeof(float) * vertexAttributeBuffer.size();
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 normals->begin(), normals->end());
-			mVAO.createAttribute(normalSpecs, mVertexAttributesBuffer);
-			mNormalsEnabled = true;
+			mVAO.createAttribute(normalSpecs, mMeshBuffers->VAB);
+			mMeshBuffers->availableComponents.normals = true;
 		}
 		else
 		{
 			mVAO.disableAttribute(normalsAttributeSpec.location);
-			mNormalsEnabled = false;
+			mMeshBuffers->availableComponents.normals = false;
 		}
 
 		// deploy indices
 		// TODO: implement
-		mIndecisEnabled = false;
+		mMeshBuffers->availableComponents.indices = false;
 
 		// reallocate buffer on gpu
-		mVertexAttributesBuffer.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+		mMeshBuffers->VAB.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+	}
+
+	void setMesh(const std::string &meshPath)
+	{
+		using namespace molecular::util;
+
+		mMeshBuffers = GLAssetManager<GLMeshObject>::addAsset(meshPath);
+		if (!mMeshBuffers)
+			mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
+				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+		assert(mMeshBuffers != nullptr);
 	}
 
 protected:
+	void drawImpl(const components::Scope &parentScope) override
+	{
+		using namespace molecular::util;
+		components::Scope scope(parentScope);
+		prepareScope(scope);
+
+		auto program =
+			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
+		program->prepare(scope);
+
+		glwrapper::GLObjectBinder bindVAO(mVAO);
+		glwrapper::GLObjectBinder bindProgram(*program);
+		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+		GLTransformedRenderFunction::drawImpl(parentScope);
+	}
+
 	void prepareScope(components::Scope &scope) override
 	{
 		using namespace molecular::util;
@@ -154,7 +174,7 @@ protected:
 		scope.Set("aVerPos"_H, components::Attribute<Eigen::Vector3f>());
 
 		const Texture *textureName = std::get_if<Texture>(&mAmbientColor);
-		if (textureName && mTextureEnabled)
+		if (textureName && mMeshBuffers->availableComponents.textureCoordinates)
 		{
 			auto texture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
 				HashUtils::MakeHash(textureName->path));
@@ -203,14 +223,8 @@ protected:
 		}
 	}
 	AmbientType mAmbientColor;
-	unsigned int mInstances{ 0 };
 
-	glwrapper::GLArrayBuffer mVertexAttributesBuffer;
-	bool mNormalsEnabled{ false };
-	bool mTextureEnabled{ false };
-
-	glwrapper::GLElementArrayBuffer mIndexBuffer;
-	bool mIndecisEnabled{ false };
+	std::shared_ptr<GLMeshObject> mMeshBuffers;
 
 	glwrapper::GLVertexArray mVAO;
 
