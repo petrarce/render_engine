@@ -56,9 +56,10 @@ public:
 
 		glwrapper::GLObjectBinder bindVAO(mVAO);
 		glwrapper::GLObjectBinder bindProgram(*program);
+		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDrawArrays(GL_TRIANGLES, 0, mInstances);
-
 		GLTransformedRenderFunction::drawImpl(parentScope);
 	}
 
