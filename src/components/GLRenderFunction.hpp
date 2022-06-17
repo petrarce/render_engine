@@ -9,9 +9,13 @@ namespace components
 class GLRenderFunction
 {
 public:
-	virtual void draw(const Scope &parentScope) = 0;
+	void draw(const Scope &parentScope)
+	{
+		drawImpl(parentScope);
+	}
 
 protected:
+	virtual void drawImpl(const Scope &parentScope) = 0;
 	virtual void prepareScope(Scope &scope)
 	{
 	}
@@ -22,10 +26,11 @@ class GLSingleCaleeRenderFunction : public GLRenderFunction
 public:
 	GLSingleCaleeRenderFunction(
 		std::shared_ptr<GLRenderFunction> calee = nullptr);
-	void draw(const Scope &parentScope) override;
 	void setCalee(std::shared_ptr<GLRenderFunction> calee);
 
-private:
+protected:
+	void drawImpl(const Scope &parentScope) override;
+
 	std::shared_ptr<GLRenderFunction> mCalee;
 };
 
@@ -50,9 +55,9 @@ public:
 					   [calee](CaleePtr item) { return item == calee; });
 	}
 
-	void draw(const Scope &parentScope);
-
 protected:
+	void drawImpl(const Scope &parentScope);
+
 	CaleeArray mCalees;
 };
 } // namespace components

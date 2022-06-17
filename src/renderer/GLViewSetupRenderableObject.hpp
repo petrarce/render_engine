@@ -19,15 +19,7 @@ public:
 	virtual ~GLViewSetupRenderFunction()
 	{
 	}
-	void draw(const Scope &parentScope) override
-	{
-		Scope viewScope(parentScope);
-		viewScope.Set(molecular::util::HashUtils::MakeHash("uView"),
-					  Uniform<Eigen::Matrix4f>(mViewMatrix));
-		viewScope.Set(molecular::util::HashUtils::MakeHash("uProjection"),
-					  Uniform<Eigen::Matrix4f>(mProjectionMatrix));
-		GLMultipleCaleeRenderFunction::draw(viewScope);
-	}
+
 	void setViewMatrix(Eigen::Matrix4f view)
 	{
 		mViewMatrix = view;
@@ -38,6 +30,16 @@ public:
 	}
 
 public:
+	void drawImpl(const Scope &parentScope) override
+	{
+		Scope viewScope(parentScope);
+		viewScope.Set(molecular::util::HashUtils::MakeHash("uView"),
+					  Uniform<Eigen::Matrix4f>(mViewMatrix));
+		viewScope.Set(molecular::util::HashUtils::MakeHash("uProjection"),
+					  Uniform<Eigen::Matrix4f>(mProjectionMatrix));
+		GLMultipleCaleeRenderFunction::drawImpl(viewScope);
+	}
+
 	Eigen::Matrix4f mViewMatrix;
 	Eigen::Matrix4f mProjectionMatrix;
 };

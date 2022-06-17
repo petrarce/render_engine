@@ -44,7 +44,7 @@ public:
 		mTextureEnabled = true;
 	}
 
-	void draw(const components::Scope &parentScope) override
+	void drawImpl(const components::Scope &parentScope) override
 	{
 		using namespace molecular::util;
 		components::Scope scope(parentScope);
@@ -59,7 +59,7 @@ public:
 
 		glDrawArrays(GL_TRIANGLES, 0, mInstances);
 
-		GLTransformedRenderFunction::draw(parentScope);
+		GLTransformedRenderFunction::drawImpl(parentScope);
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)

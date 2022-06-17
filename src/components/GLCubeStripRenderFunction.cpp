@@ -42,7 +42,7 @@ GLCubeStripRenderFunction::GLCubeStripRenderFunction()
 		mVBO);
 }
 
-void GLCubeStripRenderFunction::draw(const dream::components::Scope &scp)
+void GLCubeStripRenderFunction::drawImpl(const dream::components::Scope &scp)
 {
 	using namespace ::molecular::util;
 	dream::components::Scope currentScope(scp);

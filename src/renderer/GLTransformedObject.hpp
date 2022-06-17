@@ -20,13 +20,6 @@ public:
 	{
 	}
 
-	void draw(const Scope &parentScope) override
-	{
-		Scope scope(parentScope);
-		prepareScope(scope);
-		GLMultipleCaleeRenderFunction::draw(scope);
-	}
-
 	const Eigen::Matrix4f &transform() const
 	{
 		return mTransform;
@@ -37,6 +30,13 @@ public:
 	}
 
 protected:
+	void drawImpl(const Scope &parentScope) override
+	{
+		Scope scope(parentScope);
+		prepareScope(scope);
+		GLMultipleCaleeRenderFunction::drawImpl(scope);
+	}
+
 	void prepareScope(Scope &scope) override
 	{
 		using namespace molecular::util;

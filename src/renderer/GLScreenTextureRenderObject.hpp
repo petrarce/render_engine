@@ -44,28 +44,6 @@ public:
 	{
 	}
 
-	void draw(const components::Scope &parentScope) override
-	{
-		using namespace molecular::util;
-		glViewport(mViewport[0], mViewport[1], mViewport[2], mViewport[3]);
-		components::Scope scope(parentScope);
-		{
-			auto fbo = GLAssetManager<glwrapper::GLFrameBufferObject>::getAsset(
-				"ScreenFramebuffer"_H);
-			glwrapper::GLDrawFramebufferBinder bindFBO(*fbo);
-			glEnable(GL_DEPTH_TEST);
-			glClearColor(0.2345f, 0.492f, 0.717f, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			if (bindFBO.state() !=
-				dream::glwrapper::GLDrawFramebufferBinder::Complete)
-				throw std::runtime_error(
-					"Failed to initialize screen renderbuffer target error: " +
-					std::to_string(bindFBO.state()));
-			GLMultipleCaleeRenderFunction::draw(scope);
-		}
-		mScreenRectangle.draw(scope);
-	}
-
 	void setViewport(const std::array<int, 4> &viewport)
 	{
 		using namespace molecular::util;
@@ -93,6 +71,28 @@ public:
 	}
 
 private:
+	void drawImpl(const components::Scope &parentScope) override
+	{
+		using namespace molecular::util;
+		glViewport(mViewport[0], mViewport[1], mViewport[2], mViewport[3]);
+		components::Scope scope(parentScope);
+		{
+			auto fbo = GLAssetManager<glwrapper::GLFrameBufferObject>::getAsset(
+				"ScreenFramebuffer"_H);
+			glwrapper::GLDrawFramebufferBinder bindFBO(*fbo);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.2345f, 0.492f, 0.717f, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (bindFBO.state() !=
+				dream::glwrapper::GLDrawFramebufferBinder::Complete)
+				throw std::runtime_error(
+					"Failed to initialize screen renderbuffer target error: " +
+					std::to_string(bindFBO.state()));
+			GLMultipleCaleeRenderFunction::drawImpl(scope);
+		}
+		mScreenRectangle.draw(scope);
+	}
+
 	class DrawScreenRectangle : public GLRenderFunction
 	{
 	public:
@@ -133,7 +133,9 @@ private:
 				},
 				mVAB, mEAB);
 		}
-		void draw(const dream::components::Scope &scp) override
+
+	protected:
+		void drawImpl(const dream::components::Scope &scp) override
 		{
 			using namespace molecular::util;
 
@@ -163,7 +165,6 @@ private:
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 		}
 
-	protected:
 		void prepareScope(components::Scope &scope) override
 		{
 			using namespace molecular::util;

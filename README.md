@@ -45,3 +45,4 @@ Current `master` branch status (Build and test):
 * [ ] Cache scope state. Don't prepare it every draw call 
 * [ ] Cache uniform. Don't aply them agin unless unchanged
 * [ ] Call OpenGL bind functions only if different object is in current scope
+* [ X ] Create wrapper for OpenGL state changes 

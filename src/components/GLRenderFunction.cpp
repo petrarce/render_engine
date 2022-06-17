@@ -11,7 +11,7 @@ GLSingleCaleeRenderFunction::GLSingleCaleeRenderFunction(
 	, mCalee(calee)
 {
 }
-void GLSingleCaleeRenderFunction::draw(const Scope &parentScope)
+void GLSingleCaleeRenderFunction::drawImpl(const Scope &parentScope)
 {
 	mCalee->draw(parentScope);
 }
@@ -33,7 +33,7 @@ void GLMultipleCaleeRenderFunction::setCalees(const CaleeArray &calees)
 	mCalees = calees;
 }
 
-void GLMultipleCaleeRenderFunction::draw(const Scope &parentScope)
+void GLMultipleCaleeRenderFunction::drawImpl(const Scope &parentScope)
 {
 	for (const auto &c : mCalees) c->draw(parentScope);
 }
