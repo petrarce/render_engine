@@ -46,6 +46,14 @@ public:
 
 		return *this;
 	}
+	const T &value() const
+	{
+		return mValue;
+	}
+	T &value()
+	{
+		return mValue;
+	}
 
 private:
 	T mValue;
