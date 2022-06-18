@@ -45,11 +45,8 @@ public:
 			mMeshBuffers->availableComponents.textureCoordinates = true;
 			mMeshBuffers->numVertices							 = 3;
 		}
-		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
 
-		auto textureSpec   = textureAttributeSpec;
-		textureSpec.offset = sizeof(float) * 9;
-		mVAO.createAttribute(textureSpec, mMeshBuffers->VAB);
+		resetVertexArrayObject();
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -84,8 +81,8 @@ public:
 				   0);
 		mMeshBuffers			  = std::make_shared<GLMeshObject>();
 		mMeshBuffers->numVertices = vertices.size() / 3;
-		mMeshBuffers->numIndices  = indices->size();
-		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
+		mMeshBuffers->numIndices  = indices.has_value() ? indices->size() : 0;
+		mMeshBuffers->availableComponents = { false, false, false };
 
 		size_t bufferSize =
 			vertices.size() + (normals.has_value() ? normals->size() : 0) +
@@ -101,41 +98,25 @@ public:
 		if (textureCoordinates.has_value() &&
 			(textureCoordinates->size() % 2) == (vertices.size() % 3))
 		{
-			auto textureSpecs	= textureAttributeSpec;
-			textureSpecs.offset = sizeof(float) * vertexAttributeBuffer.size();
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 textureCoordinates->begin(),
 										 textureCoordinates->end());
-			mVAO.createAttribute(textureSpecs, mMeshBuffers->VAB);
 			mMeshBuffers->availableComponents.textureCoordinates = true;
-		}
-		else
-		{
-			mVAO.disableAttribute(textureAttributeSpec.location);
-			mMeshBuffers->availableComponents.textureCoordinates = false;
 		}
 
 		if (normals.has_value())
 		{
-			auto normalSpecs   = normalsAttributeSpec;
-			normalSpecs.offset = sizeof(float) * vertexAttributeBuffer.size();
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 normals->begin(), normals->end());
-			mVAO.createAttribute(normalSpecs, mMeshBuffers->VAB);
 			mMeshBuffers->availableComponents.normals = true;
-		}
-		else
-		{
-			mVAO.disableAttribute(normalsAttributeSpec.location);
-			mMeshBuffers->availableComponents.normals = false;
 		}
 
 		// deploy indices
 		// TODO: implement
-		mMeshBuffers->availableComponents.indices = false;
 
 		// reallocate buffer on gpu
 		mMeshBuffers->VAB.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+		resetVertexArrayObject();
 	}
 
 	void setMesh(const std::string &meshPath)
@@ -147,6 +128,7 @@ public:
 			mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
 				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
 		assert(mMeshBuffers != nullptr);
+		resetVertexArrayObject();
 	}
 
 protected:
@@ -223,6 +205,34 @@ protected:
 						  components::Uniform<typeof clr>(clr));
 			}
 		}
+	}
+
+	void resetVertexArrayObject()
+	{
+		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
+
+		if (mMeshBuffers->availableComponents.textureCoordinates)
+		{
+			auto texCoord	= textureAttributeSpec;
+			texCoord.offset = verticesAttributeSpec.components *
+							  mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(texCoord, mMeshBuffers->VAB);
+		}
+		else
+			mVAO.disableAttribute(textureAttributeSpec.location);
+
+		if (mMeshBuffers->availableComponents.normals)
+		{
+			auto normals = normalsAttributeSpec;
+			normals.offset =
+				(verticesAttributeSpec.components +
+				 textureAttributeSpec.components *
+					 mMeshBuffers->availableComponents.textureCoordinates) *
+				mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(normals, mMeshBuffers->VAB);
+		}
+		else
+			mVAO.disableAttribute(normalsAttributeSpec.location);
 	}
 	AmbientType mAmbientColor;
 
