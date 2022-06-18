@@ -85,6 +85,8 @@ public:
 		mMeshBuffers			  = std::make_shared<GLMeshObject>();
 		mMeshBuffers->numVertices = vertices.size() / 3;
 		mMeshBuffers->numIndices  = indices->size();
+		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
+
 		size_t bufferSize =
 			vertices.size() + (normals.has_value() ? normals->size() : 0) +
 			(textureCoordinates.has_value() ? textureCoordinates->size() : 0);
