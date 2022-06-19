@@ -19,7 +19,9 @@ target_include_directories(gl-renderer PUBLIC .)
 target_deploy_assets(TARGET gl-renderer ASSETFILES
 	assets/Grass.png
 	assets/TestRGBAImage.png
-	assets/Cube.ply)
+	assets/Cube.ply
+	assets/Triangle.ply
+	assets/Monkey.ply)
 
 if(BUILD_TESTING)
 	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")

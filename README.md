@@ -8,7 +8,7 @@ Current `master` branch status (Build and test):
 
 #### General
 
-* [ ] Loading 3d meshes from blender/3dmax/... model files
+* [X] Loading 3d meshes from blender/3dmax/... model files
 * [ ] Shadows
 * [ ] Screen space AO
 * [ ] Screnn space reflections

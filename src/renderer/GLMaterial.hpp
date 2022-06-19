@@ -111,10 +111,12 @@ public:
 			mMeshBuffers->availableComponents.normals = true;
 		}
 
-		// deploy indices
-		// TODO: implement
-
 		// reallocate buffer on gpu
+		if (indices.has_value())
+		{
+			mMeshBuffers->EAB.create(*indices, GL_STATIC_DRAW);
+			mMeshBuffers->availableComponents.indices = true;
+		}
 		mMeshBuffers->VAB.create(vertexAttributeBuffer, GL_STATIC_DRAW);
 		resetVertexArrayObject();
 	}
@@ -147,7 +149,11 @@ protected:
 		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+		if (mMeshBuffers->availableComponents.indices)
+			glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
+						   GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
 		GLTransformedRenderFunction::drawImpl(parentScope);
 	}
 
@@ -209,14 +215,16 @@ protected:
 
 	void resetVertexArrayObject()
 	{
-		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB);
+		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
+							 mMeshBuffers->EAB);
 
 		if (mMeshBuffers->availableComponents.textureCoordinates)
 		{
 			auto texCoord	= textureAttributeSpec;
 			texCoord.offset = verticesAttributeSpec.components *
 							  mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(texCoord, mMeshBuffers->VAB);
+			mVAO.createAttribute(texCoord, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
 		}
 		else
 			mVAO.disableAttribute(textureAttributeSpec.location);
@@ -229,7 +237,7 @@ protected:
 				 textureAttributeSpec.components *
 					 mMeshBuffers->availableComponents.textureCoordinates) *
 				mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(normals, mMeshBuffers->VAB);
+			mVAO.createAttribute(normals, mMeshBuffers->VAB, mMeshBuffers->EAB);
 		}
 		else
 			mVAO.disableAttribute(normalsAttributeSpec.location);
@@ -267,7 +275,7 @@ public:
 	};
 
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
-
+	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
@@ -291,7 +299,7 @@ public:
 		return mAmbient;
 	}
 
-	void setMesh(const std::shared_ptr<Mesh> mesh)
+	void setMesh(const MeshVariant mesh)
 	{
 		mMesh		 = mesh;
 		mMeshChanged = true;
@@ -304,21 +312,25 @@ public:
 			mRenderFunction);
 		if (mAmbientChanged)
 		{
-			rf->setAmbientColor(mAmbient);
 			mAmbientChanged = false;
+			rf->setAmbientColor(mAmbient);
 		}
-		if (mMeshChanged && mMesh)
+		if (mMeshChanged)
 		{
 			mMeshChanged = false;
-			rf->setMesh(mMesh->vertices, mMesh->normals, mMesh->textures,
-						mMesh->indices);
+			if (auto mesh = std::get_if<std::shared_ptr<Mesh>>(&mMesh))
+				rf->setMesh(
+					mesh->operator->()->vertices, mesh->operator->()->normals,
+					mesh->operator->()->textures, mesh->operator->()->indices);
+			else if (auto mesh = std::get_if<std::string>(&mMesh))
+				rf->setMesh(*mesh);
 		}
 	}
 
 private:
 	AmbientData mAmbient;
 	bool mAmbientChanged{ true };
-	std::shared_ptr<Mesh> mMesh;
+	MeshVariant mMesh;
 	bool mMeshChanged{ false };
 };
 } // namespace renderer

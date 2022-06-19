@@ -42,7 +42,9 @@ int main(int argc, char **argv)
 		meshWithMaterial->setTransform(transform);
 		meshWithMaterial->setAmbient(GLMeshWithMaterialRenderFunction::Texture{
 			"../assets/Grass.png", GLTexture2D::InternalFormat::Rgba });
-		meshWithMaterial->setMesh(rectangleMesh);
+		//		meshWithMaterial->setAmbient(Eigen::Vector4f(0.7f, 0.1f,
+		// 0.3f, 1.f)); 		meshWithMaterial->setMesh(rectangleMesh);
+		meshWithMaterial->setMesh("../assets/Monkey.ply");
 		meshScene->addChild(meshWithMaterial);
 	}
 	view->addChild(meshScene);
