@@ -26,7 +26,8 @@ int main(int argc, char **argv)
 {
 	Assimp::Importer importer;
 	const aiScene *scene =
-		importer.ReadFile(argv[1], aiProcess_Triangulate | aiProcess_FlipUVs);
+		importer.ReadFile(argv[1], aiProcess_Triangulate | aiProcess_FlipUVs |
+									   aiProcess_FixInfacingNormals);
 	if (!scene)
 		throw std::runtime_error("Failed to load mesh file " +
 								 std::string(argv[1]));

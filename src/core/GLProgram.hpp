@@ -59,8 +59,7 @@ public:
 		typedef void (*GlMatrixSetter)(GLint location, GLsizei count,
 									   GLboolean transpose,
 									   const GLfloat *value);
-		if (mat.cols() > 4 || mat.rows() > 4 || mat.rows() < 2 ||
-			mat.cols() < 2)
+		if (mat.cols() > 4 || mat.rows() > 4 || mat.rows() < mat.cols())
 			throw std::runtime_error("invalid matrix size");
 
 		static std::map<std::pair<int, int>, GlMatrixSetter> functions = {
@@ -76,9 +75,19 @@ public:
 			{ std::make_pair(4, 3), glUniformMatrix4x3fv },
 			{ std::make_pair(4, 4), glUniformMatrix4fv },
 		};
+
 		GLint location = glGetUniformLocation(mObjectId, name.c_str());
-		functions.find(std::make_pair(mat.rows(), mat.cols()))
-			->second(location, 1, transpose, mat.data());
+		if (mat.cols() > 1)
+			functions.find(std::make_pair(mat.rows(), mat.cols()))
+				->second(location, 1, transpose, mat.data());
+		else if (_Rows == 1)
+			glUniform1f(location, mat(0, 0));
+		else if (_Rows == 2)
+			glUniform2f(location, mat(0, 0), mat(1, 0));
+		else if (_Rows == 3)
+			glUniform3f(location, mat(0, 0), mat(1, 0), mat(2, 0));
+		else if (_Rows == 4)
+			glUniform4f(location, mat(0, 0), mat(1, 0), mat(2, 0), mat(3, 0));
 	}
 
 	std::set<std::string> getActiveUniforms()

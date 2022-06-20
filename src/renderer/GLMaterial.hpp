@@ -211,6 +211,11 @@ protected:
 						  components::Uniform<typeof clr>(clr));
 			}
 		}
+
+		if (mMeshBuffers->availableComponents.normals)
+			scope.Set("aNormal"_H, components::Attribute<Eigen::Vector3f>());
+
+		scope.Set("uSpecularity"_H, components::Uniform<float>(16));
 	}
 
 	void resetVertexArrayObject()
@@ -218,29 +223,28 @@ protected:
 		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
 							 mMeshBuffers->EAB);
 
+		if (mMeshBuffers->availableComponents.normals)
+		{
+			auto normals   = normalsAttributeSpec;
+			normals.offset = verticesAttributeSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(normals, mMeshBuffers->VAB, mMeshBuffers->EAB);
+		}
+		else
+			mVAO.disableAttribute(normalsAttributeSpec.location);
+
 		if (mMeshBuffers->availableComponents.textureCoordinates)
 		{
 			auto texCoord	= textureAttributeSpec;
-			texCoord.offset = verticesAttributeSpec.components *
+			texCoord.offset = (verticesAttributeSpec.components +
+							   normalsAttributeSpec.components *
+								   mMeshBuffers->availableComponents.normals) *
 							  mMeshBuffers->numVertices * sizeof(float);
 			mVAO.createAttribute(texCoord, mMeshBuffers->VAB,
 								 mMeshBuffers->EAB);
 		}
 		else
 			mVAO.disableAttribute(textureAttributeSpec.location);
-
-		if (mMeshBuffers->availableComponents.normals)
-		{
-			auto normals = normalsAttributeSpec;
-			normals.offset =
-				(verticesAttributeSpec.components +
-				 textureAttributeSpec.components *
-					 mMeshBuffers->availableComponents.textureCoordinates) *
-				mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(normals, mMeshBuffers->VAB, mMeshBuffers->EAB);
-		}
-		else
-			mVAO.disableAttribute(normalsAttributeSpec.location);
 	}
 	AmbientType mAmbientColor;
 

@@ -21,6 +21,7 @@ target_deploy_assets(TARGET gl-renderer ASSETFILES
 	assets/TestRGBAImage.png
 	assets/Cube.ply
 	assets/Triangle.ply
+	assets/Rectangle.ply
 	assets/Monkey.ply)
 
 if(BUILD_TESTING)
