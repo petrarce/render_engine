@@ -44,7 +44,7 @@ public:
 		mTextureEnabled = true;
 	}
 
-	void draw(const components::Scope &parentScope) override
+	void drawImpl(const components::Scope &parentScope) override
 	{
 		using namespace molecular::util;
 		components::Scope scope(parentScope);
@@ -56,10 +56,11 @@ public:
 
 		glwrapper::GLObjectBinder bindVAO(mVAO);
 		glwrapper::GLObjectBinder bindProgram(*program);
+		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDrawArrays(GL_TRIANGLES, 0, mInstances);
-
-		GLTransformedRenderFunction::draw(parentScope);
+		GLTransformedRenderFunction::drawImpl(parentScope);
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)

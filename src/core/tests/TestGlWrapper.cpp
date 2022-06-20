@@ -232,6 +232,21 @@ BOOST_AUTO_TEST_CASE(TestBindings)
 		BOOST_TEST(initialState.at(GL_DRAW_FRAMEBUFFER_BINDING) == drawFB);
 	}
 	BOOST_TEST(initialState == stateProvider.updateState());
+
+	// test OpenGL state changes
+	glEnable(GL_BLEND);
+	{
+		GLPushAttribute<GL_ALL_ATTRIB_BITS> pushAll;
+		glDisable(GL_BLEND);
+	}
+	BOOST_TEST(glIsEnabled(GL_BLEND));
+
+	glEnable(GL_DEPTH_TEST);
+	{
+		GLEnable<false, GL_DEPTH_TEST> dDepth;
+		BOOST_TEST(!glIsEnabled(GL_DEPTH_TEST));
+	}
+	BOOST_TEST(glIsEnabled(GL_DEPTH_TEST));
 }
 
 class TestGLProgram : public GLProgram

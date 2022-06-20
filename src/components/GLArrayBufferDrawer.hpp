@@ -11,9 +11,9 @@ class GLTriangleDrawer : public GLRenderFunction
 public:
 	GLTriangleDrawer();
 
-	void draw(const Scope &parentScope) override;
-
 protected:
+	void drawImpl(const Scope &parentScope) override;
+
 	glwrapper::GLVertexArray mVAO;
 	glwrapper::GLArrayBuffer mVAB;
 	GLMolecularProgram mProgram;

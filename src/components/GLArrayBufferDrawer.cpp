@@ -26,7 +26,7 @@ GLTriangleDrawer::GLTriangleDrawer()
 	mVAO.createAttribute(spec, mVAB);
 }
 
-void GLTriangleDrawer::draw(const Scope &parentScope)
+void GLTriangleDrawer::drawImpl(const Scope &parentScope)
 {
 	using namespace molecular::util;
 	Scope currentScope(parentScope);

@@ -10,3 +10,4 @@
 #include <GLDefinitions.hpp>
 #include <GLFrameBufferObject.hpp>
 #include <GLRenderBuffer.hpp>
+#include <GLStateChangeHelpers.hpp>

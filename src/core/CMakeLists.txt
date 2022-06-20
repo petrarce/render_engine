@@ -15,6 +15,7 @@ add_library(opengl-wrapper-core STATIC
 	GLFrameBufferObject.hpp
 	GLFrameBufferObject.cpp
 	GLRenderBuffer.hpp
+	GLStateChangeHelpers.hpp
 )
 
 target_link_libraries(opengl-wrapper-core PUBLIC glad)

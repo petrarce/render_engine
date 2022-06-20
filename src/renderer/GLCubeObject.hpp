@@ -29,20 +29,7 @@ public:
 	virtual ~GLCubeRenderFunction()
 	{
 	}
-	void draw(const Scope &parentScope) override
-	{
-		Scope scope(parentScope);
-		prepareScope(scope);
 
-		auto program =
-			renderer::GLAssetManager<GLMolecularProgram>::addAsset(scope);
-		program->prepare(scope);
-
-		glwrapper::GLObjectBinder bindVAO(mVAO);
-		glwrapper::GLObjectBinder bindProgram(*program);
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 42);
-	}
 	void updateCube(const Eigen::Vector3f &size)
 	{
 		std::vector<float> cubeStrip = {
@@ -65,6 +52,21 @@ public:
 	}
 
 private:
+	void drawImpl(const Scope &parentScope) override
+	{
+		Scope scope(parentScope);
+		prepareScope(scope);
+
+		auto program =
+			renderer::GLAssetManager<GLMolecularProgram>::addAsset(scope);
+		program->prepare(scope);
+
+		glwrapper::GLObjectBinder bindVAO(mVAO);
+		glwrapper::GLObjectBinder bindProgram(*program);
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 42);
+	}
+
 	void prepareScope(Scope &scope) override
 	{
 		GLTransformedRenderFunction::prepareScope(scope);
