@@ -22,7 +22,9 @@ target_deploy_assets(TARGET gl-renderer ASSETFILES
 	assets/Cube.ply
 	assets/Triangle.ply
 	assets/Rectangle.ply
-	assets/Monkey.ply)
+	assets/Monkey.ply
+	assets/MonkeySmooth.ply
+	)
 
 if(BUILD_TESTING)
 	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")

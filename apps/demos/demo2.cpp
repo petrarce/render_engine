@@ -42,9 +42,9 @@ int main(int argc, char **argv)
 		meshWithMaterial->setTransform(transform);
 		meshWithMaterial->setAmbient(GLMeshWithMaterialRenderFunction::Texture{
 			"../assets/TestRGBAImage.png", GLTexture2D::InternalFormat::Rgba });
-		meshWithMaterial->setAmbient(Eigen::Vector4f(0.7f, 0.1f, 0.3f, 1.f));
+		meshWithMaterial->setAmbient(Eigen::Vector4f(1, 0.5, 0.1, 1.f));
 		//		meshWithMaterial->setMesh(rectangleMesh);
-		meshWithMaterial->setMesh("../assets/Cube.ply");
+		meshWithMaterial->setMesh("../assets/MonkeySmooth.ply");
 		meshScene->addChild(meshWithMaterial);
 	}
 	view->addChild(meshScene);
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 		rootScope.Set("gl_Position"_H, dream::components::Output());
 		rootScope.Set("uLightDirection"_H,
 					  dream::components::Uniform<Eigen::Vector3f>(
-						  Eigen::Vector3f(-0.45, -0.45, -0.45).normalized()));
+						  Eigen::Vector3f(-1, -2, -3).normalized()));
 	}
 
 	view->setFarPlane(1000.f);
