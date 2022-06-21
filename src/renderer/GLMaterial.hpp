@@ -214,6 +214,11 @@ protected:
 
 		if (mMeshBuffers->availableComponents.normals)
 			scope.Set("aNormal"_H, components::Attribute<Eigen::Vector3f>());
+		if (mMeshBuffers->availableComponents.tangentspace)
+		{
+			scope.Set("aTangent"_H, components::Attribute<Eigen::Vector3f>());
+			scope.Set("aBitangent"_H, components::Attribute<Eigen::Vector3f>());
+		}
 
 		scope.Set("uSpecularity"_H, components::Uniform<float>(16));
 	}
@@ -245,6 +250,36 @@ protected:
 		}
 		else
 			mVAO.disableAttribute(textureAttributeSpec.location);
+
+		if (mMeshBuffers->availableComponents.tangentspace)
+		{
+			auto tangentsSpec = tangentAttributSpec;
+			tangentsSpec.offset =
+				(verticesAttributeSpec.components +
+				 normalsAttributeSpec.components *
+					 mMeshBuffers->availableComponents.normals +
+				 textureAttributeSpec.components *
+					 mMeshBuffers->availableComponents.textureCoordinates) *
+				mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(tangentsSpec, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
+			auto bitangentSpec = bitangentAttributSpec;
+			bitangentSpec.offset =
+				(verticesAttributeSpec.components +
+				 normalsAttributeSpec.components *
+					 mMeshBuffers->availableComponents.normals +
+				 textureAttributeSpec.components *
+					 mMeshBuffers->availableComponents.textureCoordinates +
+				 tangentAttributSpec.components) *
+				mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(bitangentSpec, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
+		}
+		else
+		{
+			mVAO.disableAttribute(tangentAttributSpec.location);
+			mVAO.disableAttribute(bitangentAttributSpec.location);
+		}
 	}
 	AmbientType mAmbientColor;
 
@@ -259,6 +294,10 @@ protected:
 		textureAttributeSpec;
 	static const glwrapper::GLVertexArray::AttributeSpecification
 		normalsAttributeSpec;
+	static const glwrapper::GLVertexArray::AttributeSpecification
+		tangentAttributSpec;
+	static const glwrapper::GLVertexArray::AttributeSpecification
+		bitangentAttributSpec;
 };
 
 } // namespace renderer

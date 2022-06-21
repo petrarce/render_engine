@@ -41,10 +41,10 @@ int main(int argc, char **argv)
 			"Mesh" + std::to_string(i));
 		meshWithMaterial->setTransform(transform);
 		meshWithMaterial->setAmbient(GLMeshWithMaterialRenderFunction::Texture{
-			"../assets/TestRGBAImage.png", GLTexture2D::InternalFormat::Rgba });
-		meshWithMaterial->setAmbient(Eigen::Vector4f(1, 0.5, 0.1, 1.f));
-		//		meshWithMaterial->setMesh(rectangleMesh);
-		meshWithMaterial->setMesh("../assets/MonkeySmooth.ply");
+			"../assets/TestRGBAImage.png",
+			GLTexture2D::InternalFormat::Srgb8_alpha8 });
+		meshWithMaterial->setMesh(i % 2 ? "../assets/MonkeySmooth.ply"
+										: "../assets/Monkey.ply");
 		meshScene->addChild(meshWithMaterial);
 	}
 	view->addChild(meshScene);

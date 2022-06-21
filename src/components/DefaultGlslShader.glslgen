@@ -153,3 +153,26 @@ out vec4 fragColor( vec3 blinnPhongColor)
 @endsrc
 }
 
+fragment prio=1
+out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
+{
+@src
+	fragColor = vec4((gsNormal + vec3(1,1,1)) / 2, 1.f);
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
+{
+@src
+	fragColor = vec4((aTangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor(attr3 vec3 aBitangent, bool fDrawBitangent)
+{
+@src
+	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}

@@ -68,7 +68,8 @@ GLAssetManager<GLMeshObject>::loadAsset(const std::string &filePath)
 	Assimp::Importer importer;
 	const aiScene *scene = importer.ReadFile(
 		filePath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |
-							  aiProcess_FixInfacingNormals);
+							  aiProcess_FixInfacingNormals |
+							  aiProcess_CalcTangentSpace);
 	if (!scene)
 	{
 		std::cerr << "Failed to load mesh file " + filePath << std::endl;
@@ -95,9 +96,8 @@ GLAssetManager<GLMeshObject>::loadAsset(const std::string &filePath)
 											 2 * (mesh->HasTextureCoords(0))));
 
 	aiVector3D *vertices = mesh->mVertices;
-	vertexData.insert(
-		vertexData.end(), reinterpret_cast<float *>(vertices),
-		reinterpret_cast<float *>(&vertices[mesh->mNumVertices - 1]) + 3);
+	vertexData.insert(vertexData.end(), reinterpret_cast<float *>(vertices),
+					  reinterpret_cast<float *>(&vertices[mesh->mNumVertices]));
 
 	if (mesh->HasNormals())
 	{
@@ -105,7 +105,7 @@ GLAssetManager<GLMeshObject>::loadAsset(const std::string &filePath)
 		aiVector3D *normals						= mesh->mNormals;
 		vertexData.insert(
 			vertexData.end(), reinterpret_cast<float *>(normals),
-			reinterpret_cast<float *>(&normals[mesh->mNumVertices - 1]) + 3);
+			reinterpret_cast<float *>(&normals[mesh->mNumVertices]));
 	}
 
 	if (mesh->HasTextureCoords(0))
@@ -118,6 +118,18 @@ GLAssetManager<GLMeshObject>::loadAsset(const std::string &filePath)
 			vertexData.push_back(textures[i].x);
 			vertexData.push_back(textures[i].y);
 		}
+	}
+	if (mesh->HasTangentsAndBitangents())
+	{
+		meshObject->availableComponents.tangentspace = true;
+		aiVector3D *tangents						 = mesh->mTangents;
+		vertexData.insert(
+			vertexData.end(), reinterpret_cast<float *>(tangents),
+			reinterpret_cast<float *>(&tangents[mesh->mNumVertices]));
+		aiVector3D *bitangents = mesh->mBitangents;
+		vertexData.insert(
+			vertexData.end(), reinterpret_cast<float *>(bitangents),
+			reinterpret_cast<float *>(&bitangents[mesh->mNumVertices]));
 	}
 
 	std::vector<unsigned int> indexData;

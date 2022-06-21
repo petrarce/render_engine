@@ -94,5 +94,34 @@ public:
 	}
 };
 
+template <class ValueT>
+class Option : public Variable
+{
+public:
+	Option(const ValueT &value)
+		: Variable()
+		, mValue(value)
+	{
+	}
+	~Option()
+	{
+	}
+	void apply(const std::string &name,
+			   glwrapper::GLProgram &program) const override
+	{
+	}
+	const ValueT &value() const
+	{
+		return mValue;
+	}
+	void setValue(const ValueT &value)
+	{
+		mValue = value;
+	}
+
+private:
+	ValueT mValue;
+};
+
 } // namespace components
 } // namespace dream

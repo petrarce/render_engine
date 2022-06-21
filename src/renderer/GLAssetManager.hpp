@@ -19,8 +19,9 @@ struct GLMeshObject
 		bool normals : 1;
 		bool textureCoordinates : 1;
 		bool indices : 1;
+		bool tangentspace : 1;
 	};
-	Components availableComponents = { false, false, false };
+	Components availableComponents = { false, false, false, false };
 	unsigned int numVertices	   = 0;
 	unsigned int numIndices		   = 0;
 	glwrapper::GLArrayBuffer VAB;
