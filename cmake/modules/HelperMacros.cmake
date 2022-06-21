@@ -15,7 +15,6 @@ function(target_deploy_assets)
 		"${singleValArgs}"
 		"${multiValArgs}"
 		${ARGN})
-	message("ASSETS_TARGET=${ASSETS_TARGET}, ASSETS_ASSETFILES=${ASSETS_ASSETFILES}")
 	if(NOT ASSETS_TARGET)
 		message("target_deploy_assets: target was not provided")
 		return()
@@ -41,4 +40,34 @@ function(target_deploy_assets)
 	add_dependencies(${ASSETS_TARGET}
 		${ASSETS_TARGET}-assets)
 
+endfunction()
+
+function(qt_add_qml_module)
+	set(options "")
+	set(singleValArgs NAME VERSION)
+	set(multiValArgs SOURCES LINK_LIBS)
+	cmake_parse_arguments(QMLMOD
+		"${options}"
+		"${singleValArgs}"
+		"${multiValArgs}"
+		${ARGN})
+	find_package(Qt5 COMPONENTS Quick Qml Core)
+	return_if(NOT Qt5Quick_FOUND)
+	return_if(NOT Qt5Qml_FOUND)
+	return_if(NOT Qt5Core_FOUND)
+	
+	add_library(${QMLMOD_NAME}-qmlmodule SHARED
+		${QMLMOD_SOURCES})
+	
+	target_link_libraries(${QMLMOD_NAME}-qmlmodule PUBLIC 
+		Qt5::Quick
+		Qt5::Qml
+		Qt5::Core
+		${LINK_LIBS})
+	
+	
+#	set_target_properties(${QMLMOD_NAME}-qmlmodule
+#		PROPERTIES
+#			LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${QMLMOD_NAME}
+#		)
 endfunction()
