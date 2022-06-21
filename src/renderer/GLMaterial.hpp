@@ -29,38 +29,24 @@ public:
 	GLMeshWithMaterialRenderFunction()
 		: components::GLTransformedRenderFunction()
 	{
-		mVertexAttributesBuffer.create(
-			std::vector<float>{ // vertex positions
-								0, 0, 0, 5, 0, 10, 10, 0, 10,
-								// texture coordinates
-								0, 0, 0.5, 1, 1, 0 },
-			GL_STATIC_DRAW);
-		mInstances = 3;
-		mVAO.createAttribute(verticesAttributeSpec, mVertexAttributesBuffer);
-
-		auto textureSpec   = textureAttributeSpec;
-		textureSpec.offset = sizeof(float) * 9;
-		mVAO.createAttribute(textureSpec, mVertexAttributesBuffer);
-		mTextureEnabled = true;
-	}
-
-	void drawImpl(const components::Scope &parentScope) override
-	{
 		using namespace molecular::util;
-		components::Scope scope(parentScope);
-		prepareScope(scope);
+		mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
+			"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+		if (mMeshBuffers == nullptr)
+		{
+			mMeshBuffers = GLAssetManager<GLMeshObject>::createAsset(
+				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+			mMeshBuffers->VAB.create(
+				std::vector<float>{ // vertex positions
+									0, 0, 0, 5, 0, 10, 10, 0, 10,
+									// texture coordinates
+									0, 0, 0.5, 1, 1, 0 },
+				GL_STATIC_DRAW);
+			mMeshBuffers->availableComponents.textureCoordinates = true;
+			mMeshBuffers->numVertices							 = 3;
+		}
 
-		auto program =
-			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
-		program->prepare(scope);
-
-		glwrapper::GLObjectBinder bindVAO(mVAO);
-		glwrapper::GLObjectBinder bindProgram(*program);
-		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glDrawArrays(GL_TRIANGLES, 0, mInstances);
-		GLTransformedRenderFunction::drawImpl(parentScope);
+		resetVertexArrayObject();
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -93,8 +79,11 @@ public:
 		assert(!textureCoordinates.has_value() ||
 			   textureCoordinates->size() % textureAttributeSpec.components ==
 				   0);
-		mInstances =
-			(indices.has_value() ? indices->size() : vertices.size() / 3);
+		mMeshBuffers			  = std::make_shared<GLMeshObject>();
+		mMeshBuffers->numVertices = vertices.size() / 3;
+		mMeshBuffers->numIndices  = indices.has_value() ? indices->size() : 0;
+		mMeshBuffers->availableComponents = { false, false, false };
+
 		size_t bufferSize =
 			vertices.size() + (normals.has_value() ? normals->size() : 0) +
 			(textureCoordinates.has_value() ? textureCoordinates->size() : 0);
@@ -109,44 +98,65 @@ public:
 		if (textureCoordinates.has_value() &&
 			(textureCoordinates->size() % 2) == (vertices.size() % 3))
 		{
-			auto textureSpecs	= textureAttributeSpec;
-			textureSpecs.offset = sizeof(float) * vertexAttributeBuffer.size();
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 textureCoordinates->begin(),
 										 textureCoordinates->end());
-			mVAO.createAttribute(textureSpecs, mVertexAttributesBuffer);
-			mTextureEnabled = true;
-		}
-		else
-		{
-			mVAO.disableAttribute(textureAttributeSpec.location);
-			mTextureEnabled = false;
+			mMeshBuffers->availableComponents.textureCoordinates = true;
 		}
 
 		if (normals.has_value())
 		{
-			auto normalSpecs   = normalsAttributeSpec;
-			normalSpecs.offset = sizeof(float) * vertexAttributeBuffer.size();
 			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
 										 normals->begin(), normals->end());
-			mVAO.createAttribute(normalSpecs, mVertexAttributesBuffer);
-			mNormalsEnabled = true;
+			mMeshBuffers->availableComponents.normals = true;
 		}
-		else
-		{
-			mVAO.disableAttribute(normalsAttributeSpec.location);
-			mNormalsEnabled = false;
-		}
-
-		// deploy indices
-		// TODO: implement
-		mIndecisEnabled = false;
 
 		// reallocate buffer on gpu
-		mVertexAttributesBuffer.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+		if (indices.has_value())
+		{
+			mMeshBuffers->EAB.create(*indices, GL_STATIC_DRAW);
+			mMeshBuffers->availableComponents.indices = true;
+		}
+		mMeshBuffers->VAB.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+		resetVertexArrayObject();
+	}
+
+	void setMesh(const std::string &meshPath)
+	{
+		using namespace molecular::util;
+
+		mMeshBuffers = GLAssetManager<GLMeshObject>::addAsset(meshPath);
+		if (!mMeshBuffers)
+			mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
+				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+		assert(mMeshBuffers != nullptr);
+		resetVertexArrayObject();
 	}
 
 protected:
+	void drawImpl(const components::Scope &parentScope) override
+	{
+		using namespace molecular::util;
+		components::Scope scope(parentScope);
+		prepareScope(scope);
+
+		auto program =
+			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
+		program->prepare(scope);
+
+		glwrapper::GLObjectBinder bindVAO(mVAO);
+		glwrapper::GLObjectBinder bindProgram(*program);
+		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (mMeshBuffers->availableComponents.indices)
+			glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
+						   GL_UNSIGNED_INT, 0);
+		else
+			glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+		GLTransformedRenderFunction::drawImpl(parentScope);
+	}
+
 	void prepareScope(components::Scope &scope) override
 	{
 		using namespace molecular::util;
@@ -154,7 +164,7 @@ protected:
 		scope.Set("aVerPos"_H, components::Attribute<Eigen::Vector3f>());
 
 		const Texture *textureName = std::get_if<Texture>(&mAmbientColor);
-		if (textureName && mTextureEnabled)
+		if (textureName && mMeshBuffers->availableComponents.textureCoordinates)
 		{
 			auto texture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
 				HashUtils::MakeHash(textureName->path));
@@ -201,16 +211,79 @@ protected:
 						  components::Uniform<typeof clr>(clr));
 			}
 		}
+
+		if (mMeshBuffers->availableComponents.normals)
+			scope.Set("aNormal"_H, components::Attribute<Eigen::Vector3f>());
+		if (mMeshBuffers->availableComponents.tangentspace)
+		{
+			scope.Set("aTangent"_H, components::Attribute<Eigen::Vector3f>());
+			scope.Set("aBitangent"_H, components::Attribute<Eigen::Vector3f>());
+		}
+
+		scope.Set("uSpecularity"_H, components::Uniform<float>(16));
+	}
+
+	void resetVertexArrayObject()
+	{
+		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
+							 mMeshBuffers->EAB);
+
+		if (mMeshBuffers->availableComponents.normals)
+		{
+			auto normals   = normalsAttributeSpec;
+			normals.offset = verticesAttributeSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(normals, mMeshBuffers->VAB, mMeshBuffers->EAB);
+		}
+		else
+			mVAO.disableAttribute(normalsAttributeSpec.location);
+
+		if (mMeshBuffers->availableComponents.textureCoordinates)
+		{
+			auto texCoord	= textureAttributeSpec;
+			texCoord.offset = (verticesAttributeSpec.components +
+							   normalsAttributeSpec.components *
+								   mMeshBuffers->availableComponents.normals) *
+							  mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(texCoord, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
+		}
+		else
+			mVAO.disableAttribute(textureAttributeSpec.location);
+
+		if (mMeshBuffers->availableComponents.tangentspace)
+		{
+			auto tangentsSpec = tangentAttributSpec;
+			tangentsSpec.offset =
+				(verticesAttributeSpec.components +
+				 normalsAttributeSpec.components *
+					 mMeshBuffers->availableComponents.normals +
+				 textureAttributeSpec.components *
+					 mMeshBuffers->availableComponents.textureCoordinates) *
+				mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(tangentsSpec, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
+			auto bitangentSpec = bitangentAttributSpec;
+			bitangentSpec.offset =
+				(verticesAttributeSpec.components +
+				 normalsAttributeSpec.components *
+					 mMeshBuffers->availableComponents.normals +
+				 textureAttributeSpec.components *
+					 mMeshBuffers->availableComponents.textureCoordinates +
+				 tangentAttributSpec.components) *
+				mMeshBuffers->numVertices * sizeof(float);
+			mVAO.createAttribute(bitangentSpec, mMeshBuffers->VAB,
+								 mMeshBuffers->EAB);
+		}
+		else
+		{
+			mVAO.disableAttribute(tangentAttributSpec.location);
+			mVAO.disableAttribute(bitangentAttributSpec.location);
+		}
 	}
 	AmbientType mAmbientColor;
-	unsigned int mInstances{ 0 };
 
-	glwrapper::GLArrayBuffer mVertexAttributesBuffer;
-	bool mNormalsEnabled{ false };
-	bool mTextureEnabled{ false };
-
-	glwrapper::GLElementArrayBuffer mIndexBuffer;
-	bool mIndecisEnabled{ false };
+	std::shared_ptr<GLMeshObject> mMeshBuffers;
 
 	glwrapper::GLVertexArray mVAO;
 
@@ -221,6 +294,10 @@ protected:
 		textureAttributeSpec;
 	static const glwrapper::GLVertexArray::AttributeSpecification
 		normalsAttributeSpec;
+	static const glwrapper::GLVertexArray::AttributeSpecification
+		tangentAttributSpec;
+	static const glwrapper::GLVertexArray::AttributeSpecification
+		bitangentAttributSpec;
 };
 
 } // namespace renderer
@@ -241,7 +318,7 @@ public:
 	};
 
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
-
+	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
@@ -265,7 +342,7 @@ public:
 		return mAmbient;
 	}
 
-	void setMesh(const std::shared_ptr<Mesh> mesh)
+	void setMesh(const MeshVariant mesh)
 	{
 		mMesh		 = mesh;
 		mMeshChanged = true;
@@ -278,21 +355,25 @@ public:
 			mRenderFunction);
 		if (mAmbientChanged)
 		{
-			rf->setAmbientColor(mAmbient);
 			mAmbientChanged = false;
+			rf->setAmbientColor(mAmbient);
 		}
-		if (mMeshChanged && mMesh)
+		if (mMeshChanged)
 		{
 			mMeshChanged = false;
-			rf->setMesh(mMesh->vertices, mMesh->normals, mMesh->textures,
-						mMesh->indices);
+			if (auto mesh = std::get_if<std::shared_ptr<Mesh>>(&mMesh))
+				rf->setMesh(
+					mesh->operator->()->vertices, mesh->operator->()->normals,
+					mesh->operator->()->textures, mesh->operator->()->indices);
+			else if (auto mesh = std::get_if<std::string>(&mMesh))
+				rf->setMesh(*mesh);
 		}
 	}
 
 private:
 	AmbientData mAmbient;
 	bool mAmbientChanged{ true };
-	std::shared_ptr<Mesh> mMesh;
+	MeshVariant mMesh;
 	bool mMeshChanged{ false };
 };
 } // namespace renderer

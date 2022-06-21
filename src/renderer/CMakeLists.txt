@@ -12,12 +12,19 @@ add_library(gl-renderer STATIC
 
 target_link_libraries(gl-renderer PUBLIC
 	gl-components
-	stb-lib)
+	stb-lib
+	assimp)
 target_include_directories(gl-renderer PUBLIC .)
 
 target_deploy_assets(TARGET gl-renderer ASSETFILES
 	assets/Grass.png
-	assets/TestRGBAImage.png)
+	assets/TestRGBAImage.png
+	assets/Cube.ply
+	assets/Triangle.ply
+	assets/Rectangle.ply
+	assets/Monkey.ply
+	assets/MonkeySmooth.ply
+	)
 
 if(BUILD_TESTING)
 	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
@@ -31,5 +38,9 @@ if(BUILD_TESTING)
 	)
 
 	add_test(NAME test-opengl-components COMMAND test-opengl-components)
+	add_executable(assimp-based-loader
+		tests/AssimpBasedLoader.cpp)
+	target_link_libraries(assimp-based-loader assimp)
 endif()
+
 

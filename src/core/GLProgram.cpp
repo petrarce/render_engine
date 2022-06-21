@@ -102,10 +102,10 @@ void GLProgram::prepare(const std::string &vertexShaderText,
 	GLFragmentShader fs;
 	if (!vs.compile(vertexShaderText))
 		throw std::runtime_error("Vertex compilation failed:\n " +
-								 vs.compilationLog());
+								 vs.compilationLog() + vertexShaderText);
 	if (!fs.compile(fragmentShaderText))
 		throw std::runtime_error("Fragment compilation failed:\n " +
-								 fs.compilationLog());
+								 fs.compilationLog() + fragmentShaderText);
 	if (!link(vs, fs))
 		throw std::runtime_error("Link error:\n" + linkageLog() +
 								 "Vertex Shader:\n " + vertexShaderText +

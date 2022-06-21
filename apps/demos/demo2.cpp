@@ -41,8 +41,10 @@ int main(int argc, char **argv)
 			"Mesh" + std::to_string(i));
 		meshWithMaterial->setTransform(transform);
 		meshWithMaterial->setAmbient(GLMeshWithMaterialRenderFunction::Texture{
-			"../assets/Grass.png", GLTexture2D::InternalFormat::Rgba });
-		meshWithMaterial->setMesh(rectangleMesh);
+			"../assets/TestRGBAImage.png",
+			GLTexture2D::InternalFormat::Srgb8_alpha8 });
+		meshWithMaterial->setMesh(i % 2 ? "../assets/MonkeySmooth.ply"
+										: "../assets/Monkey.ply");
 		meshScene->addChild(meshWithMaterial);
 	}
 	view->addChild(meshScene);
@@ -55,6 +57,9 @@ int main(int argc, char **argv)
 		using namespace molecular::util;
 		rootScope.Set("fragColor"_H, dream::components::Output());
 		rootScope.Set("gl_Position"_H, dream::components::Output());
+		rootScope.Set("uLightDirection"_H,
+					  dream::components::Uniform<Eigen::Vector3f>(
+						  Eigen::Vector3f(-1, -2, -3).normalized()));
 	}
 
 	view->setFarPlane(1000.f);

@@ -29,10 +29,21 @@ public:
 		mProjectionMatrix = projection;
 	}
 
-public:
+protected:
+	void prepareScope(components::Scope &scope) override
+	{
+		using namespace molecular::util;
+		scope.Set(
+			"uViewDirection"_H,
+			Uniform<Eigen::Vector3f>(mViewMatrix.transpose().block<3, 3>(0, 0) *
+									 Eigen::Vector3f(0, 0, -1)));
+	}
+
 	void drawImpl(const Scope &parentScope) override
 	{
-		Scope viewScope(parentScope);
+		Scope scope(parentScope);
+		prepareScope(scope);
+		Scope viewScope(scope);
 		viewScope.Set(molecular::util::HashUtils::MakeHash("uView"),
 					  Uniform<Eigen::Matrix4f>(mViewMatrix));
 		viewScope.Set(molecular::util::HashUtils::MakeHash("uProjection"),

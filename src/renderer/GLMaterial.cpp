@@ -44,6 +44,28 @@ const glwrapper::GLVertexArray::AttributeSpecification
 			.stride		   = sizeof(float) * 3,
 			.type		   = GL_FLOAT,
 		};
+const glwrapper::GLVertexArray::AttributeSpecification
+	GLMeshWithMaterialRenderFunction::tangentAttributSpec =
+		glwrapper::GLVertexArray::AttributeSpecification{
+			.components	   = 3,
+			.instanceLevel = 0,
+			.location	   = 3,
+			.normalize	   = false,
+			.offset		   = 0,
+			.stride		   = sizeof(float) * 3,
+			.type		   = GL_FLOAT,
+		};
+const glwrapper::GLVertexArray::AttributeSpecification
+	GLMeshWithMaterialRenderFunction::bitangentAttributSpec =
+		glwrapper::GLVertexArray::AttributeSpecification{
+			.components	   = 3,
+			.instanceLevel = 0,
+			.location	   = 4,
+			.normalize	   = false,
+			.offset		   = 0,
+			.stride		   = sizeof(float) * 3,
+			.type		   = GL_FLOAT,
+		};
 
 } // namespace renderer
 } // namespace dream

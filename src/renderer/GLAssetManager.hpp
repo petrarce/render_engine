@@ -12,6 +12,22 @@ namespace dream
 namespace renderer
 {
 
+struct GLMeshObject
+{
+	struct Components
+	{
+		bool normals : 1;
+		bool textureCoordinates : 1;
+		bool indices : 1;
+		bool tangentspace : 1;
+	};
+	Components availableComponents = { false, false, false, false };
+	unsigned int numVertices	   = 0;
+	unsigned int numIndices		   = 0;
+	glwrapper::GLArrayBuffer VAB;
+	glwrapper::GLElementArrayBuffer EAB;
+};
+
 template <class AssetT>
 class GLAssetManager
 	: public dream::components::Singleton<GLAssetManager<AssetT>>
@@ -54,6 +70,15 @@ public:
 		return manager.mAssets.at(id);
 	}
 
+	static AssetPtr createAsset(molecular::util::Hash id)
+	{
+		auto &manager = GLAssetManager<AssetT>::instance();
+		if (manager.mAssets.find(id) == manager.mAssets.end())
+			manager.mAssets.insert({ id, std::make_shared<AssetT>() });
+
+		return manager.mAssets.at(id);
+	}
+
 	static AssetPtr removeAsset(molecular::util::Hash id)
 	{
 		auto &manager = GLAssetManager<AssetT>::instance();
@@ -66,7 +91,6 @@ public:
 	}
 
 private:
-	template <class... Args>
 	static AssetPtr loadAsset(const std::string &assetPath);
 	static AssetPtr loadAsset(const std::string &assetPath,
 							  glwrapper::GLTexture2D::InternalFormat format);

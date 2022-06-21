@@ -78,3 +78,101 @@ out vec4 fragColor(vec4 ambientColor)
 	fragColor = ambientColor;
 @endsrc
 }
+
+fragment
+float ambientTerm()
+{
+@src
+	ambientTerm = 0.1;
+@endsrc
+}
+
+fragment
+vec3 diffuseColor(vec4 ambientColor)
+{
+@src
+	diffuseColor = vec3(ambientColor);
+@endsrc
+}
+
+fragment
+vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
+{
+@src
+	mat3 rotation = mat3(uModel);
+	gsNormal = normalize(rotation * aNormal);
+@endsrc
+}
+
+fragment
+float diffuseTerm(vec3 gsNormal, vec3 uLightDirection, float ambientTerm)
+{
+@src
+	vec3 reflectionDir = normalize(uLightDirection - 2 * gsNormal * dot(uLightDirection, gsNormal));
+	diffuseTerm = max(0, dot(reflectionDir, gsNormal));
+@endsrc
+}
+
+fragment
+vec3 specularColor()
+{
+@src
+	specularColor = vec3(1.f, 1.f, 1.f);
+@endsrc
+}
+
+fragment
+float specularTerm(vec3 uLightDirection, vec3 uViewDirection, vec3 gsNormal, float uSpecularity)
+{
+@src
+	//half vector
+	vec3 hv = normalize(normalize(-uLightDirection) + normalize(-uViewDirection));
+	specularTerm = max(0, pow(dot(gsNormal, hv), uSpecularity));
+@endsrc
+}
+
+fragment
+vec3 blinnPhongColor(	vec4 ambientColor,		float ambientTerm,
+						vec3 diffuseColor,		float diffuseTerm,
+						vec3 specularColor,		float specularTerm)
+{
+@src
+	blinnPhongColor = clamp(vec3(ambientColor) * ambientTerm
+							 + diffuseColor * (1 - ambientTerm)
+							+ specularColor * specularTerm,
+						vec3(0.f, 0.f, 0.f),
+						vec3(1.f, 1.f, 1.f));
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor( vec3 blinnPhongColor)
+{
+@src
+	fragColor = vec4(blinnPhongColor, 1.f);
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
+{
+@src
+	fragColor = vec4((gsNormal + vec3(1,1,1)) / 2, 1.f);
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
+{
+@src
+	fragColor = vec4((aTangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}
+
+fragment prio=1
+out vec4 fragColor(attr3 vec3 aBitangent, bool fDrawBitangent)
+{
+@src
+	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}
