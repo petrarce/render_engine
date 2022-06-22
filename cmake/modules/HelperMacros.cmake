@@ -63,7 +63,7 @@ function(qt_add_qml_module)
 		Qt5::Quick
 		Qt5::Qml
 		Qt5::Core
-		${LINK_LIBS})
+		${QMLMOD_LINK_LIBS})
 
 	set(QML_MODULE_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${QMLMOD_NAME})
 	set_target_properties(${QMLMOD_NAME}-qmlmodule

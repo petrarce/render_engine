@@ -9,7 +9,7 @@ namespace components
 class GLRenderFunction
 {
 public:
-	void draw(const Scope &parentScope)
+	void draw(const Scope &parentScope = Scope())
 	{
 		assert(mInitialized && "Render function was not initialized");
 		drawImpl(parentScope);

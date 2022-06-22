@@ -4,9 +4,15 @@ qt_add_qml_module( NAME Graphics
 		GraphicsQmlPlugin.hpp
 		RenderDisplay.hpp
 		RenderDisplay.cpp
+		RenderableObject.hpp
+		RenderableObject.cpp
+		SceneView.cpp
+		SceneView.hpp
 	QMLFILES
 		Graphics.qmltypes
 	VERSION 0.1
+	LINK_LIBS 
+		gl-renderer
 	)
 
 target_deploy_assets(
