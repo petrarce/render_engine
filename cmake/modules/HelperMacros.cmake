@@ -45,7 +45,7 @@ endfunction()
 function(qt_add_qml_module)
 	set(options "")
 	set(singleValArgs NAME VERSION)
-	set(multiValArgs SOURCES LINK_LIBS)
+	set(multiValArgs SOURCES LINK_LIBS QMLFILES)
 	cmake_parse_arguments(QMLMOD
 		"${options}"
 		"${singleValArgs}"
@@ -55,7 +55,7 @@ function(qt_add_qml_module)
 	return_if(NOT Qt5Quick_FOUND)
 	return_if(NOT Qt5Qml_FOUND)
 	return_if(NOT Qt5Core_FOUND)
-	
+
 	add_library(${QMLMOD_NAME}-qmlmodule SHARED
 		${QMLMOD_SOURCES})
 	
@@ -64,10 +64,40 @@ function(qt_add_qml_module)
 		Qt5::Qml
 		Qt5::Core
 		${LINK_LIBS})
-	
-	
-#	set_target_properties(${QMLMOD_NAME}-qmlmodule
-#		PROPERTIES
-#			LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${QMLMOD_NAME}
-#		)
+
+	set(QML_MODULE_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${QMLMOD_NAME})
+	set_target_properties(${QMLMOD_NAME}-qmlmodule
+		PROPERTIES
+			LIBRARY_OUTPUT_DIRECTORY ${QML_MODULE_DIR}
+		)
+
+	foreach(ASSET ${QMLMOD_QMLFILES})
+		list(APPEND SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/${ASSET}")
+		list(APPEND DEST_LIST "${QML_MODULE_DIR}/${ASSET}")
+	endforeach()
+	list(APPEND SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/qmldir")
+	list(APPEND DEST_LIST "${QMLMOD_QMLFILES}/qmldir")
+
+	# Move qml and other resource files to modules directory
+	add_custom_target(${QMLMOD_NAME}-qmlmodule-files
+		COMMAND ${CMAKE_COMMAND} -E copy ${SRC_LIST} qmldir ${QML_MODULE_DIR}
+		BYPRODUCTS ${DEST_LIST}
+		COMMENT "Deploing assets for${QMLMOD_NAME}-qmlmodule-files"
+		DEPENDS ${SRC_LIST}
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		SOURCES ${SRC_LIST})
+	add_dependencies(${QMLMOD_NAME}-qmlmodule
+		${QMLMOD_NAME}-qmlmodule-files)
+
+	# generate qml types information file
+	get_filename_component(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+	set(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMLPLUGINDUMP_EXECUTABLE}/qmlplugindump")
+	if(EXISTS ${QT_QMLPLUGINDUMP_EXECUTABLE})
+		add_custom_command(TARGET ${QMLMOD_NAME}-qmlmodule POST_BUILD
+			COMMAND ${QT_QMLPLUGINDUMP_EXECUTABLE} ${QMLMOD_NAME} ${QMLMOD_VERSION} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} > ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes
+			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes ${QML_MODULE_DIR}
+			)
+	else()
+		message("Cannot generate qmltypes file: ${QT_QMLPLUGINDUMP_EXECUTABLE} doesn't exists")
+	endif()
 endfunction()

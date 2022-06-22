@@ -26,7 +26,6 @@ set(VERSION_PATCH 0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" CACHE PATH "Path to cmake modules")
 
-
 include_directories(AFTER .)
 include_directories(AFTER molecular-programgenerator)
 include_directories(AFTER molecular-util)

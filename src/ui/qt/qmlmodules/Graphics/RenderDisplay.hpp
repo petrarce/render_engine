@@ -8,15 +8,20 @@ class RenderDisplay : public QQuickFramebufferObject
 {
 	Q_OBJECT
 public:
-	RenderDisplay(QQuickItem *parent = nullptr)
-		: QQuickFramebufferObject(parent)
+	class Renderer : public QQuickFramebufferObject::Renderer
 	{
-	}
+	public:
+		Renderer();
+		virtual ~Renderer();
+
+		void render() override;
+		void synchronize(QQuickFramebufferObject *) override;
+	};
+
+	RenderDisplay(QQuickItem *parent = nullptr);
 	~RenderDisplay();
-	QQuickFramebufferObject::Renderer *createRenderer() const override
-	{
-		return nullptr;
-	}
+	QQuickFramebufferObject::Renderer *createRenderer() const override;
 };
+
 } // namespace Graphics
 } // namespace qmlmodule

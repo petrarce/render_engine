@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
 		QDir dir(p);
 		viewer.engine()->addImportPath(dir.absolutePath());
 	}
+	viewer.engine()->addImportPath(QGuiApplication::applicationDirPath() +
+								   "/../lib/");
 
 	if (positionalArguments.empty())
 	{
