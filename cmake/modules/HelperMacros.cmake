@@ -1,10 +1,10 @@
-function(return_if)
+macro(return_if)
 	if( ${ARGV} )
 		string(REPLACE ";" " " OUTMSG "${ARGV}")
 		message("${OUTMSG}")
 		return()
 	endif()
-endfunction()
+endmacro()
 
 function(target_deploy_assets)
 	set(options "")
