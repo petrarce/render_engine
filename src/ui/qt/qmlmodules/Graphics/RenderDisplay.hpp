@@ -2,6 +2,8 @@
 #include <QQuickFramebufferObject>
 #include <QQmlListProperty>
 #include <GLRenderer>
+#include <GLComponents>
+#include <QStringList>
 #include "RenderableObject.hpp"
 
 namespace qmlmodule
@@ -14,6 +16,8 @@ class RenderDisplay : public QQuickFramebufferObject
 	Q_PROPERTY(
 		RenderableObject *rootRenderableObject READ rootRenderableObject WRITE
 			setRootRenderableObject NOTIFY rootRenderableObjectChanged)
+	Q_PROPERTY(QStringList rootScope READ rootScope WRITE setRootScope NOTIFY
+				   rootScopeChanged)
 	Q_CLASSINFO("DefaultProperty", "rootRenderableObject")
 
 public:
@@ -28,33 +32,26 @@ public:
 
 	private:
 		const RenderDisplay &mRenderDisplay;
+		dream::components::Scope mRenderingRootScope;
 	};
 
 	RenderDisplay(QQuickItem *parent = nullptr);
 	~RenderDisplay();
 	QQuickFramebufferObject::Renderer *createRenderer() const override;
 
-	RenderableObject *rootRenderableObject() const
-	{
-		return mRootRenderableObject;
-	}
+	RenderableObject *rootRenderableObject() const { return mRootRenderableObject; }
+	const QStringList& rootScope() const { return mRootScope; }
 
-	void setRootRenderableObject(RenderableObject *rootRenderableObject)
-	{
-		if (mRootRenderableObject == rootRenderableObject)
-			return;
-
-		mRootRenderableObject = rootRenderableObject;
-		connect(mRootRenderableObject, &RenderableObject::update, this,
-				&QQuickFramebufferObject::update);
-		Q_EMIT rootRenderableObjectChanged(mRootRenderableObject);
-	}
+	void setRootRenderableObject(RenderableObject *rootRenderableObject);
+	void setRootScope(const QStringList &rootScope);
 
 Q_SIGNALS:
 	void rootRenderableObjectChanged(RenderableObject *rootRenderableObject);
+	void rootScopeChanged(const QStringList &rootScope);
 
 private:
 	RenderableObject *mRootRenderableObject{ nullptr };
+	QStringList mRootScope;
 };
 
 } // namespace Graphics

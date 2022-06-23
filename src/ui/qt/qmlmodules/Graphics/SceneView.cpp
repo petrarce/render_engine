@@ -17,6 +17,7 @@ SceneView::SceneView(QQuickItem *parent)
 					dream::renderer::GLViewSetupRenderableObject>(
 					mRenderableObject);
 				renderable->setNearPlane(nearPlane);
+				Q_EMIT update();
 			});
 	connect(this, &SceneView::farPlaneChanged,
 			[this](qreal farPlane)
@@ -25,6 +26,7 @@ SceneView::SceneView(QQuickItem *parent)
 					dream::renderer::GLViewSetupRenderableObject>(
 					mRenderableObject);
 				renderable->setFarPlane(farPlane);
+				Q_EMIT update();
 			});
 	connect(this, &SceneView::aspectRatioChanged,
 			[this](qreal ar)
@@ -33,6 +35,7 @@ SceneView::SceneView(QQuickItem *parent)
 					dream::renderer::GLViewSetupRenderableObject>(
 					mRenderableObject);
 				renderable->setAspectRatio(ar);
+				Q_EMIT update();
 			});
 	connect(this, &SceneView::fovChanged,
 			[this](qreal fov)
@@ -41,6 +44,7 @@ SceneView::SceneView(QQuickItem *parent)
 					dream::renderer::GLViewSetupRenderableObject>(
 					mRenderableObject);
 				renderable->setFov(fov);
+				Q_EMIT update();
 			});
 }
 
@@ -55,7 +59,6 @@ void SceneView::setNearPlane(qreal nearPlane)
 
 	mNearPlane = nearPlane;
 	Q_EMIT nearPlaneChanged(mNearPlane);
-	Q_EMIT update();
 }
 
 void SceneView::setFarPlane(qreal farPlane)
@@ -65,7 +68,6 @@ void SceneView::setFarPlane(qreal farPlane)
 
 	mFarPlane = farPlane;
 	Q_EMIT farPlaneChanged(mFarPlane);
-	Q_EMIT update();
 }
 
 void SceneView::setAspectRatio(qreal aspectRatio)
@@ -75,7 +77,6 @@ void SceneView::setAspectRatio(qreal aspectRatio)
 
 	mAspectRatio = aspectRatio;
 	Q_EMIT aspectRatioChanged(mAspectRatio);
-	Q_EMIT update();
 }
 
 void SceneView::setFov(qreal fov)
@@ -85,7 +86,6 @@ void SceneView::setFov(qreal fov)
 
 	mFov = fov;
 	Q_EMIT fovChanged(mFov);
-	Q_EMIT update();
 }
 
 } // namespace Graphics

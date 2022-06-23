@@ -9,13 +9,16 @@ Rectangle {
 	ColumnLayout {
 		anchors.fill: parent
 		RenderDisplay {
-			id: mesh
+			id: viewport
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 			Layout.margins: 20
 			SceneView {
 				id: sceneView
 				fov: 45
+				aspectRatio: viewport.width/viewport.height
+				farPlane: 1000
+				nearPlane: 0.1
 			}
 		}
 		Rectangle{
@@ -38,7 +41,7 @@ Rectangle {
 		running: true
 		onTriggered: {
 			
-			sceneView.fov += 1
+			sceneView.fov = sceneView.fov + 1
 			console.log("Timer triggered")
 		}
 	}

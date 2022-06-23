@@ -24,19 +24,19 @@ public:
 
 	qreal nearPlane() const
 	{
-		return mFarPlane;
+		return mNearPlane;
 	}
 	qreal farPlane() const
 	{
-		return mAspectRatio;
+		return mFarPlane;
 	}
 	qreal aspectRatio() const
 	{
-		return mFov;
+		return mAspectRatio;
 	}
 	qreal fov() const
 	{
-		return mNearPlane;
+		return mFov;
 	}
 
 	void setNearPlane(qreal nearPlane);
