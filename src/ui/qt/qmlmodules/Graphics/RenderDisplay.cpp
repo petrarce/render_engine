@@ -21,22 +21,23 @@ void RenderDisplay::Renderer::render()
 	mRenderDisplay.rootRenderableObject()
 		->renderableObject()
 		->renderFunction()
-		->draw(mRenderingRootScope);
+		->draw(*mRenderingRootScope);
 }
 
 void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 {
 	mRenderDisplay.rootRenderableObject()->renderableObject()->sync();
 
-	dream::components::Scope newRootScope;
-	for (const auto &v : mRenderDisplay.rootScope())
-		newRootScope.Set(molecular::util::HashUtils::MakeHash(v.toStdString()),
-						 dream::components::Attribute<void>());
-	mRenderingRootScope = newRootScope;
+	auto newRootScope = std::make_unique<dream::components::Scope>();
+	for (const auto &v : mRenderDisplay.mRootScope)
+		newRootScope->Set(molecular::util::HashUtils::MakeHash(v.toStdString()),
+						  dream::components::Attribute<void>());
+	mRenderingRootScope = std::move(newRootScope);
 }
 
 RenderDisplay::RenderDisplay(QQuickItem *parent)
 	: QQuickFramebufferObject(parent)
+	, mRootScope({ "fragColor", "gl_Position" })
 {
 }
 
@@ -55,19 +56,21 @@ void RenderDisplay::setRootRenderableObject(
 	if (mRootRenderableObject == rootRenderableObject)
 		return;
 
+	disconnect(mRootRenderableObject, &RenderableObject::update, this,
+			   &QQuickFramebufferObject::update);
 	mRootRenderableObject = rootRenderableObject;
 	connect(mRootRenderableObject, &RenderableObject::update, this,
 			&QQuickFramebufferObject::update);
 	Q_EMIT rootRenderableObjectChanged(mRootRenderableObject);
 }
 
-void RenderDisplay::setRootScope(const QStringList &rootScope)
+void RenderDisplay::setMode(RenderingMode mode)
 {
-	if (mRootScope == rootScope)
+	if (mMode == mode)
 		return;
 
-	mRootScope = rootScope;
-	Q_EMIT rootScopeChanged(mRootScope);
+	mMode = mode;
+	Q_EMIT modeChanged(mMode);
 }
 
 } // namespace Graphics

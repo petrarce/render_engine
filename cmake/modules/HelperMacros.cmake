@@ -90,14 +90,15 @@ function(qt_add_qml_module)
 		${QMLMOD_NAME}-qmlmodule-files)
 
 	# generate qml types information file
-	get_filename_component(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
-	set(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMLPLUGINDUMP_EXECUTABLE}/qmlplugindump")
-	if(EXISTS ${QT_QMLPLUGINDUMP_EXECUTABLE})
-		add_custom_command(TARGET ${QMLMOD_NAME}-qmlmodule POST_BUILD
-			COMMAND ${QT_QMLPLUGINDUMP_EXECUTABLE} ${QMLMOD_NAME} ${QMLMOD_VERSION} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} > ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes
-			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes ${QML_MODULE_DIR}
-			)
-	else()
-		message("Cannot generate qmltypes file: ${QT_QMLPLUGINDUMP_EXECUTABLE} doesn't exists")
-	endif()
+	#TODO: Segfault???
+#	get_filename_component(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+#	set(QT_QMLPLUGINDUMP_EXECUTABLE "${QT_QMLPLUGINDUMP_EXECUTABLE}/qmlplugindump")
+#	if(EXISTS ${QT_QMLPLUGINDUMP_EXECUTABLE})
+#		add_custom_command(TARGET ${QMLMOD_NAME}-qmlmodule POST_BUILD
+#			COMMAND ${QT_QMLPLUGINDUMP_EXECUTABLE} ${QMLMOD_NAME} ${QMLMOD_VERSION} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} > ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes
+#			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${QMLMOD_NAME}.qmltypes ${QML_MODULE_DIR}
+#			)
+#	else()
+#		message("Cannot generate qmltypes file: ${QT_QMLPLUGINDUMP_EXECUTABLE} doesn't exists")
+#	endif()
 endfunction()

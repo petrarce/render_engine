@@ -56,5 +56,6 @@ private:
 	qreal mFov{ 0 };
 	qreal mNearPlane{ 0 };
 };
+
 } // namespace Graphics
 } // namespace qmlmodule

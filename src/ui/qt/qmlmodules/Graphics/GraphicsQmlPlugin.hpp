@@ -1,11 +1,6 @@
 #pragma once
 #include <QQmlExtensionPlugin>
 #include <QQmlExtensionInterface>
-namespace qmlmodule
-{
-namespace Graphics
-{
-
 class GraphicsQmlPlugin : public QQmlExtensionPlugin
 {
 	Q_OBJECT
@@ -13,5 +8,3 @@ class GraphicsQmlPlugin : public QQmlExtensionPlugin
 public:
 	void registerTypes(const char *uri) override;
 };
-} // namespace Graphics
-} // namespace qmlmodule

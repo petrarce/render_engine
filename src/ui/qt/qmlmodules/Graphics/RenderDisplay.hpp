@@ -16,11 +16,18 @@ class RenderDisplay : public QQuickFramebufferObject
 	Q_PROPERTY(
 		RenderableObject *rootRenderableObject READ rootRenderableObject WRITE
 			setRootRenderableObject NOTIFY rootRenderableObjectChanged)
-	Q_PROPERTY(QStringList rootScope READ rootScope WRITE setRootScope NOTIFY
-				   rootScopeChanged)
+	Q_PROPERTY(RenderingMode mode READ mode WRITE setMode NOTIFY modeChanged)
 	Q_CLASSINFO("DefaultProperty", "rootRenderableObject")
 
 public:
+	enum RenderingMode
+	{
+		Defualt,
+		Normals,
+		Tangents,
+		Bitangents
+	};
+	Q_ENUM(RenderingMode)
 	class Renderer : public QQuickFramebufferObject::Renderer
 	{
 	public:
@@ -32,26 +39,33 @@ public:
 
 	private:
 		const RenderDisplay &mRenderDisplay;
-		dream::components::Scope mRenderingRootScope;
+		std::unique_ptr<dream::components::Scope> mRenderingRootScope;
 	};
 
+	friend class Renderer;
 	RenderDisplay(QQuickItem *parent = nullptr);
 	~RenderDisplay();
 	QQuickFramebufferObject::Renderer *createRenderer() const override;
 
-	RenderableObject *rootRenderableObject() const { return mRootRenderableObject; }
-	const QStringList& rootScope() const { return mRootScope; }
+	RenderableObject *rootRenderableObject() const
+	{
+		return mRootRenderableObject;
+	}
+	RenderingMode mode() const
+	{
+		return mMode;
+	}
 
 	void setRootRenderableObject(RenderableObject *rootRenderableObject);
-	void setRootScope(const QStringList &rootScope);
-
+	void setMode(RenderingMode mode);
 Q_SIGNALS:
 	void rootRenderableObjectChanged(RenderableObject *rootRenderableObject);
-	void rootScopeChanged(const QStringList &rootScope);
+	void modeChanged(RenderingMode mode);
 
 private:
 	RenderableObject *mRootRenderableObject{ nullptr };
 	QStringList mRootScope;
+	RenderingMode mMode;
 };
 
 } // namespace Graphics

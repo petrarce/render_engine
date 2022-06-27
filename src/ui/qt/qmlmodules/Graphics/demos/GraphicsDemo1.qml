@@ -19,6 +19,10 @@ Rectangle {
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
+				MeshObject {
+					ambient: Qt.rgba(1, 0, 0, 1)
+					mesh: "../assets/Cube.ply"
+				}
 			}
 		}
 		Rectangle{

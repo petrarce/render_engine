@@ -8,6 +8,8 @@ qt_add_qml_module( NAME Graphics
 		RenderableObject.cpp
 		SceneView.cpp
 		SceneView.hpp
+		MeshObject.cpp
+		MeshObject.hpp
 	QMLFILES
 		Graphics.qmltypes
 	VERSION 0.1
