@@ -15,30 +15,6 @@ public:
 	GLScreenTextureRenderFunction()
 		: components::GLMultipleCaleeRenderFunction()
 	{
-		using namespace molecular::util;
-		auto fbo = GLAssetManager<glwrapper::GLFrameBufferObject>::addAsset(
-			"ScreenFramebuffer"_H,
-			std::make_shared<glwrapper::GLFrameBufferObject>());
-		auto st = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
-			"ScreenTexture"_H, std::make_shared<glwrapper::GLTexture2D>());
-		auto rb = GLAssetManager<glwrapper::GLRenderBuffer>::addAsset(
-			"ScreenDepthBuffer"_H,
-			std::make_shared<glwrapper::GLRenderBuffer>());
-		st->setParameter(
-			dream::glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
-		st->setParameter(
-			dream::glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
-		std::array<std::size_t, 2> size;
-		size[0] = mViewport[2];
-		size[1] = mViewport[3];
-		st->create<2>(0, dream::glwrapper::GLTexture2D::InternalFormat::Rgba,
-					  size);
-		rb->create(size[0], size[1], GL_DEPTH24_STENCIL8);
-		dream::glwrapper::GLDrawFramebufferBinder bindFBO(*fbo);
-		fbo->attach(
-			dream::glwrapper::GLFrameBufferObject::AttachmentPoint::Color0,
-			*st);
-		fbo->attach(dream::glwrapper::GLFrameBufferObject::DepthStencil, *rb);
 	}
 	virtual ~GLScreenTextureRenderFunction()
 	{
@@ -69,6 +45,37 @@ public:
 	{
 		return mViewport;
 	}
+	void init() override
+	{
+		components::GLMultipleCaleeRenderFunction::init();
+
+		using namespace molecular::util;
+		auto fbo = GLAssetManager<glwrapper::GLFrameBufferObject>::addAsset(
+			"ScreenFramebuffer"_H,
+			std::make_shared<glwrapper::GLFrameBufferObject>());
+		auto st = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
+			"ScreenTexture"_H, std::make_shared<glwrapper::GLTexture2D>());
+		auto rb = GLAssetManager<glwrapper::GLRenderBuffer>::addAsset(
+			"ScreenDepthBuffer"_H,
+			std::make_shared<glwrapper::GLRenderBuffer>());
+		st->setParameter(
+			dream::glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
+		st->setParameter(
+			dream::glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
+		std::array<std::size_t, 2> size;
+		size[0] = mViewport[2];
+		size[1] = mViewport[3];
+		st->create<2>(0, dream::glwrapper::GLTexture2D::InternalFormat::Rgba,
+					  size);
+		rb->create(size[0], size[1], GL_DEPTH24_STENCIL8);
+		dream::glwrapper::GLDrawFramebufferBinder bindFBO(*fbo);
+		fbo->attach(
+			dream::glwrapper::GLFrameBufferObject::AttachmentPoint::Color0,
+			*st);
+		fbo->attach(dream::glwrapper::GLFrameBufferObject::DepthStencil, *rb);
+
+		mScreenRectangle.init();
+	}
 
 private:
 	void drawImpl(const components::Scope &parentScope) override
@@ -98,7 +105,16 @@ private:
 	public:
 		DrawScreenRectangle()
 		{
-			mVAB.create(
+		}
+
+		void init() override
+		{
+			GLRenderFunction::init();
+			mVAB = std::make_unique<dream::glwrapper::GLArrayBuffer>();
+			mEAB = std::make_unique<dream::glwrapper::GLElementArrayBuffer>();
+			mVAO = std::make_unique<dream::glwrapper::GLVertexArray>();
+
+			mVAB->create(
 				std::vector<float>{
 					-1, -1, 0,	0, 0,
 					1, -1, 0,	1, 0,
@@ -106,10 +122,10 @@ private:
 					1, 1, 0,	1, 1,
 				},
 				GL_STATIC_DRAW);
-			mEAB.create(std::vector<unsigned int>{ 0, 1, 2, 2, 1, 3 },
-						GL_STATIC_DRAW);
+			mEAB->create(std::vector<unsigned int>{ 0, 1, 2, 2, 1, 3 },
+						 GL_STATIC_DRAW);
 			// vertex position attribute
-			mVAO.createAttribute(
+			mVAO->createAttribute(
 				dream::glwrapper::GLVertexArray::AttributeSpecification{
 					.components	   = 3,
 					.instanceLevel = 0,
@@ -119,9 +135,9 @@ private:
 					.stride		   = sizeof(float) * 5,
 					.type		   = GL_FLOAT,
 				},
-				mVAB, mEAB);
+				*mVAB, *mEAB);
 			// texture coordinates attribute
-			mVAO.createAttribute(
+			mVAO->createAttribute(
 				dream::glwrapper::GLVertexArray::AttributeSpecification{
 					.components	   = 2,
 					.instanceLevel = 0,
@@ -131,7 +147,7 @@ private:
 					.stride		   = sizeof(float) * 5,
 					.type		   = GL_FLOAT,
 				},
-				mVAB, mEAB);
+				*mVAB, *mEAB);
 		}
 
 	protected:
@@ -160,7 +176,7 @@ private:
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			dream::glwrapper::GLObjectBinder bindProg(*program);
-			dream::glwrapper::GLObjectBinder binVAO(mVAO);
+			dream::glwrapper::GLObjectBinder binVAO(*mVAO);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 		}
@@ -174,9 +190,9 @@ private:
 			scope.Set("aTexCoord"_H,
 					  dream::components::Attribute<Eigen::Vector2f>());
 		}
-		dream::glwrapper::GLElementArrayBuffer mEAB;
-		dream::glwrapper::GLArrayBuffer mVAB;
-		dream::glwrapper::GLVertexArray mVAO;
+		std::unique_ptr<dream::glwrapper::GLElementArrayBuffer> mEAB;
+		std::unique_ptr<dream::glwrapper::GLArrayBuffer> mVAB;
+		std::unique_ptr<dream::glwrapper::GLVertexArray> mVAO;
 	};
 	std::array<int, 4> mViewport{ 0, 0, 1, 1 };
 	DrawScreenRectangle mScreenRectangle;
