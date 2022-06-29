@@ -39,14 +39,17 @@ public:
 		{
 			auto glTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
 				texture->path, texture->internalFormat);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			if (glTexture)
+			{
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			}
 		}
 	}
 
