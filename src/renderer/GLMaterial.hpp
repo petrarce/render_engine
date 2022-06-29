@@ -362,7 +362,6 @@ public:
 
 	void syncSelf() override
 	{
-		mRenderFunction->init();
 		GLTransformedObject::syncSelf();
 		auto rf = std::static_pointer_cast<GLMeshWithMaterialRenderFunction>(
 			mRenderFunction);

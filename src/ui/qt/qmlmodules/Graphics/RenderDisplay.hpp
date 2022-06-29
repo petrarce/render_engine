@@ -36,6 +36,8 @@ public:
 
 		void render() override;
 		void synchronize(QQuickFramebufferObject *) override;
+		QOpenGLFramebufferObject *
+		createFramebufferObject(const QSize &size) override;
 
 	private:
 		const RenderDisplay &mRenderDisplay;

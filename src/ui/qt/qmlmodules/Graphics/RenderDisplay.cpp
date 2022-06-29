@@ -1,5 +1,7 @@
 #include "RenderDisplay.hpp"
-
+#include <glad/glad.h>
+#include <mutex>
+#include <QOpenGLFramebufferObject>
 namespace qmlmodule
 {
 namespace Graphics
@@ -9,6 +11,12 @@ RenderDisplay::Renderer::Renderer(const RenderDisplay &renderDisplay)
 	: QQuickFramebufferObject::Renderer()
 	, mRenderDisplay(renderDisplay)
 {
+	static bool init = false;
+	static std::mutex m;
+	std::lock_guard<std::mutex> lock(m);
+	if (!init)
+		if (!gladLoadGL())
+			throw std::runtime_error("Failed to load glad");
 }
 
 RenderDisplay::Renderer::~Renderer()
@@ -18,6 +26,9 @@ RenderDisplay::Renderer::~Renderer()
 void RenderDisplay::Renderer::render()
 {
 	qWarning() << "render executed";
+	glClearColor(0.3, 0.5, 1, 1.0);
+	glClearDepth(1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	mRenderDisplay.rootRenderableObject()
 		->renderableObject()
 		->renderFunction()
@@ -26,6 +37,7 @@ void RenderDisplay::Renderer::render()
 
 void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 {
+	mRenderDisplay.rootRenderableObject()->renderableObject()->resetSync();
 	mRenderDisplay.rootRenderableObject()->renderableObject()->sync();
 
 	auto newRootScope = std::make_unique<dream::components::Scope>();
@@ -35,10 +47,20 @@ void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 	mRenderingRootScope = std::move(newRootScope);
 }
 
+QOpenGLFramebufferObject *
+RenderDisplay::Renderer::createFramebufferObject(const QSize &size)
+{
+	QOpenGLFramebufferObjectFormat format;
+	format.setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
+
+	return new QOpenGLFramebufferObject(size, format);
+}
+
 RenderDisplay::RenderDisplay(QQuickItem *parent)
 	: QQuickFramebufferObject(parent)
 	, mRootScope({ "fragColor", "gl_Position" })
 {
+	setTextureFollowsItemSize(true);
 }
 
 RenderDisplay::~RenderDisplay()

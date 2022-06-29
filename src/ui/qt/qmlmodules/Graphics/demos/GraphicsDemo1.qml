@@ -15,12 +15,22 @@ Rectangle {
 			Layout.margins: 20
 			SceneView {
 				id: sceneView
+				property real colorValue: 0
 				fov: 45
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
 				MeshObject {
-					ambient: Qt.rgba(1, 0, 0, 1)
+					ambient: Qt.rgba(	Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)), 
+										Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)), 
+										(sceneView.colorValue < 0.25) 
+										? sceneView.colorValue 
+										: sceneView.colorValue > 0.75
+											? 3 - 3 * sceneView.colorValue
+											: 1,
+										1)
+//					ambient: Qt.rgba(0.5, 0.5, 1, 1)
+					onAmbientChanged: console.log(ambient)
 					mesh: "../assets/Cube.ply"
 				}
 			}
@@ -37,16 +47,14 @@ Rectangle {
 				onClicked: mesh.update()
 			}
 		}
-		
-	}
-	resources: Timer {
-		interval: 1000
-		repeat: true
-		running: true
-		onTriggered: {
-			
-			sceneView.fov = sceneView.fov + 1
-			console.log("Timer triggered")
+		resources: PropertyAnimation {
+			target: sceneView
+			property: "colorValue"
+			running: true
+			loops: Animation.Infinite
+			from: 0
+			to: 1
+			duration: 5000
 		}
 	}
 }

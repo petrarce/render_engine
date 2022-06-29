@@ -19,6 +19,10 @@ public:
 	{
 		mInitialized = true;
 	}
+	bool isInitialized()
+	{
+		return mInitialized;
+	}
 
 protected:
 	virtual void drawImpl(const Scope &parentScope) = 0;

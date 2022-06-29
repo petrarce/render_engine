@@ -23,13 +23,17 @@ MeshObject::MeshObject(QQuickItem *parent)
 					Eigen::Vector4f(color.red() / 256., color.green() / 256.,
 									color.blue() / 256., color.alpha() / 265.);
 				ro->setAmbient(eigenColor);
+				update();
 			}
-			if (ambient.canConvert<QString>())
+			else if (ambient.canConvert<QString>())
+			{
 				ro->setAmbient(
 					dream::renderer::GLMeshWithMaterialRenderFunction::Texture{
 						ambient.value<QString>().toStdString(),
 						dream::glwrapper::GLTexture2D::InternalFormat::
 							Srgb8_alpha8 });
+				update();
+			}
 		});
 	connect(this, &MeshObject::meshChanged, this,
 			[this](const QVariant &mesh)
@@ -39,6 +43,7 @@ MeshObject::MeshObject(QQuickItem *parent)
 					mRenderableObject);
 				if (mesh.canConvert<QString>())
 					ro->setMesh(mesh.value<QString>().toStdString());
+				update();
 			});
 }
 MeshObject::~MeshObject()

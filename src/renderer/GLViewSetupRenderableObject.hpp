@@ -127,7 +127,7 @@ private:
 			mFOVChanged			= false;
 		}
 	}
-	Eigen::Matrix4f mViewTransofrm;
+	Eigen::Matrix4f mViewTransofrm{ Eigen::Matrix4f::Identity() };
 	bool mViewTransofrmUpdated = true;
 	float mFar{ 1000.f };
 	bool mFarChanged{ true };
