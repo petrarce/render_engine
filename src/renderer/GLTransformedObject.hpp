@@ -29,6 +29,11 @@ public:
 		mTransform = transform;
 	}
 
+	void init() override
+	{
+		GLMultipleCaleeRenderFunction::init();
+	}
+
 protected:
 	void drawImpl(const Scope &parentScope) override
 	{

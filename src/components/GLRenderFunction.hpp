@@ -11,7 +11,13 @@ class GLRenderFunction
 public:
 	void draw(const Scope &parentScope)
 	{
+		assert(mInitialized && "Render function was not initialized");
 		drawImpl(parentScope);
+	}
+
+	virtual void init()
+	{
+		mInitialized = true;
 	}
 
 protected:
@@ -19,6 +25,9 @@ protected:
 	virtual void prepareScope(Scope &scope)
 	{
 	}
+
+private:
+	bool mInitialized{ false };
 };
 
 class GLSingleCaleeRenderFunction : public GLRenderFunction
@@ -55,8 +64,13 @@ public:
 					   [calee](CaleePtr item) { return item == calee; });
 	}
 
+	void init() override
+	{
+		GLRenderFunction::init();
+	}
+
 protected:
-	void drawImpl(const Scope &parentScope);
+	void drawImpl(const Scope &parentScope) override;
 
 	CaleeArray mCalees;
 };

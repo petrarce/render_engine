@@ -23,7 +23,11 @@ GLAssetManager<glwrapper::GLTexture2D>::loadAsset(
 	unsigned char *data =
 		stbi_load(path.c_str(), &width, &height, &components, 0);
 	if (!data)
+	{
+		std::cerr << "Failed to load texture from " << path.c_str()
+				  << std::endl;
 		return nullptr;
+	}
 	std::vector<char> dataBuf(width * height * components);
 	std::copy(data, data + dataBuf.size(), dataBuf.begin());
 	free(data);

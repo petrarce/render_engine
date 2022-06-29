@@ -29,24 +29,6 @@ public:
 	GLMeshWithMaterialRenderFunction()
 		: components::GLTransformedRenderFunction()
 	{
-		using namespace molecular::util;
-		mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
-			"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
-		if (mMeshBuffers == nullptr)
-		{
-			mMeshBuffers = GLAssetManager<GLMeshObject>::createAsset(
-				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
-			mMeshBuffers->VAB.create(
-				std::vector<float>{ // vertex positions
-									0, 0, 0, 5, 0, 10, 10, 0, 10,
-									// texture coordinates
-									0, 0, 0.5, 1, 1, 0 },
-				GL_STATIC_DRAW);
-			mMeshBuffers->availableComponents.textureCoordinates = true;
-			mMeshBuffers->numVertices							 = 3;
-		}
-
-		resetVertexArrayObject();
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -57,14 +39,17 @@ public:
 		{
 			auto glTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
 				texture->path, texture->internalFormat);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
-			glTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			if (glTexture)
+			{
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueMinFilter::MinLinear);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+				glTexture->setParameter(
+					glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			}
 		}
 	}
 
@@ -133,6 +118,32 @@ public:
 		resetVertexArrayObject();
 	}
 
+	void init() override
+	{
+		GLTransformedRenderFunction::init();
+
+		mVAO = std::make_unique<glwrapper::GLVertexArray>();
+
+		using namespace molecular::util;
+		mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
+			"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+		if (mMeshBuffers == nullptr)
+		{
+			mMeshBuffers = GLAssetManager<GLMeshObject>::createAsset(
+				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+			mMeshBuffers->VAB.create(
+				std::vector<float>{ // vertex positions
+									0, 0, 0, 5, 0, 10, 10, 0, 10,
+									// texture coordinates
+									0, 0, 0.5, 1, 1, 0 },
+				GL_STATIC_DRAW);
+			mMeshBuffers->availableComponents.textureCoordinates = true;
+			mMeshBuffers->numVertices							 = 3;
+		}
+
+		resetVertexArrayObject();
+	}
+
 protected:
 	void drawImpl(const components::Scope &parentScope) override
 	{
@@ -144,7 +155,7 @@ protected:
 			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
 		program->prepare(scope);
 
-		glwrapper::GLObjectBinder bindVAO(mVAO);
+		glwrapper::GLObjectBinder bindVAO(*mVAO);
 		glwrapper::GLObjectBinder bindProgram(*program);
 		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -225,18 +236,19 @@ protected:
 
 	void resetVertexArrayObject()
 	{
-		mVAO.createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
-							 mMeshBuffers->EAB);
+		mVAO->createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
+							  mMeshBuffers->EAB);
 
 		if (mMeshBuffers->availableComponents.normals)
 		{
 			auto normals   = normalsAttributeSpec;
 			normals.offset = verticesAttributeSpec.components *
 							 mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(normals, mMeshBuffers->VAB, mMeshBuffers->EAB);
+			mVAO->createAttribute(normals, mMeshBuffers->VAB,
+								  mMeshBuffers->EAB);
 		}
 		else
-			mVAO.disableAttribute(normalsAttributeSpec.location);
+			mVAO->disableAttribute(normalsAttributeSpec.location);
 
 		if (mMeshBuffers->availableComponents.textureCoordinates)
 		{
@@ -245,11 +257,11 @@ protected:
 							   normalsAttributeSpec.components *
 								   mMeshBuffers->availableComponents.normals) *
 							  mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(texCoord, mMeshBuffers->VAB,
-								 mMeshBuffers->EAB);
+			mVAO->createAttribute(texCoord, mMeshBuffers->VAB,
+								  mMeshBuffers->EAB);
 		}
 		else
-			mVAO.disableAttribute(textureAttributeSpec.location);
+			mVAO->disableAttribute(textureAttributeSpec.location);
 
 		if (mMeshBuffers->availableComponents.tangentspace)
 		{
@@ -261,8 +273,8 @@ protected:
 				 textureAttributeSpec.components *
 					 mMeshBuffers->availableComponents.textureCoordinates) *
 				mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(tangentsSpec, mMeshBuffers->VAB,
-								 mMeshBuffers->EAB);
+			mVAO->createAttribute(tangentsSpec, mMeshBuffers->VAB,
+								  mMeshBuffers->EAB);
 			auto bitangentSpec = bitangentAttributSpec;
 			bitangentSpec.offset =
 				(verticesAttributeSpec.components +
@@ -272,20 +284,20 @@ protected:
 					 mMeshBuffers->availableComponents.textureCoordinates +
 				 tangentAttributSpec.components) *
 				mMeshBuffers->numVertices * sizeof(float);
-			mVAO.createAttribute(bitangentSpec, mMeshBuffers->VAB,
-								 mMeshBuffers->EAB);
+			mVAO->createAttribute(bitangentSpec, mMeshBuffers->VAB,
+								  mMeshBuffers->EAB);
 		}
 		else
 		{
-			mVAO.disableAttribute(tangentAttributSpec.location);
-			mVAO.disableAttribute(bitangentAttributSpec.location);
+			mVAO->disableAttribute(tangentAttributSpec.location);
+			mVAO->disableAttribute(bitangentAttributSpec.location);
 		}
 	}
 	AmbientType mAmbientColor;
 
 	std::shared_ptr<GLMeshObject> mMeshBuffers;
 
-	glwrapper::GLVertexArray mVAO;
+	std::unique_ptr<glwrapper::GLVertexArray> mVAO;
 
 	static const Eigen::Vector4f mDefaultColor;
 	static const glwrapper::GLVertexArray::AttributeSpecification
@@ -350,6 +362,7 @@ public:
 
 	void syncSelf() override
 	{
+		mRenderFunction->init();
 		GLTransformedObject::syncSelf();
 		auto rf = std::static_pointer_cast<GLMeshWithMaterialRenderFunction>(
 			mRenderFunction);
