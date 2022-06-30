@@ -9,3 +9,4 @@ set(QML_IMPORT_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} CACHE PATH "Path to qml mo
 
 add_subdirectory(app)
 add_subdirectory(qmlmodules)
+add_subdirectory(helpers)

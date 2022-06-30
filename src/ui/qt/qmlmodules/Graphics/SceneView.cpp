@@ -1,5 +1,6 @@
 #include "SceneView.hpp"
 #include <GLRenderer>
+#include <EigenConversions.hpp>
 namespace qmlmodule
 {
 namespace Graphics
@@ -46,6 +47,15 @@ SceneView::SceneView(QQuickItem *parent)
 				renderable->setFov(fov);
 				Q_EMIT update();
 			});
+	connect(this, &SceneView::viewMatrixChanged,
+			[this](const QMatrix4x4 &view)
+			{
+				auto renderable = std::reinterpret_pointer_cast<
+					dream::renderer::GLViewSetupRenderableObject>(
+					mRenderableObject);
+				renderable->setViewTransform(qt::helpers::toEigen(view));
+				Q_EMIT update();
+			});
 }
 
 SceneView::~SceneView()
@@ -86,6 +96,15 @@ void SceneView::setFov(qreal fov)
 
 	mFov = fov;
 	Q_EMIT fovChanged(mFov);
+}
+
+void SceneView::setViewMatrix(const QMatrix4x4 &viewMatrix)
+{
+	if (mViewMatrix == viewMatrix)
+		return;
+
+	mViewMatrix = viewMatrix;
+	Q_EMIT viewMatrixChanged(mViewMatrix);
 }
 
 } // namespace Graphics

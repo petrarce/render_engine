@@ -13,6 +13,7 @@ Rectangle {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 			Layout.margins: 20
+			onViewTransformChanged: sceneView.viewMatrix = view
 			SceneView {
 				id: sceneView
 				property real colorValue: 0
@@ -21,30 +22,46 @@ Rectangle {
 				farPlane: 1000
 				nearPlane: 0.1
 				MeshObject {
-					ambient: Qt.rgba(	Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)), 
-										Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)), 
-										(sceneView.colorValue < 0.25) 
-										? sceneView.colorValue 
-										: sceneView.colorValue > 0.75
-											? 3 - 3 * sceneView.colorValue
-											: 1,
-										1)
-//					ambient: Qt.rgba(0.5, 0.5, 1, 1)
-					onAmbientChanged: console.log(ambient)
+					property vector3d rgb: Qt.vector3d(
+						Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)), 
+						Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)), 
+						(sceneView.colorValue < 0.25) 
+							? 4 * sceneView.colorValue 
+							: (sceneView.colorValue > 0.75
+								? 4 * (1 - sceneView.colorValue)
+								: 1)
+					)
+					ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
 					mesh: "../assets/Cube.ply"
 				}
 			}
 		}
-		Rectangle{
+		RenderDisplay {
+			id: viewport2
 			Layout.fillWidth: true
 			Layout.fillHeight: true
-			color: "green"
-			Button {
-				anchors.fill: parent
-				Layout.fillWidth: true
-				Layout.fillHeight: true
-				text: "Update"
-				onClicked: mesh.update()
+			Layout.margins: 20
+			onViewTransformChanged: sceneView2.viewMatrix = view
+			SceneView {
+				id: sceneView2
+				property real colorValue: 0
+				fov: 45
+				aspectRatio: viewport.width/viewport.height
+				farPlane: 1000
+				nearPlane: 0.1
+				MeshObject {
+					property vector3d rgb: Qt.vector3d(
+						Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)),
+						Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)),
+						(sceneView.colorValue < 0.25)
+							? 4 * sceneView.colorValue
+							: (sceneView.colorValue > 0.75
+								? 4 * (1 - sceneView.colorValue)
+								: 1)
+					)
+					ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
+					mesh: "../assets/Cube.ply"
+				}
 			}
 		}
 		resources: PropertyAnimation {

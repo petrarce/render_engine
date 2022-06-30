@@ -25,7 +25,6 @@ RenderDisplay::Renderer::~Renderer()
 
 void RenderDisplay::Renderer::render()
 {
-	qWarning() << "render executed";
 	glClearColor(0.3, 0.5, 1, 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -59,8 +58,13 @@ RenderDisplay::Renderer::createFramebufferObject(const QSize &size)
 RenderDisplay::RenderDisplay(QQuickItem *parent)
 	: QQuickFramebufferObject(parent)
 	, mRootScope({ "fragColor", "gl_Position" })
+	, mDefaultCamera(new OrbitCamera(this))
+	, mCamera(mDefaultCamera)
 {
 	setTextureFollowsItemSize(true);
+	setAcceptedMouseButtons(Qt::AllButtons);
+	connect(mCamera, &Camera::viewMatrixChanged, this,
+			&RenderDisplay::viewTransformChanged);
 }
 
 RenderDisplay::~RenderDisplay()
@@ -93,6 +97,17 @@ void RenderDisplay::setMode(RenderingMode mode)
 
 	mMode = mode;
 	Q_EMIT modeChanged(mMode);
+}
+
+void RenderDisplay::setCamera(Camera *camera)
+{
+	if (mCamera == camera)
+		return;
+
+	disconnect(mCamera, nullptr, this, nullptr);
+	mCamera = camera;
+	connect(mCamera, &Camera::viewMatrixChanged, this,
+			&RenderDisplay::viewTransformChanged);
 }
 
 } // namespace Graphics
