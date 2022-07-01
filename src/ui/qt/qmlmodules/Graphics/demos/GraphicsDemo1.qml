@@ -3,8 +3,9 @@ import Graphics 0.1
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.2
 import QtQml 2.1
+import QtQuick.Window 2.2
 
-Rectangle {
+Window {
 	color: "red"
 	ColumnLayout {
 		anchors.fill: parent
@@ -23,10 +24,10 @@ Rectangle {
 				nearPlane: 0.1
 				MeshObject {
 					property vector3d rgb: Qt.vector3d(
-						Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)), 
-						Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)), 
-						(sceneView.colorValue < 0.25) 
-							? 4 * sceneView.colorValue 
+						Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)),
+						Math.min(1, Math.max(0, 4 * sceneView.colorValue - 2)),
+						(sceneView.colorValue < 0.25)
+							? 4 * sceneView.colorValue
 							: (sceneView.colorValue > 0.75
 								? 4 * (1 - sceneView.colorValue)
 								: 1)
@@ -36,6 +37,7 @@ Rectangle {
 				}
 			}
 		}
+
 		RenderDisplay {
 			id: viewport2
 			Layout.fillWidth: true
@@ -74,4 +76,16 @@ Rectangle {
 			duration: 5000
 		}
 	}
+
+	Popup {
+		id: popup
+		x: 100
+		y: 100
+		width: 200
+		height: 300
+		modal: true
+		focus: true
+		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+	}
+	Component.onCompleted: popup.open()
 }

@@ -96,20 +96,33 @@ private:
 
 	void mouseMoveEvent(QMouseEvent *event) override
 	{
-		auto offset = event->pos() - mLastMousePress;
-		qWarning() << "button " << event->button();
+		auto offset		= mLastMousePress - event->pos();
+		mLastMousePress = event->pos();
 		if (mPressedButton == Qt::MouseButton::LeftButton)
 		{
-			mCamera->rotateCamera(offset.x(), offset.y());
-			qWarning() << "RotateCamera";
+			mCamera->rotateCamera(offset.x() / 100.f, -offset.y() / 100.f);
+			event->accept();
 		}
 		else if (mPressedButton == Qt::MouseButton::RightButton)
 		{
-			mCamera->moveCamera(offset.x(), offset.y());
-			qWarning() << "MoveCamera";
+			mCamera->moveCamera(offset.x() / 100.f, offset.y() / 100.f);
+			event->accept();
 		}
+		else if (mPressedButton == Qt::MouseButton::MiddleButton)
+		{
+			mCamera->zoomCamera(offset.y() / 10.f);
+			event->accept();
+		}
+		else
+		{
+			event->ignore();
+			return;
+		}
+	}
 
-		mLastMousePress = event->pos();
+	void wheelEvent(QWheelEvent *event) override
+	{
+
 		event->accept();
 	}
 

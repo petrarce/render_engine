@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <mutex>
 #include <QOpenGLFramebufferObject>
+#include <molecular/util/Hash.h>
 namespace qmlmodule
 {
 namespace Graphics
@@ -28,6 +29,7 @@ void RenderDisplay::Renderer::render()
 	glClearColor(0.3, 0.5, 1, 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	mRenderDisplay.rootRenderableObject()
 		->renderableObject()
 		->renderFunction()
@@ -36,6 +38,7 @@ void RenderDisplay::Renderer::render()
 
 void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 {
+	using namespace molecular::util;
 	mRenderDisplay.rootRenderableObject()->renderableObject()->resetSync();
 	mRenderDisplay.rootRenderableObject()->renderableObject()->sync();
 
@@ -43,6 +46,9 @@ void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 	for (const auto &v : mRenderDisplay.mRootScope)
 		newRootScope->Set(molecular::util::HashUtils::MakeHash(v.toStdString()),
 						  dream::components::Attribute<void>());
+	newRootScope->Set("uLightDirection"_H,
+					  dream::components::Uniform<Eigen::Vector3f>(
+						  Eigen::Vector3f(-1, -2, -3).normalized()));
 	mRenderingRootScope = std::move(newRootScope);
 }
 
@@ -82,8 +88,8 @@ void RenderDisplay::setRootRenderableObject(
 	if (mRootRenderableObject == rootRenderableObject)
 		return;
 
-	disconnect(mRootRenderableObject, &RenderableObject::update, this,
-			   &QQuickFramebufferObject::update);
+	if (mRootRenderableObject)
+		disconnect(mRootRenderableObject, nullptr, this, nullptr);
 	mRootRenderableObject = rootRenderableObject;
 	connect(mRootRenderableObject, &RenderableObject::update, this,
 			&QQuickFramebufferObject::update);
