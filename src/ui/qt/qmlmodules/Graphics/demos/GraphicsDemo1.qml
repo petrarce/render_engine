@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.2
 import QtQml 2.1
 import QtQuick.Window 2.2
 
-Window {
+Rectangle {
 	color: "red"
 	ColumnLayout {
 		anchors.fill: parent
@@ -51,6 +51,7 @@ Window {
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
+
 				MeshObject {
 					property vector3d rgb: Qt.vector3d(
 						Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)),
@@ -77,15 +78,5 @@ Window {
 		}
 	}
 
-	Popup {
-		id: popup
-		x: 100
-		y: 100
-		width: 200
-		height: 300
-		modal: true
-		focus: true
-		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
-	}
 	Component.onCompleted: popup.open()
 }
