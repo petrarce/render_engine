@@ -1,5 +1,6 @@
 #include "MeshObject.hpp"
 #include <GLRenderer>
+#include <EigenConversions.hpp>
 namespace qmlmodule
 {
 namespace Graphics
@@ -45,6 +46,15 @@ MeshObject::MeshObject(QQuickItem *parent)
 					ro->setMesh(mesh.value<QString>().toStdString());
 				update();
 			});
+	connect(this, &MeshObject::transformChanged, this,
+			[this](const QMatrix4x4 &transform)
+			{
+				auto ro = std::reinterpret_pointer_cast<
+					dream::renderer::GLMeshWithMaterialObject>(
+					mRenderableObject);
+				ro->setTransform(qt::helpers::toEigen(mTransform));
+				update();
+			});
 }
 MeshObject::~MeshObject()
 {
@@ -65,6 +75,15 @@ void MeshObject::setAmbient(const QVariant &ambient)
 
 	mAmbient = ambient;
 	Q_EMIT ambientChanged(mAmbient);
+}
+
+void MeshObject::setTransform(const QMatrix4x4 &transform)
+{
+	if (mTransform == transform)
+		return;
+
+	mTransform = transform;
+	Q_EMIT transformChanged(mTransform);
 }
 
 } // namespace Graphics

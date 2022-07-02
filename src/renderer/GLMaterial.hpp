@@ -112,8 +112,7 @@ public:
 
 		mMeshBuffers = GLAssetManager<GLMeshObject>::addAsset(meshPath);
 		if (!mMeshBuffers)
-			mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
-				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
+			return;
 		assert(mMeshBuffers != nullptr);
 		resetVertexArrayObject();
 	}
@@ -123,48 +122,35 @@ public:
 		GLTransformedRenderFunction::init();
 
 		mVAO = std::make_unique<glwrapper::GLVertexArray>();
-
-		using namespace molecular::util;
-		mMeshBuffers = GLAssetManager<GLMeshObject>::getAsset(
-			"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
-		if (mMeshBuffers == nullptr)
-		{
-			mMeshBuffers = GLAssetManager<GLMeshObject>::createAsset(
-				"GLMeshWithMaterialRenderFunctionMeshDefault"_H);
-			mMeshBuffers->VAB.create(
-				std::vector<float>{ // vertex positions
-									0, 0, 0, 5, 0, 10, 10, 0, 10,
-									// texture coordinates
-									0, 0, 0.5, 1, 1, 0 },
-				GL_STATIC_DRAW);
-			mMeshBuffers->availableComponents.textureCoordinates = true;
-			mMeshBuffers->numVertices							 = 3;
-		}
-
-		resetVertexArrayObject();
 	}
 
 protected:
 	void drawImpl(const components::Scope &parentScope) override
 	{
-		using namespace molecular::util;
-		components::Scope scope(parentScope);
-		prepareScope(scope);
+		// first prepare scope for local object and draw them
+		if (mMeshBuffers)
+		{
+			using namespace molecular::util;
+			components::Scope scope(parentScope);
+			GLMeshWithMaterialRenderFunction::prepareScope(scope);
 
-		auto program =
-			GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
-		program->prepare(scope);
+			auto program =
+				GLAssetManager<components::GLMolecularProgram>::addAsset(scope);
+			program->prepare(scope);
 
-		glwrapper::GLObjectBinder bindVAO(*mVAO);
-		glwrapper::GLObjectBinder bindProgram(*program);
-		glwrapper::GLEnable<true, GL_BLEND> enableBlend;
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glwrapper::GLObjectBinder bindVAO(*mVAO);
+			glwrapper::GLObjectBinder bindProgram(*program);
+			glwrapper::GLEnable<true, GL_BLEND> enableBlend;
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		if (mMeshBuffers->availableComponents.indices)
-			glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
-						   GL_UNSIGNED_INT, 0);
-		else
-			glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+			if (mMeshBuffers->availableComponents.indices)
+				glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
+							   GL_UNSIGNED_INT, 0);
+			else
+				glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+		}
+
+		// now draw children
 		GLTransformedRenderFunction::drawImpl(parentScope);
 	}
 
@@ -172,6 +158,7 @@ protected:
 	{
 		using namespace molecular::util;
 		GLTransformedRenderFunction::prepareScope(scope);
+
 		scope.Set("aVerPos"_H, components::Attribute<Eigen::Vector3f>());
 
 		const Texture *textureName = std::get_if<Texture>(&mAmbientColor);

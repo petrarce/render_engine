@@ -44,6 +44,12 @@ public:
 	OrbitCamera(QObject *parent = nullptr)
 		: Camera(parent)
 	{
+		mCameraController.camera.angleX	   = -45;
+		mCameraController.camera.angleZ	   = 0;
+		mCameraController.camera.distance  = 20;
+		mCameraController.camera.pivot	   = Eigen::Vector3f(0, 0, 0);
+		mCameraController.camera.upAxis	   = Eigen::Vector3f(0, 0, 1);
+		mCameraController.camera.rightAxis = Eigen::Vector3f(1, 0, 0);
 		connect(this, &OrbitCamera::pivotChanged, this,
 				[this]()
 				{

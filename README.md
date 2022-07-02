@@ -9,6 +9,7 @@ Current `master` branch status (Build and test):
 #### General
 * [X] Interte qml interface
 * [X] Loading 3d meshes from blender/3dmax/... model files
+* [X] add support of multiple viewports fort the same scene
 * [ ] Shadows
 * [ ] Screen space AO
 * [ ] Screnn space reflections
@@ -29,6 +30,15 @@ Current `master` branch status (Build and test):
 
 * [ ] Cube texture for surrounding
 * [ ] Heightmap meshes
+* [ ] Implement light sources
+** [ ] Point light
+** [ ] Directional light
+** [ ] Spot light
+* Add draw options for meshes
+** [ ] Normal mode (draw mesh faces only)
+** [ ] Overlay mode (draw meshes with edges and points overlayed)
+** [ ] Cascade mode (draw only edges)
+** [ ] Points mode (draw obly points of the mesh)
 
 #### Procedural textures
 

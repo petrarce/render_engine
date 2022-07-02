@@ -9,7 +9,7 @@ namespace qmlmodule
 namespace Graphics
 {
 
-class RenderableObject : public QObject
+class RenderableObject : public QQuickItem
 {
 	Q_OBJECT
 	Q_PROPERTY(QQmlListProperty<qmlmodule::Graphics::RenderableObject>
@@ -17,8 +17,8 @@ class RenderableObject : public QObject
 	Q_CLASSINFO("DefaultProperty", "renderables")
 	QML_ELEMENT
 public:
-	RenderableObject(QObject *parent = nullptr)
-		: QObject(parent)
+	RenderableObject(QQuickItem *parent = nullptr)
+		: QQuickItem(parent)
 	{
 		// renderable object should be initialized in each subclass
 		// according to a implementation
@@ -31,6 +31,11 @@ public:
 	renderableObject() const
 	{
 		return mRenderableObject;
+	}
+
+	Q_INVOKABLE void addRenderableObject(RenderableObject *renderable)
+	{
+		appendRenderable(renderable);
 	}
 
 	// qml api

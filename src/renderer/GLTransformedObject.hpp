@@ -38,7 +38,7 @@ protected:
 	void drawImpl(const Scope &parentScope) override
 	{
 		Scope scope(parentScope);
-		prepareScope(scope);
+		GLTransformedRenderFunction::prepareScope(scope);
 		GLMultipleCaleeRenderFunction::drawImpl(scope);
 	}
 
