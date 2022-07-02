@@ -1,0 +1,4 @@
+module Graphics
+plugin Graphics-qmlmodule
+classname GraphicsQmlPlugin
+typeinfo Graphics.qmltypes

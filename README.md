@@ -7,7 +7,7 @@ Current `master` branch status (Build and test):
 ### Features
 
 #### General
-
+* [X] Interte qml interface
 * [X] Loading 3d meshes from blender/3dmax/... model files
 * [ ] Shadows
 * [ ] Screen space AO

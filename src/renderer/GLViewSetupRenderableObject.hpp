@@ -2,7 +2,6 @@
 #include <GLRenderableObject.hpp>
 #include <GLComponents>
 #include <GLWrapperCore>
-#include <Camera.hpp>
 #include <molecular/util/Matrix4.h>
 
 namespace dream
@@ -75,10 +74,10 @@ public:
 	{
 	}
 
-	void setCamera(const dream::geometry::GLCamera &camera)
+	void setViewTransform(const Eigen::Matrix4f &viewTransofrm)
 	{
-		mCamera		   = camera;
-		mCameraUpdated = true;
+		mViewTransofrm		  = viewTransofrm;
+		mViewTransofrmUpdated = true;
 	}
 
 	void setFarPlane(float farPlane)
@@ -111,10 +110,10 @@ private:
 		auto viewRenderFunction =
 			std::static_pointer_cast<components::GLViewSetupRenderFunction>(
 				mRenderFunction);
-		if (mCameraUpdated)
+		if (mViewTransofrmUpdated)
 		{
-			viewRenderFunction->setViewMatrix(mCamera.toViewTransform());
-			mCameraUpdated = false;
+			viewRenderFunction->setViewMatrix(mViewTransofrm);
+			mViewTransofrmUpdated = false;
 		}
 		if (mFarChanged || mNearChanged || mAspectRatioChanged || mFOVChanged)
 		{
@@ -128,8 +127,8 @@ private:
 			mFOVChanged			= false;
 		}
 	}
-	dream::geometry::GLCamera mCamera;
-	bool mCameraUpdated = true;
+	Eigen::Matrix4f mViewTransofrm{ Eigen::Matrix4f::Identity() };
+	bool mViewTransofrmUpdated = true;
 	float mFar{ 1000.f };
 	bool mFarChanged{ true };
 	float mNear{ 0.1f };

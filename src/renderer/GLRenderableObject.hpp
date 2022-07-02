@@ -34,11 +34,12 @@ public:
 		return mRenderFunction;
 	}
 
-	virtual void sync()
+	void sync()
 	{
-		mRenderFunction->init();
 		if (mSynchronized)
 			return;
+		if (!mRenderFunction->isInitialized())
+			mRenderFunction->init();
 		syncSelf();
 		mSynchronized = true;
 		for (auto c : mChildren) c->sync();

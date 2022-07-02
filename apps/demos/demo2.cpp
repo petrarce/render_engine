@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 							  Eigen::Vector3f(0, 0, 1))
 				.matrix();
 		cube->setTransform(cubeTransform);
-		view->setCamera(infra.getController().camera);
+		view->setViewTransform(infra.getController().camera.toViewTransform());
 		view->setAspectRatio(static_cast<float>(m_viewport[2]) / m_viewport[3]);
 		rootRenderer->setViewport(m_viewport);
 		rootRenderer->resetSync();
