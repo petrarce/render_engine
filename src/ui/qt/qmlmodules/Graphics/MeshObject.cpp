@@ -55,6 +55,44 @@ MeshObject::MeshObject(QQuickItem *parent)
 				ro->setTransform(qt::helpers::toEigen(mTransform));
 				update();
 			});
+	connect(
+		this, &MeshObject::renderModeChanged, this,
+		[this](RenderMode renderMode)
+		{
+			auto ro = std::reinterpret_pointer_cast<
+				dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
+			if (renderMode == RenderMode::Faces)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Faces);
+			else if (renderMode == RenderMode::Lines)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Lines);
+			else if (renderMode == RenderMode::Points)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Points);
+			else if (renderMode == RenderMode::FacesLines)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Lines |
+								  dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Faces);
+			else if (renderMode == RenderMode::FacesPoints)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Points |
+								  dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Faces);
+			else if (renderMode == RenderMode::LinesPoints)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Lines |
+								  dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Points);
+			else if (renderMode == RenderMode::FacesLinesPoints)
+				ro->setRenderMode(dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Lines |
+								  dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Points |
+								  dream::renderer::GLMeshWithMaterialObject::
+									  RenderMode::Faces);
+		});
 }
 MeshObject::~MeshObject()
 {
@@ -84,6 +122,15 @@ void MeshObject::setTransform(const QMatrix4x4 &transform)
 
 	mTransform = transform;
 	Q_EMIT transformChanged(mTransform);
+}
+
+void MeshObject::setRenderMode(RenderMode renderMode)
+{
+	if (mRenderMode == renderMode)
+		return;
+
+	mRenderMode = renderMode;
+	Q_EMIT renderModeChanged(mRenderMode);
 }
 
 } // namespace Graphics

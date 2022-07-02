@@ -7,52 +7,52 @@ Current `master` branch status (Build and test):
 ### Features
 
 #### General
-* [X] Interte qml interface
-* [X] Loading 3d meshes from blender/3dmax/... model files
-* [X] add support of multiple viewports fort the same scene
-* [ ] Shadows
-* [ ] Screen space AO
-* [ ] Screnn space reflections
-* [ ] Generation of open space environments
-* [ ] Level of details maps
+- [X] Interte qml interface
+- [X] Loading 3d meshes from blender/3dmax/... model files
+- [X] add support of multiple viewports fort the same scene
+- [ ] Shadows
+- [ ] Screen space AO
+- [ ] Screnn space reflections
+- [ ] Generation of open space environments
+- [ ] Level of details maps
 
 #### Shaders
 
-* [ ] Phong/Blinn-Phong/GGX models
-* [ ] Ambient occlusions maps
-* [ ] Normal maps
-* [ ] Metalikness maps
-* [ ] Specularity maps
-* [ ] Bump maps
-* [ ] Roughness maps
+- [ ] Phong/Blinn-Phong/GGX models
+- [ ] Ambient occlusions maps
+- [ ] Normal maps
+- [ ] Metalikness maps
+- [ ] Specularity maps
+- [ ] Bump maps
+- [ ] Roughness maps
 
 #### Meshes
 
-* [ ] Cube texture for surrounding
-* [ ] Heightmap meshes
-* [ ] Implement light sources
-** [ ] Point light
-** [ ] Directional light
-** [ ] Spot light
-* Add draw options for meshes
-** [ ] Normal mode (draw mesh faces only)
-** [ ] Overlay mode (draw meshes with edges and points overlayed)
-** [ ] Cascade mode (draw only edges)
-** [ ] Points mode (draw obly points of the mesh)
+- [ ] Cube texture for surrounding
+- [ ] Heightmap meshes
+- [ ] Implement light sources
+	- [ ] Point light
+	- [ ] Directional light
+	- [ ] Spot light
+- [X] Add draw options for meshes
+	- [X] Normal mode (draw mesh faces only)
+	- [X] Overlay mode (draw meshes with edges and points overlayed)
+	- [X] Cascade mode (draw only edges)
+	- [X] Points mode (draw only points of the mesh)
 
 #### Procedural textures
 
-* [ ] Cellular texturing (Worley noise)
-* [ ] Solid texturing (Perlin noise)
-* [ ] Self-organized textures?
+- [ ] Cellular texturing (Worley noise)
+- [ ] Solid texturing (Perlin noise)
+- [ ] Self-organized textures?
 
 ####  Algorythms
 
-* [ ] GPU-based sort algorythms.
+- [ ] GPU-based sort algorythms.
 
 ### Improvements
 
-* [ ] Cache scope state. Don't prepare it every draw call 
-* [ ] Cache uniform. Don't aply them agin unless unchanged
-* [ ] Call OpenGL bind functions only if different object is in current scope
-* [X] Create wrapper for OpenGL state changes 
+- [ ] Cache scope state. Don't prepare it every draw call 
+- [ ] Cache uniform. Don't aply them agin unless unchanged
+- [ ] Call OpenGL bind functions only if different object is in current scope
+- [X] Create wrapper for OpenGL state changes 
