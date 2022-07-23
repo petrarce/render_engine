@@ -29,7 +29,7 @@ Rectangle {
 				MeshObject {
 					id: rootMeshObject
 					resources: Instantiator {
-						model: 20
+						model: 100
 						delegate: MeshObject {
 							property vector3d rgb: Qt.vector3d(
 								Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)),
@@ -90,14 +90,26 @@ Rectangle {
 
 			}
 		}
-		resources: PropertyAnimation {
-			target: sceneView
-			property: "colorValue"
+		resources: SequentialAnimation
+		{
 			running: true
 			loops: Animation.Infinite
-			from: 0
-			to: 1
-			duration: 5000
+
+			PropertyAnimation {
+				target: sceneView
+				property: "colorValue"
+				from: 0
+				to: 1
+				duration: 2500
+			}
+			PropertyAnimation {
+				target: sceneView
+				property: "colorValue"
+				from: 1
+				to: 0
+				duration: 2500
+			}
+
 		}
 	}
 }

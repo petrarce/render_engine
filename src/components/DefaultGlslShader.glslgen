@@ -56,26 +56,26 @@ out vec4 fragColor(sampler2D uScreenTexture, vec2 texCoord)
 
 
 fragment
-vec4 ambientColor(vec4 uAmbiantColor)
+vec4 diffuseColor(vec4 uDiffuseColor)
 {
 @src
-	ambientColor = uAmbiantColor;
+	diffuseColor = uDiffuseColor;
 @endsrc
 }
 
 fragment
-vec4 ambientColor(sampler2D uAmbiantTexture, attr1 vec2 aTextureCoord)
+vec4 diffuseColor(sampler2D uDiffuseTexture, attr1 vec2 aTextureCoord)
 {
 @src
-	ambientColor = texture(uAmbiantTexture, aTextureCoord);
+	diffuseColor = texture(uDiffuseTexture, aTextureCoord);
 @endsrc
 }
 
 fragment
-out vec4 fragColor(vec4 ambientColor)
+out vec4 fragColor(vec4 diffuseColor)
 {
 @src
-	fragColor = ambientColor;
+	fragColor = diffuseColor;
 @endsrc
 }
 
@@ -83,15 +83,7 @@ fragment
 float ambientTerm()
 {
 @src
-	ambientTerm = 0.1;
-@endsrc
-}
-
-fragment
-vec3 diffuseColor(vec4 ambientColor)
-{
-@src
-	diffuseColor = vec3(ambientColor);
+	ambientTerm = 0.3;
 @endsrc
 }
 
@@ -105,51 +97,55 @@ vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
 }
 
 fragment
-float diffuseTerm(vec3 gsNormal, vec3 uLightDirection, float ambientTerm)
+vec3 lightDirection(vec3 uLightDirection)
 {
 @src
-	vec3 reflectionDir = normalize(uLightDirection - 2 * gsNormal * dot(uLightDirection, gsNormal));
+	lightDirection = uLightDirection;
+@endsrc
+}
+
+fragment
+vec3 lightColor()
+{
+@src
+	lightColor = vec3(1, 1, 1);
+@endsrc
+}
+
+fragment
+float diffuseTerm(vec3 gsNormal, vec3 lightDirection, float ambientTerm)
+{
+@src
+	vec3 reflectionDir = normalize(lightDirection - 2 * gsNormal * dot(lightDirection, gsNormal));
 	diffuseTerm = max(0, dot(reflectionDir, gsNormal));
 @endsrc
 }
 
 fragment
-vec3 specularColor()
-{
-@src
-	specularColor = vec3(1.f, 1.f, 1.f);
-@endsrc
-}
-
-fragment
-float specularTerm(vec3 uLightDirection, vec3 uViewDirection, vec3 gsNormal, float uSpecularity)
+float specularTerm(vec3 lightDirection, vec3 uViewDirection, vec3 gsNormal, float uSpecularity)
 {
 @src
 	//half vector
-	vec3 hv = normalize(normalize(-uLightDirection) + normalize(-uViewDirection));
+	vec3 hv = normalize(normalize(-lightDirection) + normalize(-uViewDirection));
 	specularTerm = max(0, pow(dot(gsNormal, hv), uSpecularity));
 @endsrc
 }
 
 fragment
-vec3 blinnPhongColor(	vec4 ambientColor,		float ambientTerm,
-						vec3 diffuseColor,		float diffuseTerm,
-						vec3 specularColor,		float specularTerm)
+vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
+					float ambientTerm, float diffuseTerm, float specularTerm)
 {
 @src
-	blinnPhongColor = clamp(vec3(ambientColor) * ambientTerm
-							 + diffuseColor * (1 - ambientTerm)
-							+ specularColor * specularTerm,
-						vec3(0.f, 0.f, 0.f),
-						vec3(1.f, 1.f, 1.f));
+	vec3 lighting = vec3(lightColor) * clamp(ambientTerm + diffuseTerm * (1 - ambientTerm) + specularTerm, 0.f, 1.f);
+	blinnPhongColor = diffuseColor * vec4(lighting, 1.f);
 @endsrc
 }
 
 fragment prio=1
-out vec4 fragColor( vec3 blinnPhongColor)
+out vec4 fragColor( vec4 blinnPhongColor)
 {
 @src
-	fragColor = vec4(blinnPhongColor, 1.f);
+	fragColor = blinnPhongColor;
 @endsrc
 }
 
