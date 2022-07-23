@@ -84,8 +84,7 @@ private:
 	void mousePressEvent(QMouseEvent *event) override
 	{
 		mLastMousePress = event->pos();
-		qWarning() << "button " << event->button();
-		mPressedButton = event->button();
+		mPressedButton	= event->button();
 		event->accept();
 	}
 

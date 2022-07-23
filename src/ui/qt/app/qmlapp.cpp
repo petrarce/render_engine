@@ -26,8 +26,6 @@ int main(int argc, char *argv[])
 	parser.process(app);
 
 	auto positionalArguments = parser.positionalArguments();
-	qWarning() << "positional arguments " << positionalArguments;
-	qWarning() << "import paths: " << parser.values("I");
 	QQuickView viewer;
 
 	const auto importPaths = parser.values("I");
@@ -40,11 +38,7 @@ int main(int argc, char *argv[])
 								   "/../lib/");
 
 	if (positionalArguments.empty())
-	{
-
-		qWarning() << parser.helpText();
 		return 1;
-	}
 
 	QFileInfo file(positionalArguments[0]);
 	viewer.setSource(file.absoluteFilePath());
