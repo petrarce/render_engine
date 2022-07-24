@@ -121,7 +121,6 @@ private:
 
 	void wheelEvent(QWheelEvent *event) override
 	{
-
 		event->accept();
 	}
 

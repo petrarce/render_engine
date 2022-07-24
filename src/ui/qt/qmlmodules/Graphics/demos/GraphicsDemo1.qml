@@ -26,10 +26,14 @@ Rectangle {
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
+				lights: [
+					{color: Qt.vector3d(1, 0, 1), position: Qt.vector3d(10, 20, 20)}
+				]
+
 				MeshObject {
 					id: rootMeshObject
 					resources: Instantiator {
-						model: 100
+						model: 1000
 						delegate: MeshObject {
 							property vector3d rgb: Qt.vector3d(
 								Math.min(1, Math.max(0, -4 * sceneView.colorValue + 2)),
@@ -41,9 +45,10 @@ Rectangle {
 										: 1)
 							)
 							ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
-							mesh: "../assets/MonkeySmooth.ply"
-							transform: Qt.matrix4x4(1, 0, 0, (index % 5) * 5,
-													0, 1, 0, (index / 5) * 5,
+//							ambient: Qt.rgba(1, 1, 1, 1)
+							mesh: "../assets/Cube.ply"
+							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
+													0, 1, 0, (index / 20) * 5,
 													0, 0, 1, 0,
 													0, 0, 0, 1)
 							renderMode: {
@@ -86,8 +91,11 @@ Rectangle {
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
-				renderables: rootMeshObject
+				lights: [
+					{color: Qt.vector3d(1, 1, 1), direction: Qt.vector3d(-1, -2, -3)}
+				]
 
+				renderables: [rootMeshObject]
 			}
 		}
 		resources: SequentialAnimation

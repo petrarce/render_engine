@@ -4,6 +4,7 @@
 #include "RenderableObject.hpp"
 #include "MeshObject.hpp"
 #include "Camera.hpp"
+#include "Lights.hpp"
 #include <QtQml>
 
 using namespace qmlmodule::Graphics;
@@ -14,6 +15,8 @@ void GraphicsQmlPlugin::registerTypes(const char *uri)
 	qmlRegisterType<SceneView>(uri, 0, 1, "SceneView");
 	qmlRegisterType<MeshObject>(uri, 0, 1, "MeshObject");
 	qmlRegisterType<OrbitCamera>(uri, 0, 1, "OrbitCamera");
+	qmlRegisterType<PointLight>(uri, 0, 1, "PointLight");
+	qmlRegisterType<DirectionLight>(uri, 0, 1, "DirectionLight");
 
 	qmlRegisterAnonymousType<RenderableObject>(uri, 0);
 	qmlRegisterAnonymousType<Camera>(uri, 0);

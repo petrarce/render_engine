@@ -46,9 +46,9 @@ void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
 	for (const auto &v : mRenderDisplay.mRootScope)
 		newRootScope->Set(molecular::util::HashUtils::MakeHash(v.toStdString()),
 						  dream::components::Attribute<void>());
-	newRootScope->Set("uLightDirection"_H,
-					  dream::components::Uniform<Eigen::Vector3f>(
-						  Eigen::Vector3f(-1, -2, -3).normalized()));
+	//	newRootScope->Set("uLightDirection"_H,
+	//					  dream::components::Uniform<Eigen::Vector3f>(
+	//						  Eigen::Vector3f(-1, -2, -3).normalized()));
 	mRenderingRootScope = std::move(newRootScope);
 }
 

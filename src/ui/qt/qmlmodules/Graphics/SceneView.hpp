@@ -1,5 +1,6 @@
 #pragma once
 #include <QQuickItem>
+#include <QVariantList>
 #include <QMatrix4x4>
 #include "RenderableObject.hpp"
 
@@ -7,7 +8,6 @@ namespace qmlmodule
 {
 namespace Graphics
 {
-
 class SceneView : public RenderableObject
 {
 	Q_OBJECT
@@ -20,6 +20,8 @@ class SceneView : public RenderableObject
 	Q_PROPERTY(qreal fov READ fov WRITE setFov NOTIFY fovChanged)
 	Q_PROPERTY(QMatrix4x4 viewMatrix READ viewMatrix WRITE setViewMatrix NOTIFY
 				   viewMatrixChanged)
+	Q_PROPERTY(
+		QVariantList lights READ lights WRITE setLights NOTIFY lightsChanged)
 
 public:
 	SceneView(QQuickItem *parent = nullptr);
@@ -50,11 +52,17 @@ public:
 		return mViewMatrix;
 	}
 
+	const QVariantList lights() const
+	{
+		return mLights;
+	}
+
 	void setNearPlane(qreal nearPlane);
 	void setFarPlane(qreal farPlane);
 	void setAspectRatio(qreal aspectRatio);
 	void setFov(qreal fov);
 	void setViewMatrix(const QMatrix4x4 &viewMatrix);
+	void setLights(const QVariantList &lights);
 
 Q_SIGNALS:
 	void nearPlaneChanged(qreal nearPlane);
@@ -62,6 +70,7 @@ Q_SIGNALS:
 	void aspectRatioChanged(qreal aspectRatio);
 	void fovChanged(qreal fov);
 	void viewMatrixChanged(const QMatrix4x4 &viewMatrix);
+	void lightsChanged(const QVariantList &lights);
 
 private:
 	qreal mFarPlane{ 0 };
@@ -69,6 +78,7 @@ private:
 	qreal mFov{ 0 };
 	qreal mNearPlane{ 0 };
 	QMatrix4x4 mViewMatrix;
+	QVariantList mLights{};
 };
 
 } // namespace Graphics

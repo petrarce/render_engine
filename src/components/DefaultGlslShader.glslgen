@@ -105,6 +105,30 @@ vec3 lightDirection(vec3 uLightDirection)
 }
 
 fragment
+vec3 gsVerPos(attr0 vec3 aVerPos, mat4 uModel)
+{
+@src
+	gsVerPos = vec3(uModel * vec4(aVerPos, 1.f));
+@endsrc
+}
+
+fragment
+vec3 lightDirection(vec3 uLightPosition, vec3 gsVerPos)
+{
+@src
+	lightDirection = normalize(gsVerPos - uLightPosition);
+@endsrc
+}
+
+fragment
+vec3 lightColor(vec3 uLightColor)
+{
+@src
+	lightColor = uLightColor;
+@endsrc
+}
+
+fragment
 vec3 lightColor()
 {
 @src
@@ -122,11 +146,20 @@ float diffuseTerm(vec3 gsNormal, vec3 lightDirection, float ambientTerm)
 }
 
 fragment
-float specularTerm(vec3 lightDirection, vec3 uViewDirection, vec3 gsNormal, float uSpecularity)
+vec3 viewDirection(vec3 gsVerPos, vec3 uViewPosition)
 {
 @src
 	//half vector
-	vec3 hv = normalize(normalize(-lightDirection) + normalize(-uViewDirection));
+	viewDirection = gsVerPos - uViewPosition;
+@endsrc
+}
+
+fragment
+float specularTerm(vec3 lightDirection, vec3 gsNormal, float uSpecularity, vec3 viewDirection)
+{
+@src
+	//half vector
+	vec3 hv = normalize(normalize(-lightDirection) + normalize(-viewDirection));
 	specularTerm = max(0, pow(dot(gsNormal, hv), uSpecularity));
 @endsrc
 }
@@ -172,3 +205,4 @@ out vec4 fragColor(attr3 vec3 aBitangent, bool fDrawBitangent)
 	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
 @endsrc
 }
+

@@ -12,6 +12,8 @@ qt_add_qml_module( NAME Graphics
 		MeshObject.hpp
 		Camera.hpp
 		Camera.cpp
+		Lights.hpp
+		Lights.cpp
 	QMLFILES
 		Graphics.qmltypes
 	VERSION 0.1

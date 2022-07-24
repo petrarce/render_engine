@@ -3,18 +3,27 @@
 #include <GLComponents>
 #include <GLWrapperCore>
 #include <molecular/util/Matrix4.h>
+#include <Light.hpp>
 
 namespace dream
 {
 namespace components
 {
+
 class GLViewSetupRenderFunction : public GLMultipleCaleeRenderFunction
 {
 public:
+	using LightPtr = std::shared_ptr<dream::geometry::Light>;
+
 	GLViewSetupRenderFunction()
 		: GLMultipleCaleeRenderFunction()
 	{
+		//		auto light = std::make_shared<dream::geometry::PointLight>();
+		//		light->setColor({1, 1, 1});
+		//		light->setPosition({10, 10, 10});
+		//		mLights.push_back(light);
 	}
+
 	virtual ~GLViewSetupRenderFunction()
 	{
 	}
@@ -23,35 +32,64 @@ public:
 	{
 		mViewMatrix = view;
 	}
+
 	void setProjectionMatrix(Eigen::Matrix4f projection)
 	{
 		mProjectionMatrix = projection;
+	}
+
+	void setLights(const std::vector<LightPtr> lights)
+	{
+		mLights = lights;
 	}
 
 protected:
 	void prepareScope(components::Scope &scope) override
 	{
 		using namespace molecular::util;
-		scope.Set(
-			"uViewDirection"_H,
-			Uniform<Eigen::Vector3f>(mViewMatrix.transpose().block<3, 3>(0, 0) *
-									 Eigen::Vector3f(0, 0, -1)));
+		scope.Set("uViewPosition"_H,
+				  Uniform<Eigen::Vector3f>(
+					  (mViewMatrix.inverse() * Eigen::Vector4f(0, 0, 0, 1))
+						  .block<3, 1>(0, 0)));
+		scope.Set("uView"_H, Uniform<Eigen::Matrix4f>(mViewMatrix));
+		scope.Set("uProjection"_H, Uniform<Eigen::Matrix4f>(mProjectionMatrix));
 	}
 
 	void drawImpl(const Scope &parentScope) override
 	{
 		Scope scope(parentScope);
 		prepareScope(scope);
-		Scope viewScope(scope);
-		viewScope.Set(molecular::util::HashUtils::MakeHash("uView"),
-					  Uniform<Eigen::Matrix4f>(mViewMatrix));
-		viewScope.Set(molecular::util::HashUtils::MakeHash("uProjection"),
-					  Uniform<Eigen::Matrix4f>(mProjectionMatrix));
-		GLMultipleCaleeRenderFunction::drawImpl(viewScope);
+		for (auto light : mLights)
+		{
+			Scope lightScope(scope);
+			prepareLightScope(lightScope, light);
+			GLMultipleCaleeRenderFunction::drawImpl(lightScope);
+		}
+	}
+
+	void prepareLightScope(components::Scope &lightScope, LightPtr light)
+	{
+		using namespace molecular::util;
+		lightScope.Set("uLightColor"_H,
+					   Uniform<Eigen::Vector3f>(light->color()));
+		if (auto concreteLight =
+				dynamic_cast<dream::geometry::DirectionLight *>(light.get()))
+		{
+			lightScope.Set(
+				"uLightDirection"_H,
+				Uniform<Eigen::Vector3f>(concreteLight->direction()));
+		}
+		else if (auto concreteLight =
+					 dynamic_cast<dream::geometry::PointLight *>(light.get()))
+		{
+			lightScope.Set("uLightPosition"_H,
+						   Uniform<Eigen::Vector3f>(concreteLight->position()));
+		}
 	}
 
 	Eigen::Matrix4f mViewMatrix;
 	Eigen::Matrix4f mProjectionMatrix;
+	std::vector<LightPtr> mLights;
 };
 } // namespace components
 } // namespace dream
@@ -63,6 +101,8 @@ namespace renderer
 class GLViewSetupRenderableObject : public GLRenderableObject
 {
 public:
+	using LightsVec =
+		std::vector<dream::components::GLViewSetupRenderFunction::LightPtr>;
 	GLViewSetupRenderableObject(
 		const std::string &name = "GLViewSetupRenderableObject")
 		: GLRenderableObject(name)
@@ -70,6 +110,7 @@ public:
 		mRenderFunction =
 			std::make_shared<components::GLViewSetupRenderFunction>();
 	}
+
 	~GLViewSetupRenderableObject()
 	{
 	}
@@ -104,6 +145,12 @@ public:
 		mFOVChanged = true;
 	}
 
+	void setLights(const LightsVec lights)
+	{
+		mLights		   = lights;
+		mLightsChanged = true;
+	}
+
 private:
 	void syncSelf() override
 	{
@@ -126,6 +173,12 @@ private:
 			mAspectRatioChanged = false;
 			mFOVChanged			= false;
 		}
+
+		if (mLightsChanged)
+		{
+			viewRenderFunction->setLights(mLights);
+			mLightsChanged = false;
+		}
 	}
 	Eigen::Matrix4f mViewTransofrm{ Eigen::Matrix4f::Identity() };
 	bool mViewTransofrmUpdated = true;
@@ -137,6 +190,8 @@ private:
 	bool mAspectRatioChanged{ true };
 	float mFOV{ 45.f };
 	bool mFOVChanged{ true };
+	LightsVec mLights;
+	bool mLightsChanged{ true };
 };
 } // namespace renderer
 } // namespace dream
