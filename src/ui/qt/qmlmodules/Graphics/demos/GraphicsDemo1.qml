@@ -27,7 +27,7 @@ Rectangle {
 				farPlane: 1000
 				nearPlane: 0.1
 				lights: [
-					{color: Qt.vector3d(1, 0, 1), position: Qt.vector3d(10, 20, 20)}
+					{color: Qt.vector3d(1, 0, 1), position: Qt.vector3d(3, 3, 1)}
 				]
 
 				MeshObject {

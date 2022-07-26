@@ -18,10 +18,6 @@ public:
 	GLViewSetupRenderFunction()
 		: GLMultipleCaleeRenderFunction()
 	{
-		//		auto light = std::make_shared<dream::geometry::PointLight>();
-		//		light->setColor({1, 1, 1});
-		//		light->setPosition({10, 10, 10});
-		//		mLights.push_back(light);
 	}
 
 	virtual ~GLViewSetupRenderFunction()
@@ -72,16 +68,18 @@ protected:
 		using namespace molecular::util;
 		lightScope.Set("uLightColor"_H,
 					   Uniform<Eigen::Vector3f>(light->color()));
-		if (auto concreteLight =
-				dynamic_cast<dream::geometry::DirectionLight *>(light.get()))
+		if (dynamic_cast<dream::geometry::DirectionLight *>(light.get()))
 		{
+			auto concreteLight =
+				dynamic_cast<dream::geometry::DirectionLight *>(light.get());
 			lightScope.Set(
 				"uLightDirection"_H,
 				Uniform<Eigen::Vector3f>(concreteLight->direction()));
 		}
-		else if (auto concreteLight =
-					 dynamic_cast<dream::geometry::PointLight *>(light.get()))
+		else if (dynamic_cast<dream::geometry::PointLight *>(light.get()))
 		{
+			auto concreteLight =
+				dynamic_cast<dream::geometry::PointLight *>(light.get());
 			lightScope.Set("uLightPosition"_H,
 						   Uniform<Eigen::Vector3f>(concreteLight->position()));
 		}

@@ -12,6 +12,7 @@ add_library(gl-renderer STATIC
 
 target_link_libraries(gl-renderer PUBLIC
 	gl-components
+	geometry-primitives
 	stb-lib
 	assimp)
 target_include_directories(gl-renderer PUBLIC .)

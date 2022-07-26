@@ -3,6 +3,7 @@
 #include <molecular/gfx/Scope.h>
 #include <molecular/programgenerator/ProgramGenerator.h>
 #include <molecular/util/Scope.h>
+#include <map>
 #include "Variable.hpp"
 namespace dream
 {
@@ -60,9 +61,10 @@ namespace HashUtils
 {
 inline Hash MakeHash(const dream::components::Scope &scope)
 {
-	auto &keys = scope.keys();
-	Hash id	   = 0;
-	for (auto k : keys) id ^= k;
+	Hash id		= 0;
+	auto hashes = scope.ToMap();
+
+	for (auto k : hashes) id ^= k.first;
 	return id;
 }
 
