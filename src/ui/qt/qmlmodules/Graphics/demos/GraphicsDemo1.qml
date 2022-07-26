@@ -45,7 +45,6 @@ Rectangle {
 										: 1)
 							)
 							ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
-//							ambient: Qt.rgba(1, 1, 1, 1)
 							mesh: "../assets/Cube.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
 													0, 1, 0, (index / 20) * 5,

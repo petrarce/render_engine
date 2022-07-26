@@ -99,7 +99,7 @@ private:
 		mLastMousePress = event->pos();
 		if (mPressedButton == Qt::MouseButton::LeftButton)
 		{
-			mCamera->rotateCamera(offset.x() / 100.f, -offset.y() / 100.f);
+			mCamera->rotateCamera(offset.x() / 500.f, -offset.y() / 500.f);
 			event->accept();
 		}
 		else if (mPressedButton == Qt::MouseButton::RightButton)
