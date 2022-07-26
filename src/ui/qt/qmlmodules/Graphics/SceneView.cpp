@@ -1,5 +1,4 @@
 #include "SceneView.hpp"
-#include "Lights.hpp"
 #include <GLRenderer>
 #include <EigenConversions.hpp>
 namespace qmlmodule
