@@ -17,7 +17,9 @@ MeshObject::MeshObject(QQuickItem *parent)
 		{
 			auto ro = std::reinterpret_pointer_cast<
 				dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
-			if (ambient.canConvert<QColor>())
+			if (ambient.canConvert<QColor>() ||
+				(ambient.canConvert<QString>() &&
+				 QColor::isValidColor(ambient.value<QString>())))
 			{
 				auto color = ambient.value<QColor>();
 				const auto eigenColor =

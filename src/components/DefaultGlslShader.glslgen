@@ -141,7 +141,10 @@ float diffuseTerm(vec3 gsNormal, vec3 lightDirection, float ambientTerm)
 {
 @src
 	vec3 reflectionDir = normalize(lightDirection - 2 * gsNormal * dot(lightDirection, gsNormal));
-	diffuseTerm = max(0, dot(reflectionDir, gsNormal));
+	if(dot(-lightDirection, gsNormal) < 0)
+		diffuseTerm = 0;
+	else
+		diffuseTerm = max(0, dot(reflectionDir, gsNormal));
 @endsrc
 }
 
@@ -160,7 +163,10 @@ float specularTerm(vec3 lightDirection, vec3 gsNormal, float uSpecularity, vec3 
 @src
 	//half vector
 	vec3 hv = -normalize(lightDirection + viewDirection);
-	specularTerm = max(0, pow(dot(gsNormal, hv), uSpecularity));
+	if(dot(-lightDirection, gsNormal) < 0)
+		specularTerm = 0;
+	else
+		specularTerm = max(0, pow(max(0, dot(gsNormal, hv)), uSpecularity));
 @endsrc
 }
 

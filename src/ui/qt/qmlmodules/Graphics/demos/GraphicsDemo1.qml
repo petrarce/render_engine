@@ -26,7 +26,7 @@ Rectangle {
 						{
 							color: Qt.vector3d(1, 1, 1), 
 							position: Qt.vector3d(30, 100 * value, 9 * value + 1),
-							attenuationDistance: 30
+							attenuationDistance: 50
 						}
 					]
 					return result
@@ -43,6 +43,16 @@ Rectangle {
 
 				MeshObject {
 					id: rootMeshObject
+
+					MeshObject {
+						ambient: Qt.rgba(0.3, 0.4, 0.8, 1)
+						mesh: "../assets/Rectangle.ply"
+						transform: Qt.matrix4x4(100, 0, 0, 0,
+												0, 100, 0, 0,
+												0, 0, 100, -3,
+												0, 0, 0, 1)
+					}
+
 					resources: Instantiator {
 						model: 1000
 						delegate: MeshObject {
@@ -55,7 +65,6 @@ Rectangle {
 										? 4 * (1 - sceneView.colorValue)
 										: 1)
 							)
-//							ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
 							ambient: Qt.rgba(0.3, 0.5, 0.9, 1)
 							mesh: "../assets/Monkey.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
