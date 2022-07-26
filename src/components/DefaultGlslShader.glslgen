@@ -165,12 +165,40 @@ float specularTerm(vec3 lightDirection, vec3 gsNormal, float uSpecularity, vec3 
 }
 
 fragment
-vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
-					float ambientTerm, float diffuseTerm, float specularTerm)
+float attenuation()
 {
 @src
-	vec3 lighting = vec3(lightColor) * clamp(ambientTerm + diffuseTerm * (1 - ambientTerm) + specularTerm, 0.f, 1.f);
-	blinnPhongColor = diffuseColor * vec4(lighting, 1.f);
+	attenuation = 1.f;
+@endsrc
+}
+
+fragment
+float attenuation(float uAttenuationDistance, vec3 gsVerPos, vec3 uLightPosition)
+{
+@src
+	float norm = length(gsVerPos - uLightPosition);
+	float factor = clamp(norm / uAttenuationDistance, 0.f, 1.f);
+	attenuation = (cos(3.1415926535897932384626433832795 * factor) + 1) / 2;
+@endsrc
+}
+
+fragment
+vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
+					float ambientTerm, float diffuseTerm, 
+					float specularTerm,
+					float attenuation)
+{
+@src
+	vec3 lighting = vec3(lightColor) 
+		* clamp(ambientTerm + diffuseTerm * (1 - ambientTerm), 0.f, 1.f)
+		* attenuation;
+	blinnPhongColor = diffuseColor 
+		* vec4(	
+			clamp(
+				lighting, 
+				vec3(0, 0, 0), 
+				vec3(1.f, 1.f, 1.f)) + specularTerm * vec3(lightColor), 
+			1.f);
 @endsrc
 }
 

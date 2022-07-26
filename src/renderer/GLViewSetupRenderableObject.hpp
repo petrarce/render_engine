@@ -82,6 +82,9 @@ protected:
 				dynamic_cast<dream::geometry::PointLight *>(light.get());
 			lightScope.Set("uLightPosition"_H,
 						   Uniform<Eigen::Vector3f>(concreteLight->position()));
+			lightScope.Set(
+				"uAttenuationDistance"_H,
+				Uniform<float>(concreteLight->attenuationDistance()));
 		}
 	}
 

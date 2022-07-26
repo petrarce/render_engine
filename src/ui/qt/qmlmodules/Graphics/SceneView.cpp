@@ -88,15 +88,21 @@ SceneView::SceneView(QQuickItem *parent)
 							lightsVec.push_back(light);
 						}
 						// point light
-						else if (lightProperties.keys().contains("position"))
+						else if (lightProperties.keys().contains("position") &&
+								 lightProperties.keys().contains(
+									 "attenuationDistance"))
 						{
 							auto position = qt::helpers::toEigen(
 								lightProperties.value("position")
 									.value<QVector3D>());
+							auto attenuationDistance =
+								lightProperties.value("attenuationDistance")
+									.value<float>();
 							auto light =
 								std::make_shared<dream::geometry::PointLight>();
 							light->setColor(color);
 							light->setPosition(position);
+							light->setAttenuationDistance(attenuationDistance);
 							lightsVec.push_back(light);
 						}
 					}

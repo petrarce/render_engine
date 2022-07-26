@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <Eigen/Dense>
 namespace dream
 {
@@ -47,18 +47,18 @@ public:
 		mPosition = position;
 	}
 
-	float distance() const
+	float attenuationDistance() const
 	{
-		return mDistance;
+		return mAttenuationDistance;
 	}
-	void setDistance(float distance)
+	void setAttenuationDistance(float distance)
 	{
-		mDistance = distance;
+		mAttenuationDistance = distance;
 	}
 
 protected:
 	Eigen::Vector3f mPosition;
-	float mDistance;
+	float mAttenuationDistance;
 };
 
 class DirectionLight : public Light

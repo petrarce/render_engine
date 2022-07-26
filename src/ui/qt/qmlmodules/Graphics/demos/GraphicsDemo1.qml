@@ -21,14 +21,25 @@ Rectangle {
 			SceneView {
 				id: sceneView
 
+				function lightsFunc(value) {
+					var result = [
+						{
+							color: Qt.vector3d(1, 1, 1), 
+							position: Qt.vector3d(30, 100 * value, 9 * value + 1),
+							attenuationDistance: 30
+						}
+					]
+					return result
+				}
+
 				property real colorValue: 0
+				property var lightVlaue: lightsFunc(colorValue)
+
 				fov: 45
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000
 				nearPlane: 0.1
-				lights: [
-					{color: Qt.vector3d(1, 0, 1), position: Qt.vector3d(3, 3, 1)}
-				]
+				lights: lightVlaue
 
 				MeshObject {
 					id: rootMeshObject
@@ -44,8 +55,9 @@ Rectangle {
 										? 4 * (1 - sceneView.colorValue)
 										: 1)
 							)
-							ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
-							mesh: "../assets/Cube.ply"
+//							ambient: Qt.rgba(rgb.x, rgb.y, rgb.z, 1)
+							ambient: Qt.rgba(0.3, 0.5, 0.9, 1)
+							mesh: "../assets/Monkey.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
 													0, 1, 0, (index / 20) * 5,
 													0, 0, 1, 0,
@@ -85,7 +97,6 @@ Rectangle {
 			Component.onCompleted: sceneView2.viewMatrix = camera.viewMatrix
 			SceneView {
 				id: sceneView2
-				property real colorValue: 0
 				fov: 45
 				aspectRatio: viewport.width/viewport.height
 				farPlane: 1000

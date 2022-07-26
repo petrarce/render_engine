@@ -68,6 +68,8 @@ class PointLight : public Light
 	Q_OBJECT
 	Q_PROPERTY(QVector3D position READ position WRITE setPosition NOTIFY
 				   positionChanged)
+	Q_PROPERTY(qreal attenuationDistance READ attenuationDistance WRITE
+				   setAttenuationDistance NOTIFY attenuationDistanceChanged)
 public:
 	explicit PointLight(QObject *parent = nullptr)
 		: Light(parent)
@@ -82,13 +84,22 @@ public:
 	{
 		return mPosition;
 	}
+
+	qreal attenuationDistance() const
+	{
+		return mAttenuationDistance;
+	}
+
 	void setPosition(const QVector3D &direction);
+	void setAttenuationDistance(qreal attenuationDistance);
 
 Q_SIGNALS:
 	void positionChanged(const QVector3D &direction);
+	void attenuationDistanceChanged(qreal attenuationDistance);
 
 private:
 	QVector3D mPosition;
+	qreal mAttenuationDistance;
 };
 } // namespace Graphics
 } // namespace qmlmodule

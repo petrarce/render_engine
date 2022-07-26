@@ -32,5 +32,14 @@ void PointLight::setPosition(const QVector3D &position)
 	Q_EMIT positionChanged(mPosition);
 }
 
+void PointLight::setAttenuationDistance(qreal attenuationDistance)
+{
+	if (qFuzzyCompare(attenuationDistance, mAttenuationDistance))
+		return;
+
+	mAttenuationDistance = attenuationDistance;
+	Q_EMIT attenuationDistanceChanged(mAttenuationDistance);
+}
+
 } // namespace Graphics
 } // namespace qmlmodule
