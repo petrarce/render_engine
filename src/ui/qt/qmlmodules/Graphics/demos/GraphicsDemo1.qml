@@ -46,6 +46,22 @@ Rectangle {
 													0, 1, 0, (index / 5) * 5,
 													0, 0, 1, 0,
 													0, 0, 0, 1)
+							renderMode: {
+								if(index % 7 === 0)
+									return MeshObject.Faces
+								if(index % 7 === 1)
+									return MeshObject.Lines
+								if(index % 7 === 2)
+									return MeshObject.Points
+								if(index % 7 === 3)
+									return MeshObject.FacesLines
+								if(index % 7 === 4)
+									return MeshObject.FacesPoints
+								if(index % 7 === 5)
+									return MeshObject.LinesPoints
+								if(index % 7 === 6)
+									return MeshObject.FacesLinesPoints
+							}
 						}
 						onObjectAdded: {
 							rootMeshObject.addRenderableObject(object)

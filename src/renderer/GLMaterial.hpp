@@ -24,6 +24,13 @@ public:
 		glwrapper::GLTexture2D::InternalFormat internalFormat;
 	};
 
+	enum RenderMode
+	{
+		Faces  = 0x1,
+		Lines  = 0x2,
+		Points = 0x4,
+	};
+
 	using AmbientType = std::variant<Texture, Eigen::Vector4f>;
 
 	GLMeshWithMaterialRenderFunction()
@@ -124,6 +131,21 @@ public:
 		mVAO = std::make_unique<glwrapper::GLVertexArray>();
 	}
 
+	void setPointSize(float ps)
+	{
+		mPointSize = ps;
+	}
+
+	void setLineSize(float ls)
+	{
+		mLineWidth = ls;
+	}
+
+	void setRenderMode(int mode)
+	{
+		mRenderModes = mode;
+	}
+
 protected:
 	void drawImpl(const components::Scope &parentScope) override
 	{
@@ -141,13 +163,34 @@ protected:
 			glwrapper::GLObjectBinder bindVAO(*mVAO);
 			glwrapper::GLObjectBinder bindProgram(*program);
 			glwrapper::GLEnable<true, GL_BLEND> enableBlend;
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+			glPointSize(mPointSize);
+			glLineWidth(mLineWidth);
 			if (mMeshBuffers->availableComponents.indices)
-				glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
-							   GL_UNSIGNED_INT, 0);
+			{
+				if (mRenderModes & RenderMode::Faces)
+					glDrawElements(GL_TRIANGLES, mMeshBuffers->numIndices,
+								   GL_UNSIGNED_INT, 0);
+
+				if (mRenderModes & RenderMode::Lines)
+					glDrawElements(GL_LINES, mMeshBuffers->numIndices,
+								   GL_UNSIGNED_INT, 0);
+
+				if (mRenderModes & RenderMode::Points)
+					glDrawElements(GL_POINTS, mMeshBuffers->numIndices,
+								   GL_UNSIGNED_INT, 0);
+			}
 			else
-				glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+			{
+				if (mRenderModes & RenderMode::Faces)
+					glDrawArrays(GL_TRIANGLES, 0, mMeshBuffers->numVertices);
+
+				if (mRenderModes & RenderMode::Lines)
+					glDrawArrays(GL_LINES, 0, mMeshBuffers->numVertices);
+
+				if (mRenderModes & RenderMode::Points)
+					glDrawArrays(GL_POINTS, 0, mMeshBuffers->numVertices);
+			}
 		}
 
 		// now draw children
@@ -286,6 +329,11 @@ protected:
 
 	std::unique_ptr<glwrapper::GLVertexArray> mVAO;
 
+	int mRenderModes{ RenderMode::Points };
+
+	float mLineWidth{ 1 };
+	float mPointSize{ 3 };
+
 	static const Eigen::Vector4f mDefaultColor;
 	static const glwrapper::GLVertexArray::AttributeSpecification
 		verticesAttributeSpec;
@@ -318,15 +366,11 @@ public:
 
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
 	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
+	using RenderMode  = GLMeshWithMaterialRenderFunction::RenderMode;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
-		, mMesh(std::make_shared<Mesh>(Mesh{
-			  .indices	= std::nullopt,
-			  .normals	= std::nullopt,
-			  .textures = std::vector<float>({ 0, 0, 0.5, 1, 1, 0 }),
-			  .vertices = std::vector<float>({ 0, 0, 0, 5, 0, 10, 10, 0, 10 }),
-		  }))
+
 	{
 		mRenderFunction = std::make_shared<GLMeshWithMaterialRenderFunction>();
 	}
@@ -345,6 +389,12 @@ public:
 	{
 		mMesh		 = mesh;
 		mMeshChanged = true;
+	}
+
+	void setRenderMode(const int mode)
+	{
+		mRenderModes	   = mode;
+		mRenderModeChanged = true;
 	}
 
 	void syncSelf() override
@@ -367,13 +417,20 @@ public:
 			else if (auto mesh = std::get_if<std::string>(&mMesh))
 				rf->setMesh(*mesh);
 		}
+		if (mRenderModeChanged)
+		{
+			rf->setRenderMode(mRenderModes);
+			mRenderModeChanged = false;
+		}
 	}
 
 private:
 	AmbientData mAmbient;
 	bool mAmbientChanged{ true };
 	MeshVariant mMesh;
-	bool mMeshChanged{ false };
+	bool mMeshChanged{ false }; // don't draw empty mesh by default
+	int mRenderModes{ RenderMode::Faces };
+	bool mRenderModeChanged{ true };
 };
 } // namespace renderer
 } // namespace dream
