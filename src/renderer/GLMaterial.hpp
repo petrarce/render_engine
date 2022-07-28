@@ -212,7 +212,7 @@ protected:
 			if (texture)
 			{
 				texture->attach(glwrapper::GLTextureUnit::Texture0 + 1);
-				scope.Set("uAmbiantTexture"_H, components::Uniform<int>(1));
+				scope.Set("uDiffuseTexture"_H, components::Uniform<int>(1));
 				scope.Set("aTextureCoord"_H,
 						  components::Attribute<Eigen::Vector2f>());
 			}
@@ -224,7 +224,7 @@ protected:
 					mDefaultColor(2),
 					mDefaultColor(3),
 				};
-				scope.Set("uAmbiantColor"_H,
+				scope.Set("uDiffuseColor"_H,
 						  components::Uniform<typeof clr>(clr));
 			}
 		}
@@ -237,7 +237,7 @@ protected:
 				std::array<float, 4> clr;
 				clr = { color->operator()(0), color->operator()(1),
 						color->operator()(2), color->operator()(3) };
-				scope.Set("uAmbiantColor"_H,
+				scope.Set("uDiffuseColor"_H,
 						  components::Uniform<typeof clr>(clr));
 			}
 			else
@@ -248,7 +248,7 @@ protected:
 					mDefaultColor(2),
 					mDefaultColor(3),
 				};
-				scope.Set("uAmbiantColor"_H,
+				scope.Set("uDiffuseColor"_H,
 						  components::Uniform<typeof clr>(clr));
 			}
 		}

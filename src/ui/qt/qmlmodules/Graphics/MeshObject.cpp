@@ -17,12 +17,14 @@ MeshObject::MeshObject(QQuickItem *parent)
 		{
 			auto ro = std::reinterpret_pointer_cast<
 				dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
-			if (ambient.canConvert<QColor>())
+			if (ambient.canConvert<QColor>() ||
+				(ambient.canConvert<QString>() &&
+				 QColor::isValidColor(ambient.value<QString>())))
 			{
 				auto color = ambient.value<QColor>();
 				const auto eigenColor =
-					Eigen::Vector4f(color.red() / 256., color.green() / 256.,
-									color.blue() / 256., color.alpha() / 265.);
+					Eigen::Vector4f(color.red() / 255., color.green() / 255.,
+									color.blue() / 255., color.alpha() / 255.);
 				ro->setAmbient(eigenColor);
 				update();
 			}

@@ -84,8 +84,7 @@ private:
 	void mousePressEvent(QMouseEvent *event) override
 	{
 		mLastMousePress = event->pos();
-		qWarning() << "button " << event->button();
-		mPressedButton = event->button();
+		mPressedButton	= event->button();
 		event->accept();
 	}
 
@@ -100,7 +99,7 @@ private:
 		mLastMousePress = event->pos();
 		if (mPressedButton == Qt::MouseButton::LeftButton)
 		{
-			mCamera->rotateCamera(offset.x() / 100.f, -offset.y() / 100.f);
+			mCamera->rotateCamera(offset.x() / 500.f, -offset.y() / 500.f);
 			event->accept();
 		}
 		else if (mPressedButton == Qt::MouseButton::RightButton)
@@ -122,7 +121,6 @@ private:
 
 	void wheelEvent(QWheelEvent *event) override
 	{
-
 		event->accept();
 	}
 

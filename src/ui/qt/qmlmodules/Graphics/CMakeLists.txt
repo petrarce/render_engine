@@ -24,4 +24,7 @@ qt_add_qml_module( NAME Graphics
 target_deploy_assets(
 	TARGET Graphics-qmlmodule
 	ASSETFILES
-		demos/GraphicsDemo1.qml)
+		demos/GraphicsDemo1.qml
+		demos/MultiView.qml
+		demos/GHS-pictogram-unknown.svg
+		demos/MultiView.png)
