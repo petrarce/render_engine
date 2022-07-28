@@ -18,7 +18,9 @@ Current `master` branch status (Build and test):
 
 #### Shaders
 
-- [ ] Phong/Blinn-Phong/GGX models
+- Lighting models
+	- [ X ] Blinn-Phong
+	- [ ] GGX
 - [ ] Ambient occlusions maps
 - [ ] Normal maps
 - [ ] Metalikness maps
@@ -30,6 +32,7 @@ Current `master` branch status (Build and test):
 
 - [ ] Cube texture for surrounding
 - [ ] Heightmap meshes
+- [ ] Geometry clipmaps for terrain rendering
 - [ ] Implement light sources
 	- [ ] Point light
 	- [ ] Directional light
