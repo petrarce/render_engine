@@ -38,6 +38,27 @@ public:
 	{
 	}
 
+	void setNormalMap(const std::optional<Texture> normalMap)
+	{
+		mNormalMap = normalMap;
+		if (!mNormalMap.has_value())
+			return;
+
+		auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
+			mNormalMap->path, mNormalMap->internalFormat);
+		if (nmTexture)
+		{
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueMagFilter::MagNearest);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueMinFilter::MinNearest);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+		}
+	}
+
 	void setAmbientColor(const AmbientType &ambientColor)
 	{
 		mAmbientColor	 = std::variant(ambientColor);
@@ -261,6 +282,17 @@ protected:
 			scope.Set("aBitangent"_H, components::Attribute<Eigen::Vector3f>());
 		}
 
+		if (mNormalMap.has_value())
+		{
+			auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
+				HashUtils::MakeHash(mNormalMap->path));
+			if (nmTexture)
+			{
+				scope.Set("uNormalMapTexture"_H, components::Uniform<int>(2));
+				nmTexture->attach(glwrapper::GLTextureUnit::Texture0 + 2);
+			}
+		}
+
 		scope.Set("uSpecularity"_H, components::Uniform<float>(16));
 	}
 
@@ -324,6 +356,8 @@ protected:
 		}
 	}
 	AmbientType mAmbientColor;
+
+	std::optional<Texture> mNormalMap;
 
 	std::shared_ptr<GLMeshObject> mMeshBuffers;
 

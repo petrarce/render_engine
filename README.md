@@ -22,7 +22,7 @@ Current `master` branch status (Build and test):
 	- [ X ] Blinn-Phong
 	- [ ] GGX
 - [ ] Ambient occlusions maps
-- [ ] Normal maps
+- [ X ] Normal maps
 - [ ] Metalikness maps
 - [ ] Specularity maps
 - [ ] Bump maps

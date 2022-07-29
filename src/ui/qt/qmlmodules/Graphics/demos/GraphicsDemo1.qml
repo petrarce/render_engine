@@ -12,7 +12,7 @@ Rectangle {
 		anchors.fill: parent
 		ListView {
 			id: modeSelect
-			property string selectedItem
+			property string selectedItem: "Multi View"
 			
 			Layout.preferredWidth: 200
 			Layout.fillHeight: true
