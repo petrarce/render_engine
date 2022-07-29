@@ -234,8 +234,6 @@ protected:
 			{
 				texture->attach(glwrapper::GLTextureUnit::Texture0 + 1);
 				scope.Set("uDiffuseTexture"_H, components::Uniform<int>(1));
-				scope.Set("aTextureCoord"_H,
-						  components::Attribute<Eigen::Vector2f>());
 			}
 			else
 			{
@@ -281,6 +279,9 @@ protected:
 			scope.Set("aTangent"_H, components::Attribute<Eigen::Vector3f>());
 			scope.Set("aBitangent"_H, components::Attribute<Eigen::Vector3f>());
 		}
+		if (mMeshBuffers->availableComponents.textureCoordinates)
+			scope.Set("aTextureCoord"_H,
+					  components::Attribute<Eigen::Vector2f>());
 
 		if (mNormalMap.has_value())
 		{
@@ -401,6 +402,7 @@ public:
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
 	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
 	using RenderMode  = GLMeshWithMaterialRenderFunction::RenderMode;
+	using Texture	  = GLMeshWithMaterialRenderFunction::Texture;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
@@ -414,11 +416,6 @@ public:
 		mAmbientChanged = true;
 	}
 
-	const AmbientData &ambient() const
-	{
-		return mAmbient;
-	}
-
 	void setMesh(const MeshVariant mesh)
 	{
 		mMesh		 = mesh;
@@ -429,6 +426,12 @@ public:
 	{
 		mRenderModes	   = mode;
 		mRenderModeChanged = true;
+	}
+
+	void setNormalMap(const std::optional<Texture> normalMap)
+	{
+		mNormalMap		  = normalMap;
+		mNormalMapChanged = true;
 	}
 
 	void syncSelf() override
@@ -456,11 +459,18 @@ public:
 			rf->setRenderMode(mRenderModes);
 			mRenderModeChanged = false;
 		}
+		if (mNormalMapChanged)
+		{
+			rf->setNormalMap(mNormalMap);
+			mNormalMapChanged = false;
+		}
 	}
 
 private:
 	AmbientData mAmbient;
 	bool mAmbientChanged{ true };
+	std::optional<Texture> mNormalMap{ std::nullopt };
+	bool mNormalMapChanged{ true };
 	MeshVariant mMesh;
 	bool mMeshChanged{ false }; // don't draw empty mesh by default
 	int mRenderModes{ RenderMode::Faces };

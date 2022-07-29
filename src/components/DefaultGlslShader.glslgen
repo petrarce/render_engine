@@ -31,6 +31,34 @@ vec2 texCoord(attr1 vec2 aTexCoord)
 }
 
 fragment
+vec3 normalMapVecTangentSpace(sampler2D uNormalMapTexture, attr1 vec2 aTextureCoord)
+{
+@src
+	normalMapVecTangentSpace = normalize(texture(uNormalMapTexture, aTextureCoord).rgb * 2.0 - 1.0);
+@endsrc
+}
+
+fragment
+vec3 normalMapVecModelSpace(vec3 normalMapVecTangentSpace, attr3 vec3 aTangent, attr4 vec3 aBitangent)
+{
+@src
+	mat3 TBN;
+	vec3 T = normalize(aTangent);
+	vec3 B = aBitangent;
+	vec3 N = normalize(cross(T,B));
+	B = normalize(cross(N, T));
+	TBN[0] = T;
+	TBN[1] = B;
+	TBN[2] = N;
+	
+	normalMapVecModelSpace = TBN * normalMapVecTangentSpace;
+
+	
+@endsrc
+
+}
+
+fragment
 vec4 diffuseColor(vec4 uDiffuseColor)
 {
 @src
@@ -53,6 +81,27 @@ float ambientTerm()
 	ambientTerm = 0.3;
 @endsrc
 }
+
+fragment
+vec3 gsNormal(vec3 normalMapVecModelSpace, mat4 uModel)
+{
+@src
+
+	mat3 rotation = mat3(uModel);
+	gsNormal = normalize(rotation * normalMapVecModelSpace);
+@endsrc
+}
+
+fragment
+vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
+{
+@src
+
+	mat3 rotation = mat3(uModel);
+	gsNormal = normalize(rotation * aNormal);
+@endsrc
+}
+
 
 fragment
 vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
@@ -176,21 +225,44 @@ vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
 }
 
 fragment
-out vec4 fragColor()
+out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
 {
 @src
-	fragColor = vec4(0, 0, 0, 0);
+	fragColor = vec4((gsNormal + vec3(1,1,1)) / 2, 1.f);
 @endsrc
 }
 
 fragment
-out vec4 fragColor(vec4 uColor)
+out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
 {
 @src
-	fragColor = uColor;
+	fragColor = vec4((aTangent + vec3(1, 1, 1)) / 2, 1.f);
 @endsrc
 }
 
+fragment
+out vec4 fragColor(attr4 vec3 aBitangent, bool fDrawBitangent)
+{
+@src
+	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor(vec3 normalMapVecModelSpace, bool fDrawNormalMap)
+{
+@src
+	fragColor = vec4((normalMapVecModelSpace + vec3(1,1,1)) / 2, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( vec4 blinnPhongColor)
+{
+@src
+	fragColor = blinnPhongColor;
+@endsrc
+}
 
 fragment
 out vec4 fragColor(sampler2D uScreenTexture, vec2 texCoord)
@@ -208,34 +280,19 @@ out vec4 fragColor(vec4 diffuseColor)
 @endsrc
 }
 
-fragment prio=1
-out vec4 fragColor( vec4 blinnPhongColor)
+fragment
+out vec4 fragColor(vec4 uColor)
 {
 @src
-	fragColor = blinnPhongColor;
+	fragColor = uColor;
 @endsrc
 }
 
-fragment prio=1
-out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
+fragment
+out vec4 fragColor()
 {
 @src
-	fragColor = vec4((gsNormal + vec3(1,1,1)) / 2, 1.f);
+	fragColor = vec4(0, 0, 0, 1);
 @endsrc
 }
 
-fragment prio=1
-out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
-{
-@src
-	fragColor = vec4((aTangent + vec3(1, 1, 1)) / 2, 1.f);
-@endsrc
-}
-
-fragment prio=1
-out vec4 fragColor(attr3 vec3 aBitangent, bool fDrawBitangent)
-{
-@src
-	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
-@endsrc
-}

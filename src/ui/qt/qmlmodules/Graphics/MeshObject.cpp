@@ -95,6 +95,20 @@ MeshObject::MeshObject(QQuickItem *parent)
 								  dream::renderer::GLMeshWithMaterialObject::
 									  RenderMode::Faces);
 		});
+	connect(this, &MeshObject::normalMapChanged, this,
+			[this](const QUrl &normalMap)
+			{
+				auto ro = std::reinterpret_pointer_cast<
+					dream::renderer::GLMeshWithMaterialObject>(
+					mRenderableObject);
+				dream::renderer::GLMeshWithMaterialObject::Texture texture = {
+					.path = normalMap.path().toStdString(),
+					.internalFormat =
+						dream::glwrapper::GLTexture2D::InternalFormat::Rgb8,
+				};
+				ro->setNormalMap(texture);
+				update();
+			});
 }
 MeshObject::~MeshObject()
 {
@@ -115,6 +129,15 @@ void MeshObject::setAmbient(const QVariant &ambient)
 
 	mAmbient = ambient;
 	Q_EMIT ambientChanged(mAmbient);
+}
+
+void MeshObject::setNormalMap(const QUrl &url)
+{
+	if (mNormalMap == url)
+		return;
+
+	mNormalMap = url;
+	Q_EMIT normalMapChanged(mNormalMap);
 }
 
 void MeshObject::setTransform(const QMatrix4x4 &transform)

@@ -43,6 +43,7 @@ Rectangle {
 					MeshObject {
 						ambient: Qt.rgba(0.3, 0.4, 0.8, 1)
 						mesh: "../assets/Rectangle.ply"
+						normalMap: "../assets/demo_normalmap.jpg"
 						transform: Qt.matrix4x4(100, 0, 0, 0,
 												0, 100, 0, 0,
 												0, 0, 100, -3,
@@ -62,7 +63,8 @@ Rectangle {
 										: 1)
 							)
 							ambient: Qt.rgba(0.3, 0.5, 0.9, 1)
-							mesh: "../assets/Monkey.ply"
+							normalMap: "../assets/demo_normalmap.jpg"
+							mesh: "../assets/Cube.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
 													0, 1, 0, (index / 20) * 5,
 													0, 0, 1, 0,
