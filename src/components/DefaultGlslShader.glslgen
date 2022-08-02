@@ -22,22 +22,6 @@ out vec4 gl_Position(attr0 vec3 aVerPos, mat4 uModel, mat4 uView, mat4 uProjecti
 @endsrc
 }
 
-fragment
-out vec4 fragColor()
-{
-@src
-	fragColor = vec4(0, 0, 0, 0);
-@endsrc
-}
-
-fragment
-out vec4 fragColor(vec4 uColor)
-{
-@src
-	fragColor = uColor;
-@endsrc
-}
-
 vertex
 vec2 texCoord(attr1 vec2 aTexCoord)
 {
@@ -47,13 +31,32 @@ vec2 texCoord(attr1 vec2 aTexCoord)
 }
 
 fragment
-out vec4 fragColor(sampler2D uScreenTexture, vec2 texCoord)
+vec3 normalMapVecTangentSpace(sampler2D uNormalMapTexture, attr1 vec2 aTextureCoord)
 {
 @src
-	fragColor = texture(uScreenTexture, texCoord);
+	normalMapVecTangentSpace = normalize(texture(uNormalMapTexture, aTextureCoord).rgb * 2.0 - 1.0);
 @endsrc
 }
 
+fragment
+vec3 normalMapVecModelSpace(vec3 normalMapVecTangentSpace, attr3 vec3 aTangent, attr4 vec3 aBitangent)
+{
+@src
+	mat3 TBN;
+	vec3 T = normalize(aTangent);
+	vec3 B = aBitangent;
+	vec3 N = normalize(cross(T,B));
+	B = normalize(cross(N, T));
+	TBN[0] = T;
+	TBN[1] = B;
+	TBN[2] = N;
+	
+	normalMapVecModelSpace = TBN * normalMapVecTangentSpace;
+
+	
+@endsrc
+
+}
 
 fragment
 vec4 diffuseColor(vec4 uDiffuseColor)
@@ -72,20 +75,33 @@ vec4 diffuseColor(sampler2D uDiffuseTexture, attr1 vec2 aTextureCoord)
 }
 
 fragment
-out vec4 fragColor(vec4 diffuseColor)
-{
-@src
-	fragColor = diffuseColor;
-@endsrc
-}
-
-fragment
 float ambientTerm()
 {
 @src
 	ambientTerm = 0.3;
 @endsrc
 }
+
+fragment
+vec3 gsNormal(vec3 normalMapVecModelSpace, mat4 uModel)
+{
+@src
+
+	mat3 rotation = mat3(uModel);
+	gsNormal = normalize(rotation * normalMapVecModelSpace);
+@endsrc
+}
+
+fragment
+vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
+{
+@src
+
+	mat3 rotation = mat3(uModel);
+	gsNormal = normalize(rotation * aNormal);
+@endsrc
+}
+
 
 fragment
 vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
@@ -97,18 +113,18 @@ vec3 gsNormal(attr2 vec3 aNormal, mat4 uModel)
 }
 
 fragment
-vec3 lightDirection(vec3 uLightDirection)
-{
-@src
-	lightDirection = normalize(uLightDirection);
-@endsrc
-}
-
-fragment
 vec3 gsVerPos(attr0 vec3 aVerPos, mat4 uModel)
 {
 @src
 	gsVerPos = vec3(uModel * vec4(aVerPos, 1.f));
+@endsrc
+}
+
+fragment
+vec3 lightDirection(vec3 uLightDirection)
+{
+@src
+	lightDirection = normalize(uLightDirection);
 @endsrc
 }
 
@@ -208,15 +224,7 @@ vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
 @endsrc
 }
 
-fragment prio=1
-out vec4 fragColor( vec4 blinnPhongColor)
-{
-@src
-	fragColor = blinnPhongColor;
-@endsrc
-}
-
-fragment prio=1
+fragment
 out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
 {
 @src
@@ -224,7 +232,7 @@ out vec4 fragColor( vec3 gsNormal, bool fDrawNormals)
 @endsrc
 }
 
-fragment prio=1
+fragment
 out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
 {
 @src
@@ -232,11 +240,59 @@ out vec4 fragColor(attr3 vec3 aTangent, bool fDrawTangents)
 @endsrc
 }
 
-fragment prio=1
-out vec4 fragColor(attr3 vec3 aBitangent, bool fDrawBitangent)
+fragment
+out vec4 fragColor(attr4 vec3 aBitangent, bool fDrawBitangent)
 {
 @src
 	fragColor = vec4((aBitangent + vec3(1, 1, 1)) / 2, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor(vec3 normalMapVecModelSpace, bool fDrawNormalMap)
+{
+@src
+	fragColor = vec4((normalMapVecModelSpace + vec3(1,1,1)) / 2, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( vec4 blinnPhongColor)
+{
+@src
+	fragColor = blinnPhongColor;
+@endsrc
+}
+
+fragment
+out vec4 fragColor(sampler2D uScreenTexture, vec2 texCoord)
+{
+@src
+	fragColor = texture(uScreenTexture, texCoord);
+@endsrc
+}
+
+fragment
+out vec4 fragColor(vec4 diffuseColor)
+{
+@src
+	fragColor = diffuseColor;
+@endsrc
+}
+
+fragment
+out vec4 fragColor(vec4 uColor)
+{
+@src
+	fragColor = uColor;
+@endsrc
+}
+
+fragment
+out vec4 fragColor()
+{
+@src
+	fragColor = vec4(0, 0, 0, 1);
 @endsrc
 }
 

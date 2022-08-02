@@ -38,6 +38,27 @@ public:
 	{
 	}
 
+	void setNormalMap(const std::optional<Texture> normalMap)
+	{
+		mNormalMap = normalMap;
+		if (!mNormalMap.has_value())
+			return;
+
+		auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
+			mNormalMap->path, mNormalMap->internalFormat);
+		if (nmTexture)
+		{
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueMagFilter::MagNearest);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueMinFilter::MinNearest);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+			nmTexture->setParameter(
+				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+		}
+	}
+
 	void setAmbientColor(const AmbientType &ambientColor)
 	{
 		mAmbientColor	 = std::variant(ambientColor);
@@ -213,8 +234,6 @@ protected:
 			{
 				texture->attach(glwrapper::GLTextureUnit::Texture0 + 1);
 				scope.Set("uDiffuseTexture"_H, components::Uniform<int>(1));
-				scope.Set("aTextureCoord"_H,
-						  components::Attribute<Eigen::Vector2f>());
 			}
 			else
 			{
@@ -259,6 +278,20 @@ protected:
 		{
 			scope.Set("aTangent"_H, components::Attribute<Eigen::Vector3f>());
 			scope.Set("aBitangent"_H, components::Attribute<Eigen::Vector3f>());
+		}
+		if (mMeshBuffers->availableComponents.textureCoordinates)
+			scope.Set("aTextureCoord"_H,
+					  components::Attribute<Eigen::Vector2f>());
+
+		if (mNormalMap.has_value())
+		{
+			auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
+				HashUtils::MakeHash(mNormalMap->path));
+			if (nmTexture)
+			{
+				scope.Set("uNormalMapTexture"_H, components::Uniform<int>(2));
+				nmTexture->attach(glwrapper::GLTextureUnit::Texture0 + 2);
+			}
 		}
 
 		scope.Set("uSpecularity"_H, components::Uniform<float>(16));
@@ -325,6 +358,8 @@ protected:
 	}
 	AmbientType mAmbientColor;
 
+	std::optional<Texture> mNormalMap;
+
 	std::shared_ptr<GLMeshObject> mMeshBuffers;
 
 	std::unique_ptr<glwrapper::GLVertexArray> mVAO;
@@ -367,6 +402,7 @@ public:
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
 	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
 	using RenderMode  = GLMeshWithMaterialRenderFunction::RenderMode;
+	using Texture	  = GLMeshWithMaterialRenderFunction::Texture;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
@@ -380,11 +416,6 @@ public:
 		mAmbientChanged = true;
 	}
 
-	const AmbientData &ambient() const
-	{
-		return mAmbient;
-	}
-
 	void setMesh(const MeshVariant mesh)
 	{
 		mMesh		 = mesh;
@@ -395,6 +426,12 @@ public:
 	{
 		mRenderModes	   = mode;
 		mRenderModeChanged = true;
+	}
+
+	void setNormalMap(const std::optional<Texture> normalMap)
+	{
+		mNormalMap		  = normalMap;
+		mNormalMapChanged = true;
 	}
 
 	void syncSelf() override
@@ -422,11 +459,18 @@ public:
 			rf->setRenderMode(mRenderModes);
 			mRenderModeChanged = false;
 		}
+		if (mNormalMapChanged)
+		{
+			rf->setNormalMap(mNormalMap);
+			mNormalMapChanged = false;
+		}
 	}
 
 private:
 	AmbientData mAmbient;
 	bool mAmbientChanged{ true };
+	std::optional<Texture> mNormalMap{ std::nullopt };
+	bool mNormalMapChanged{ true };
 	MeshVariant mMesh;
 	bool mMeshChanged{ false }; // don't draw empty mesh by default
 	int mRenderModes{ RenderMode::Faces };
