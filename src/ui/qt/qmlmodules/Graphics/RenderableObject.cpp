@@ -1,9 +1,37 @@
 #include "RenderableObject.hpp"
 #include "RenderDisplay.hpp"
+#include <QRegExp>
 namespace qmlmodule
 {
 namespace Graphics
 {
+
+void RenderableObject::classBegin()
+{
+}
+
+void RenderableObject::componentComplete()
+{
+	const QMetaObject *mo = this->metaObject();
+	if (!mo)
+		return;
+	for (int i = 0; i < mo->propertyCount(); i++)
+	{
+		const auto &property = mo->property(i);
+		std::string name(property.name());
+		if (name.substr(0, sizeof("u_") - 1) == "u_")
+		{
+			QVariant value	 = property.read(this);
+			auto uniformName = name.substr(sizeof("u_") - 1, name.size());
+			QMetaObject::connect(
+				this, property.notifySignalIndex(), this,
+				mo->indexOfMethod(
+					QMetaObject::normalizedSignature("uniformChanged()")));
+		}
+		Q_UNUSED(property)
+		Q_UNUSED(name)
+	}
+}
 
 QQmlListProperty<RenderableObject> RenderableObject::renderables() const
 {

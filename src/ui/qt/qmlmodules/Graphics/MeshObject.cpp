@@ -156,9 +156,23 @@ MeshObject::MeshObject(QQuickItem *parent)
 					.internalFormat =
 						dream::glwrapper::GLTexture2D::InternalFormat::Rgb8,
 				};
-				ro->setNormalMap(texture);
+				ro->setMap("uNormalMapTexture", texture);
 				update();
 			});
+	connect(this, 
+			qOverload<const QString&, const QVariant&>(&RenderableObject::uniformChanged), 
+			this, 
+			[](const QString& name, const QVariant& value)
+	{
+		auto ro = std::reinterpret_pointer_cast<
+			dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
+		if (name.midRef(0, sizeof("map_") - 1) == "map_")
+		{
+			QString mapName = name.mid(0, sizeof("comp-1") - 1);
+			if (mapName.midRef(0, 2) == "srgb") // normal map
+			{
+			}
+		});
 }
 MeshObject::~MeshObject()
 {

@@ -2,6 +2,7 @@
 #include <QQuickItem>
 #include <GLRenderer>
 #include <QQmlListProperty>
+#include <QQmlParserStatus>
 #include <QList>
 
 namespace qmlmodule
@@ -38,6 +39,9 @@ public:
 		appendRenderable(renderable);
 	}
 
+	void classBegin() override;
+	void componentComplete() override;
+
 	// qml api
 	QQmlListProperty<RenderableObject> renderables() const;
 
@@ -63,8 +67,22 @@ public:
 		mRenderables.pop_back();
 	}
 
+	void uniformChanged()
+	{
+		auto mo = this->metaObject();
+		for (int i = 0; i < mo->propertyCount(); i++)
+		{
+			auto property = mo->property(i);
+			QString name(property.name());
+			QVariant value = property.read(this);
+			if (mUniforms.contains(name) && value != mUniforms.value(name))
+				uniformChanged(name.mid(sizeof("u_") - 1), value);
+		}
+	}
+
 Q_SIGNALS:
 	void update();
+	void uniformChanged(const QString &name, const QVariant &value);
 
 private:
 	static void
@@ -80,6 +98,8 @@ private:
 	static void removeLastRenderable(QQmlListProperty<RenderableObject> *);
 
 	QList<RenderableObject *> mRenderables;
+
+	QMap<QString, QVariant> mUniforms;
 
 protected:
 	std::shared_ptr<dream::renderer::GLRenderableObject> mRenderableObject;
