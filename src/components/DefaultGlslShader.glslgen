@@ -75,6 +75,14 @@ vec4 diffuseColor(sampler2D uDiffuseTexture, attr1 vec2 aTextureCoord)
 }
 
 fragment
+float ambientTerm(sampler2D uAmbientOcclusionMapTexture, attr1 vec2 aTextureCoord)
+{
+@src
+	ambientTerm = texture(uAmbientOcclusionMapTexture, aTextureCoord).r;
+@endsrc
+}
+
+fragment
 float ambientTerm()
 {
 @src

@@ -11,8 +11,6 @@ class MeshObject : public RenderableObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(
-		QVariant ambient READ ambient WRITE setAmbient NOTIFY ambientChanged)
 	Q_PROPERTY(QVariant mesh READ mesh WRITE setMesh NOTIFY meshChanged)
 	Q_PROPERTY(QMatrix4x4 transform READ transform WRITE setTransform NOTIFY
 				   transformChanged)
@@ -39,10 +37,7 @@ public:
 	{
 		return mMesh;
 	}
-	const QVariant &ambient() const
-	{
-		return mAmbient;
-	}
+
 	const QMatrix4x4 &transform() const
 	{
 		return mTransform;
@@ -54,13 +49,11 @@ public:
 	}
 
 	void setMesh(const QVariant &mesh);
-	void setAmbient(const QVariant &ambient);
 	void setTransform(const QMatrix4x4 &transform);
 	void setRenderMode(RenderMode renderMode);
 
 Q_SIGNALS:
 	void meshChanged(const QVariant &mesh);
-	void ambientChanged(const QVariant &ambient);
 	void transformChanged(const QMatrix4x4 &transfrom);
 	void renderModeChanged(RenderMode renderMode);
 
@@ -101,17 +94,25 @@ private:
 					dream::glwrapper::GLTexture2D::InternalFormat::Srgb8_alpha8;
 				mapName = mapName.mid(6);
 			}
+			else if (mapName.midRef(0, 2) == "r_")
+			{
+				map.internalFormat =
+					dream::glwrapper::GLTexture2D::InternalFormat::Red;
+				mapName = mapName.mid(2);
+			}
+
 			else
 				map.internalFormat =
 					dream::glwrapper::GLTexture2D::InternalFormat::Rgb8;
 
 			ro->setMap(mapName.toStdString(), map);
+			qWarning() << "setting map: " << mapName
+					   << QString::fromStdString(map.path);
 			return true;
 		}
 		else
 			return RenderableObject::handleUniform(name, val);
 	}
-	QVariant mAmbient;
 	QVariant mMesh;
 	QMatrix4x4 mTransform;
 	RenderMode mRenderMode{ RenderMode::Faces };

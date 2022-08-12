@@ -46,33 +46,6 @@ MeshObject::MeshObject(QQuickItem *parent)
 	mRenderableObject =
 		std::reinterpret_pointer_cast<dream::renderer::GLRenderableObject>(ro);
 	connect(
-		this, &MeshObject::ambientChanged, this,
-		[this](const QVariant &ambient)
-		{
-			auto ro = std::reinterpret_pointer_cast<
-				dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
-			if (ambient.canConvert<QColor>() ||
-				(ambient.canConvert<QString>() &&
-				 QColor::isValidColor(ambient.value<QString>())))
-			{
-				auto color = ambient.value<QColor>();
-				const auto eigenColor =
-					Eigen::Vector4f(color.red() / 255., color.green() / 255.,
-									color.blue() / 255., color.alpha() / 255.);
-				ro->setAmbient(eigenColor);
-				update();
-			}
-			else if (ambient.canConvert<QString>())
-			{
-				ro->setAmbient(
-					dream::renderer::GLMeshWithMaterialRenderFunction::Texture{
-						ambient.value<QString>().toStdString(),
-						dream::glwrapper::GLTexture2D::InternalFormat::
-							Srgb8_alpha8 });
-				update();
-			}
-		});
-	connect(
 		this, &MeshObject::meshChanged, this,
 		[this](const QVariant &mesh)
 		{
@@ -158,14 +131,6 @@ void MeshObject::setMesh(const QVariant &mesh)
 
 	mMesh = mesh;
 	Q_EMIT meshChanged(mMesh);
-}
-void MeshObject::setAmbient(const QVariant &ambient)
-{
-	if (ambient == mAmbient)
-		return;
-
-	mAmbient = ambient;
-	Q_EMIT ambientChanged(mAmbient);
 }
 
 void MeshObject::setTransform(const QMatrix4x4 &transform)

@@ -27,8 +27,8 @@ target_deploy_assets(
 		demos/GraphicsDemo1.qml
 		demos/MultiView.qml
 		demos/CustomMeshes.qml
-		demos/GHS-pictogram-unknown.svg
+		demos/TextureMaps.qml		demos/GHS-pictogram-unknown.svg
 		demos/MultiView.png
-		demos/demo_normalmap.jpg)
-
-target_compile_options(Graphics-qmlmodule PRIVATE -g -O0)
+		demos/demo_normalmap.jpg
+		demos/demo_AOmap.png
+		demos/demo_diffuseMap.png)

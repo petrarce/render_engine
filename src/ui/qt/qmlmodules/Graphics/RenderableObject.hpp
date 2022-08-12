@@ -147,6 +147,15 @@ protected:
 				qt::helpers::toEigen(value.value<QMatrix4x4>()));
 			return true;
 		}
+		else if (type == QMetaType::QColor)
+		{
+			auto color = value.value<QColor>();
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				Eigen::Vector4f(color.red() / 255.f, color.green() / 255.f,
+								color.blue() / 255.f, color.alpha() / 255.f));
+			return true;
+		}
 
 		return false;
 	}

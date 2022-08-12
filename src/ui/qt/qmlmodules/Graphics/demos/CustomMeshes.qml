@@ -22,7 +22,7 @@ Rectangle {
 			]
 			MeshObject {
 				objectName: "Custom triangle"
-				ambient: Qt.rgba(1, 0, 0, 1)
+				property color u_diffuseColor: Qt.rgba(1, 0, 0, 1)
 				mesh: {
 					"vertices": [
 						Qt.vector3d(-1, 1, 0),
