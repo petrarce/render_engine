@@ -63,7 +63,7 @@ Rectangle {
 										: 1)
 							)
 							ambient: Qt.rgba(0.3, 0.5, 0.9, 1)
-							normalMap: "../assets/demo_normalmap.jpg"
+							property string u_map_rgb_uNormalMapTexture: "../assets/demo_normalmap.jpg"
 							mesh: "../assets/Cube.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
 													0, 1, 0, (index / 20) * 5,

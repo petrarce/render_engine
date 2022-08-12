@@ -27,9 +27,8 @@ void RenderableObject::componentComplete()
 				this, property.notifySignalIndex(), this,
 				mo->indexOfMethod(
 					QMetaObject::normalizedSignature("uniformChanged()")));
+			uniformChanged();
 		}
-		Q_UNUSED(property)
-		Q_UNUSED(name)
 	}
 }
 
