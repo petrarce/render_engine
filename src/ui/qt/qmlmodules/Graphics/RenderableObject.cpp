@@ -15,18 +15,25 @@ void RenderableObject::componentComplete()
 	const QMetaObject *mo = this->metaObject();
 	if (!mo)
 		return;
+
+	connect(this,
+			qOverload<const QString &, const QVariant &>(
+				&RenderableObject::uniformChanged),
+			this,
+			[this](const QString &name, const QVariant &val)
+			{ this->handleUniform(name, val); });
+
 	for (int i = 0; i < mo->propertyCount(); i++)
 	{
 		const auto &property = mo->property(i);
-		std::string name(property.name());
-		if (name.substr(0, sizeof("u_") - 1) == "u_")
+		QString name(property.name());
+		if (name.mid(0, sizeof("u_") - 1) == "u_")
 		{
 			QVariant value	 = property.read(this);
-			auto uniformName = name.substr(sizeof("u_") - 1, name.size());
-			QMetaObject::connect(
-				this, property.notifySignalIndex(), this,
-				mo->indexOfMethod(
-					QMetaObject::normalizedSignature("uniformChanged()")));
+			auto slotIndex	 = mo->indexOfSlot("uniformChanged()");
+			auto signalIndex = property.notifySignalIndex();
+			QMetaObject::connect(this, signalIndex, this, slotIndex);
+			mUniforms[name] = QVariant();
 			uniformChanged();
 		}
 	}

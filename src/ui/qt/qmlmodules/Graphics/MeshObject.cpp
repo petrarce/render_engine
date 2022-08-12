@@ -145,65 +145,7 @@ MeshObject::MeshObject(QQuickItem *parent)
 								  dream::renderer::GLMeshWithMaterialObject::
 									  RenderMode::Faces);
 		});
-	connect(this, &MeshObject::normalMapChanged, this,
-			[this](const QUrl &normalMap)
-			{
-				auto ro = std::reinterpret_pointer_cast<
-					dream::renderer::GLMeshWithMaterialObject>(
-					mRenderableObject);
-				dream::renderer::GLMeshWithMaterialObject::Texture texture = {
-					.path = normalMap.path().toStdString(),
-					.internalFormat =
-						dream::glwrapper::GLTexture2D::InternalFormat::Rgb8,
-				};
-				ro->setMap("uNormalMapTexture", texture);
-				update();
-			});
-	connect(this, 
-			qOverload<const QString&, const QVariant&>(&RenderableObject::uniformChanged), 
-			this, 
-			[this](const QString& name, const QVariant& value)
-	{
-		auto ro = std::reinterpret_pointer_cast<
-			dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
-		if (name.midRef(0, sizeof("map_") - 1) == "map_")
-		{
-			dream::renderer::GLMeshWithMaterialObject::Texture map;
-			QString mapName = name.mid(sizeof("map_") - 1, name.size());
-			if(value.canConvert<QString>())
-				map.path = value.value<QString>().toStdString();
-			else
-			{
-				qWarning() << "ERROR: Invalid value for map. Path to file is expected.";
-				return;
-			}
-			if (mapName.midRef(0, 4) == "rgb_") // normal map
-			{
-				map.internalFormat = dream::glwrapper::GLTexture2D::InternalFormat::Rgb8;
-				mapName = mapName.mid(4);
-			}
-			else if(mapName.midRef(0, 5) == "srgb_")
-			{
-				map.internalFormat = dream::glwrapper::GLTexture2D::InternalFormat::Srgb8;
-				mapName = mapName.mid(5);
-			}
-			else if(mapName.midRef(0, 5) == "rgba_")
-			{
-				map.internalFormat = dream::glwrapper::GLTexture2D::InternalFormat::Rgba8;
-				mapName = mapName.mid(5);
-			}
-			else if(mapName.midRef(0, 6) == "srgba_")
-			{
-				map.internalFormat = dream::glwrapper::GLTexture2D::InternalFormat::Srgb8_alpha8;
-				mapName = mapName.mid(6);
-			}
-			else
-				map.internalFormat = dream::glwrapper::GLTexture2D::InternalFormat::Rgb8;
 
-			ro->setMap(mapName.toStdString(), map);
-
-		}
-	});
 }
 MeshObject::~MeshObject()
 {
@@ -224,15 +166,6 @@ void MeshObject::setAmbient(const QVariant &ambient)
 
 	mAmbient = ambient;
 	Q_EMIT ambientChanged(mAmbient);
-}
-
-void MeshObject::setNormalMap(const QUrl &url)
-{
-	if (mNormalMap == url)
-		return;
-
-	mNormalMap = url;
-	Q_EMIT normalMapChanged(mNormalMap);
 }
 
 void MeshObject::setTransform(const QMatrix4x4 &transform)

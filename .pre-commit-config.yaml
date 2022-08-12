@@ -10,3 +10,4 @@ repos:
     rev: v14.0.3
     hooks:
     -   id: clang-format
+        entry: ./scripts/clang-diff-format.sh

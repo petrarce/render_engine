@@ -4,6 +4,7 @@
 #include <QQmlListProperty>
 #include <QQmlParserStatus>
 #include <QList>
+#include <src/ui/qt/helpers/EigenConversions.hpp>
 
 namespace qmlmodule
 {
@@ -66,7 +67,7 @@ public:
 	{
 		mRenderables.pop_back();
 	}
-
+public Q_SLOTS:
 	void uniformChanged()
 	{
 		auto mo = this->metaObject();
@@ -76,13 +77,79 @@ public:
 			QString name(property.name());
 			QVariant value = property.read(this);
 			if (mUniforms.contains(name) && value != mUniforms.value(name))
-				uniformChanged(name.mid(sizeof("u_") - 1), value);
+			{
+				mUniforms[name] = value;
+				Q_EMIT uniformChanged(name.mid(sizeof("u_") - 1), value);
+			}
 		}
 	}
 
 Q_SIGNALS:
 	void update();
 	void uniformChanged(const QString &name, const QVariant &value);
+
+protected:
+	/// Uniforms handler.
+	/**
+	 * this defines how are uniforms handled by the subclass
+	 * returns true if uniform was accepted
+	 */
+	virtual bool handleUniform(const QString &name, const QVariant &value)
+	{
+		if (!value.isValid())
+			return false;
+		QMetaType::Type type = static_cast<QMetaType::Type>(value.type());
+
+		if (type == QMetaType::Int || type == QMetaType::Bool)
+		{
+			mRenderableObject->setUniform(name.toStdString(),
+										  value.value<int>());
+			return true;
+		}
+		else if (type == QMetaType::Float || type == QMetaType::Double)
+		{
+			mRenderableObject->setUniform(name.toStdString(),
+										  value.value<float>());
+			return true;
+		}
+		else if (type == QMetaType::QVector2D)
+		{
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				qt::helpers::toEigen(value.value<QVector2D>()));
+			return true;
+		}
+		else if (type == QMetaType::QVector3D)
+		{
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				qt::helpers::toEigen(value.value<QVector3D>()));
+			return true;
+		}
+		else if (type == QMetaType::QVector4D)
+		{
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				qt::helpers::toEigen(value.value<QVector4D>()));
+			return true;
+		}
+		else if (type == QMetaType::QMatrix)
+		{
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				qt::helpers::toEigen(value.value<QMatrix4x4>()));
+			return true;
+		}
+		else if (type == QMetaType::QMatrix4x4)
+		{
+			mRenderableObject->setUniform(
+				name.toStdString(),
+				qt::helpers::toEigen(value.value<QMatrix4x4>()));
+			return true;
+		}
+
+		return false;
+	}
 
 private:
 	static void

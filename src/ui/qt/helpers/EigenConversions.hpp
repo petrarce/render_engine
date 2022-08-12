@@ -3,6 +3,7 @@
 #include <QMatrix4x4>
 #include <QVector2D>
 #include <QVector3D>
+#include <QVector4D>
 namespace qt
 {
 namespace helpers
@@ -38,6 +39,13 @@ inline Eigen::Vector3f toEigen(const QVector3D& qvec)
 {
 	Eigen::Vector3f evec;
 	evec << qvec.x(), qvec.y(), qvec.z();
+	return evec;
+}
+
+inline Eigen::Vector4f toEigen(const QVector4D &qvec)
+{
+	Eigen::Vector4f evec;
+	evec << qvec.x(), qvec.y(), qvec.z(), qvec.w();
 	return evec;
 }
 

@@ -11,6 +11,7 @@ GLSingleCaleeRenderFunction::GLSingleCaleeRenderFunction(
 	, mCalee(calee)
 {
 }
+
 void GLSingleCaleeRenderFunction::drawImpl(const Scope &parentScope)
 {
 	mCalee->draw(parentScope);

@@ -30,3 +30,5 @@ target_deploy_assets(
 		demos/GHS-pictogram-unknown.svg
 		demos/MultiView.png
 		demos/demo_normalmap.jpg)
+
+target_compile_options(Graphics-qmlmodule PRIVATE -g -O0)
