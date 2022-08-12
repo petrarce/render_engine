@@ -1,4 +1,5 @@
 #pragma once
-#include <Camera.hpp>
-#include <CameraController.hpp>
-#include <Light.hpp>
+#include <camera/Camera.hpp>
+#include <camera/CameraController.hpp>
+#include <lights/Light.hpp>
+#include <meshes/MeshObject.hpp>

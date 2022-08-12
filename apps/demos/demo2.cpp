@@ -27,10 +27,16 @@ int main(int argc, char **argv)
 	auto cube		  = std::make_shared<GLCubeObject>();
 	auto rootRenderer = std::make_shared<GLScreenTextureRenderObject>();
 	meshScene->addChild(cube);
-	auto rectangleMesh = std::make_shared<GLMeshWithMaterialObject::Mesh>();
-	rectangleMesh->vertices = std::vector<float>(
-		{ -1, -1, 0, -1, 1, 0, 1, -1, 0, 1, -1, 0, -1, 1, 0, 1, 1, 0 });
-	rectangleMesh->textures = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1 };
+	auto rectangleMesh		  = std::make_shared<dream::geometry::GLMesh>();
+	rectangleMesh->vertices() = std::vector<Eigen::Vector3f>(
+		{ Eigen::Vector3f{ -1, -1, 0 }, Eigen::Vector3f{ -1, 1, 0 },
+		  Eigen::Vector3f{ 1, -1, 0 }, Eigen::Vector3f{ 1, -1, 0 },
+		  Eigen::Vector3f{ -1, 1, 0 }, Eigen::Vector3f{ 1, 1, 0 } });
+	rectangleMesh->texCoord() = {
+		Eigen::Vector2f{ 0, 0 }, Eigen::Vector2f{ 0, 1 },
+		Eigen::Vector2f{ 1, 0 }, Eigen::Vector2f{ 1, 0 },
+		Eigen::Vector2f{ 0, 1 }, Eigen::Vector2f{ 1, 1 }
+	};
 	const int rows			= argc == 2 ? std::stoi(argv[1]) : 5;
 	for (int i = 0; i < rows * rows; i++)
 	{

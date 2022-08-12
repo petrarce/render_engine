@@ -156,5 +156,61 @@ GLAssetManager<GLMeshObject>::loadAsset(const std::string &filePath)
 	return meshObject;
 }
 
+GLMeshObject::GLMeshObject(const geometry::GLMesh &mesh)
+{
+
+	std::vector<float> vertexData;
+	vertexData.reserve(mesh.vertices().size() * (3 + 3 * (mesh.hasNormals()) +
+												 2 * (mesh.hasTexCoord())));
+
+	const auto &vertices = mesh.vertices();
+	vertexData.insert(vertexData.end(),
+					  reinterpret_cast<const float *>(vertices.begin()->data()),
+					  reinterpret_cast<const float *>(vertices.back().data()) +
+						  3);
+
+	if (mesh.hasNormals())
+	{
+		availableComponents.normals = true;
+		const auto &normals			= mesh.normals();
+		vertexData.insert(
+			vertexData.end(),
+			reinterpret_cast<const float *>(normals.begin()->data()),
+			reinterpret_cast<const float *>(normals.back().data()) + 3);
+	}
+
+	if (mesh.hasTexCoord())
+	{
+		availableComponents.textureCoordinates = true;
+
+		const auto &textures = mesh.texCoord();
+		for (unsigned int i = 0; i < mesh.vertices().size(); i++)
+		{
+			vertexData.push_back(textures[i](0));
+			vertexData.push_back(textures[i](1));
+		}
+	}
+	if (mesh.hasBitangents() && mesh.hasTangents())
+	{
+		availableComponents.tangentspace = true;
+		vertexData.insert(
+			vertexData.end(),
+			reinterpret_cast<const float *>(mesh.tangents().begin()->data()),
+			reinterpret_cast<const float *>(mesh.tangents().back().data()) + 3);
+		vertexData.insert(
+			vertexData.end(),
+			reinterpret_cast<const float *>(mesh.bitangents().begin()->data()),
+			reinterpret_cast<const float *>(mesh.bitangents().back().data()) +
+				3);
+	}
+
+	availableComponents.indices = mesh.hasIndices();
+
+	VAB.create(vertexData, GL_STATIC_DRAW);
+	EAB.create(mesh.indices(), GL_STATIC_DRAW);
+	numVertices = mesh.vertices().size();
+	numIndices	= mesh.indices().size();
+}
+
 } // namespace renderer
 } // namespace dream

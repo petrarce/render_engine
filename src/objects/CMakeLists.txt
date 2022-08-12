@@ -5,9 +5,10 @@ add_library(geometry-primitives STATIC
 	camera/CameraController.cpp
 	camera/CameraController.hpp
 	lights/Light.hpp
+	meshes/MeshObject.hpp
 	GLGeometryObjects)
 
-target_include_directories(geometry-primitives PUBLIC . camera lights/)
+target_include_directories(geometry-primitives PUBLIC .)
 
 if(BUILD_TESTING)
 	add_executable(test-geometry-primitives

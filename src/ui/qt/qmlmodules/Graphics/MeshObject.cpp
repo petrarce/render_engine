@@ -1,10 +1,44 @@
 #include "MeshObject.hpp"
 #include <GLRenderer>
 #include <EigenConversions.hpp>
+namespace qt
+{
+namespace helpers
+{
+
+template <class T,
+		  typename std::enable_if_t<std::is_arithmetic_v<T>, bool> = true>
+inline T toEigen(const T &val)
+{
+	return val;
+}
+
+} // namespace helpers
+} // namespace qt
+
 namespace qmlmodule
 {
 namespace Graphics
 {
+
+template <class QtType, class TargetBufferType>
+void deployBuffer(const QString &field, const QVariantMap &meshMap,
+				  TargetBufferType &originalBuffer)
+{
+	if (meshMap.contains(field))
+	{
+		auto vertices = meshMap.value(field);
+		if (vertices.canConvert<QVariantList>())
+		{
+			auto verticesList = vertices.value<QVariantList>();
+			for (const auto &v : verticesList)
+				if (v.canConvert<QtType>())
+					originalBuffer.push_back(
+						qt::helpers::toEigen(v.value<QtType>()));
+		}
+	}
+}
+
 MeshObject::MeshObject(QQuickItem *parent)
 	: RenderableObject(parent)
 {
@@ -38,16 +72,32 @@ MeshObject::MeshObject(QQuickItem *parent)
 				update();
 			}
 		});
-	connect(this, &MeshObject::meshChanged, this,
-			[this](const QVariant &mesh)
+	connect(
+		this, &MeshObject::meshChanged, this,
+		[this](const QVariant &mesh)
+		{
+			auto ro = std::reinterpret_pointer_cast<
+				dream::renderer::GLMeshWithMaterialObject>(mRenderableObject);
+			if (mesh.canConvert<QString>())
+				ro->setMesh(mesh.value<QString>().toStdString());
+			else if (mesh.canConvert<QVariantMap>())
 			{
-				auto ro = std::reinterpret_pointer_cast<
-					dream::renderer::GLMeshWithMaterialObject>(
-					mRenderableObject);
-				if (mesh.canConvert<QString>())
-					ro->setMesh(mesh.value<QString>().toStdString());
-				update();
-			});
+				auto newMesh = std::make_shared<dream::geometry::GLMesh>();
+				auto meshMap = mesh.value<QVariantMap>();
+				deployBuffer<QVector3D>("vertices", meshMap,
+										newMesh->vertices());
+				deployBuffer<QVector3D>("normals", meshMap, newMesh->normals());
+				deployBuffer<QVector3D>("tangents", meshMap,
+										newMesh->tangents());
+				deployBuffer<QVector3D>("bitangents", meshMap,
+										newMesh->bitangents());
+				deployBuffer<QVector2D>("texCoord", meshMap,
+										newMesh->texCoord());
+				deployBuffer<int>("indices", meshMap, newMesh->indices());
+				ro->setMesh(newMesh);
+			}
+			update();
+		});
 	connect(this, &MeshObject::transformChanged, this,
 			[this](const QMatrix4x4 &transform)
 			{
