@@ -19,6 +19,7 @@ qt_add_qml_module( NAME Graphics
 		gl-renderer
 		geometry-primitives
 		qt-helpers
+		math-helpers
 	)
 
 target_deploy_assets(

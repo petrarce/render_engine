@@ -23,12 +23,12 @@ Rectangle {
 			
 			MeshObject {
 				mesh: "../assets/Cube.ply"
-				property color u_diffuseColor: "white"
+				property color u_diffuseColor: Qt.rgba(1, 1, 1, 1)
 			}
 			
 			MeshObject {
 				property string u_map_rgb_uNormalMapTexture: "../assets/demo_normalmap.jpg"
-				property color u_diffuseColor: "white"
+				property color u_diffuseColor: Qt.rgba(1, 1, 1, 1)
 				mesh: "../assets/Cube.ply"
 				transform: Qt.matrix4x4(1, 0, 0, 3,
 										0, 1, 0, 0,
@@ -39,7 +39,7 @@ Rectangle {
 			
 			MeshObject {
 				property string u_map_r_uAmbientOcclusionMapTexture: "../assets/demo_AOmap.png"
-				property color u_diffuseColor: "white"
+				property color u_diffuseColor: Qt.rgba(1, 1, 1, 1)
 				mesh: "../assets/Cube.ply"
 				transform: Qt.matrix4x4(1, 0, 0, 6,
 										0, 1, 0, 0,
@@ -47,21 +47,19 @@ Rectangle {
 										0, 0, 0, 1)
 			}
 			MeshObject {
-				property string u_map_rgba_uDiffuseTexture: "../assets/demo_diffuseMap.png"
+				property string u_map_rgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
 				mesh: "../assets/Cube.ply"
-				transform: Qt.matrix4x4(1, 0, 0, 9,
+				transform: Qt.matrix4x4(1, 0, 0, 12,
 										0, 1, 0, 0,
 										0, 0, 1, 0,
 										0, 0, 0, 1)
 			}
-			
-			
 			MeshObject {
 				property string u_map_r_uAmbientOcclusionMapTexture: "../assets/demo_AOmap.png"
 				property string u_map_rgb_uNormalMapTexture: "../assets/demo_normalmap.jpg"
-				property string u_map_rgba_uDiffuseTexture: "../assets/demo_diffuseMap.png"
+				property string u_map_rgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
 				mesh: "../assets/Cube.ply"
-				transform: Qt.matrix4x4(1, 0, 0, 12,
+				transform: Qt.matrix4x4(1, 0, 0, 15,
 										0, 1, 0, 0,
 										0, 0, 1, 0,
 										0, 0, 0, 1)

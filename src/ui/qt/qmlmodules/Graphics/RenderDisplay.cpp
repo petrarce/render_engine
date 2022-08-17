@@ -3,6 +3,7 @@
 #include <mutex>
 #include <QOpenGLFramebufferObject>
 #include <molecular/util/Hash.h>
+#include <MathHelpers.hpp>
 namespace qmlmodule
 {
 namespace Graphics
@@ -26,10 +27,13 @@ RenderDisplay::Renderer::~Renderer()
 
 void RenderDisplay::Renderer::render()
 {
-	glClearColor(0.3, 0.5, 1, 1.0);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	glClearColor(dream::helpers::linearToGamma(94.3 / 255.f),
+				 dream::helpers::linearToGamma(62.2 / 255.f),
+				 dream::helpers::linearToGamma(10.1 / 255.f), 1);
+	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
@@ -38,6 +42,7 @@ void RenderDisplay::Renderer::render()
 		->renderableObject()
 		->renderFunction()
 		->draw(*mRenderingRootScope);
+	glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
@@ -58,6 +63,10 @@ RenderDisplay::Renderer::createFramebufferObject(const QSize &size)
 {
 	QOpenGLFramebufferObjectFormat format;
 	format.setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
+	//	format.setInternalTextureFormat(GL_SRGB8_ALPHA8);
+	//	format.setInternalTextureFormat(GL_RGBA);
+
+	format.setSamples(4);
 
 	return new QOpenGLFramebufferObject(size, format);
 }

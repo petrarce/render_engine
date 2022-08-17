@@ -106,8 +106,6 @@ private:
 					dream::glwrapper::GLTexture2D::InternalFormat::Rgb8;
 
 			ro->setMap(mapName.toStdString(), map);
-			qWarning() << "setting map: " << mapName
-					   << QString::fromStdString(map.path);
 			return true;
 		}
 		else
