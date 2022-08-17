@@ -42,7 +42,6 @@ void RenderDisplay::Renderer::render()
 		->renderableObject()
 		->renderFunction()
 		->draw(*mRenderingRootScope);
-	glDisable(GL_FRAMEBUFFER_SRGB);
 }
 
 void RenderDisplay::Renderer::synchronize(QQuickFramebufferObject *)
@@ -63,8 +62,7 @@ RenderDisplay::Renderer::createFramebufferObject(const QSize &size)
 {
 	QOpenGLFramebufferObjectFormat format;
 	format.setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
-	//	format.setInternalTextureFormat(GL_SRGB8_ALPHA8);
-	//	format.setInternalTextureFormat(GL_RGBA);
+	format.setInternalTextureFormat(GL_SRGB8_ALPHA8);
 
 	format.setSamples(4);
 

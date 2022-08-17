@@ -47,9 +47,9 @@ Rectangle {
 										0, 0, 0, 1)
 			}
 			MeshObject {
-				property string u_map_rgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
+				property string u_map_srgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
 				mesh: "../assets/Cube.ply"
-				transform: Qt.matrix4x4(1, 0, 0, 12,
+				transform: Qt.matrix4x4(1, 0, 0, 9,
 										0, 1, 0, 0,
 										0, 0, 1, 0,
 										0, 0, 0, 1)
@@ -57,9 +57,9 @@ Rectangle {
 			MeshObject {
 				property string u_map_r_uAmbientOcclusionMapTexture: "../assets/demo_AOmap.png"
 				property string u_map_rgb_uNormalMapTexture: "../assets/demo_normalmap.jpg"
-				property string u_map_rgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
+				property string u_map_srgb_uDiffuseTexture: "../assets/demo_diffuseMap.png"
 				mesh: "../assets/Cube.ply"
-				transform: Qt.matrix4x4(1, 0, 0, 15,
+				transform: Qt.matrix4x4(1, 0, 0, 12,
 										0, 1, 0, 0,
 										0, 0, 1, 0,
 										0, 0, 0, 1)

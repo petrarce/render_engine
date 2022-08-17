@@ -42,18 +42,17 @@ public:
 	{
 		mMaps[molecular::util::HashUtils::MakeHash(mapName)] = map;
 
-		auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
+		auto texture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
 			map.path, map.internalFormat);
-		if (nmTexture)
+		if (texture)
 		{
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMagFilter::MagNearest);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMinFilter::MinNearest);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			texture->setParameter(
+				glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
+			texture->setParameter(
+				glwrapper::GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
+			texture->setParameter(glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+			texture->setParameter(glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			texture->generateMipMaps();
 		}
 	}
 
@@ -361,15 +360,9 @@ public:
 	using Texture	 = GLMeshWithMaterialRenderFunction::Texture;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
-		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
 		, mMesh(std::shared_ptr<geometry::GLMesh>(nullptr))
 	{
 		mRenderFunction = std::make_shared<GLMeshWithMaterialRenderFunction>();
-	}
-	void setAmbient(const AmbientData &ambient)
-	{
-		mAmbient		= ambient;
-		mAmbientChanged = true;
 	}
 
 	void setMesh(const MeshVariant mesh)
@@ -394,11 +387,7 @@ public:
 		GLTransformedObject::syncSelf();
 		auto rf = std::static_pointer_cast<GLMeshWithMaterialRenderFunction>(
 			mRenderFunction);
-		if (mAmbientChanged)
-		{
-			mAmbientChanged = false;
-			rf->setAmbientColor(mAmbient);
-		}
+
 		if (mMeshChanged)
 		{
 			mMeshChanged = false;
@@ -421,8 +410,6 @@ public:
 	}
 
 private:
-	AmbientData mAmbient;
-	bool mAmbientChanged{ true };
 	MeshVariant mMesh;
 	bool mMeshChanged{ false }; // don't draw empty mesh by default
 	int mRenderModes{ RenderMode::Faces };

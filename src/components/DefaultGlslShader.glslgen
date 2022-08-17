@@ -195,14 +195,6 @@ float specularTerm(vec3 lightDirection, vec3 gsNormal, float uSpecularity, vec3 
 }
 
 fragment
-float attenuation()
-{
-@src
-	attenuation = 1.f;
-@endsrc
-}
-
-fragment
 float attenuation(float uAttenuationDistance, vec3 gsVerPos, vec3 uLightPosition)
 {
 @src
@@ -216,12 +208,11 @@ fragment
 vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
 					float ambientTerm, float diffuseTerm, 
 					float specularTerm,
-					float attenuation)
+					)
 {
 @src
 	vec3 lighting = vec3(lightColor) 
-		* clamp(ambientTerm + diffuseTerm * (1 - ambientTerm), 0.f, 1.f)
-		* attenuation;
+		* clamp(ambientTerm + diffuseTerm * (1 - ambientTerm), 0.f, 1.f);
 	blinnPhongColor = diffuseColor 
 		* vec4(	
 			clamp(
@@ -229,6 +220,30 @@ vec4 blinnPhongColor(vec4 diffuseColor, vec3 lightColor,
 				vec3(0, 0, 0), 
 				vec3(1.f, 1.f, 1.f)) + specularTerm * vec3(lightColor), 
 			1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( bool fDrawSpecularTerm, float specularTerm)
+{
+@src
+	fragColor = vec4(vec3(specularTerm), 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( bool fDrawAmbientTerm, float ambientTerm)
+{
+@src
+	fragColor = vec4(vec3(ambientTerm), 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( bool fDrawDiffuseTerm, float diffuseTerm)
+{
+@src
+	fragColor = vec4(vec3(diffuseTerm), 1.f);
 @endsrc
 }
 
@@ -261,6 +276,14 @@ out vec4 fragColor(vec3 normalMapVecModelSpace, bool fDrawNormalMap)
 {
 @src
 	fragColor = vec4((normalMapVecModelSpace + vec3(1,1,1)) / 2, 1.f);
+@endsrc
+}
+
+fragment
+out vec4 fragColor( vec4 blinnPhongColor, float attenuation)
+{
+@src
+	fragColor = vec4(blinnPhongColor.rgb * attenuation, blinnPhongColor.a);
 @endsrc
 }
 
