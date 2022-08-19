@@ -1,6 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
 #include <QMatrix4x4>
+#include <QVector2D>
+#include <QVector3D>
 namespace qt
 {
 namespace helpers
@@ -23,6 +25,13 @@ inline Eigen::Matrix3f toEigen(const QMatrix3x3& qmat)
 			qmat(1, 0), qmat(1, 1), qmat(1,2),
 			qmat(2, 0), qmat(2, 1), qmat(2,2);
 	return emat;
+}
+
+inline Eigen::Vector2f toEigen(const QVector2D &qvec)
+{
+	Eigen::Vector2f evec;
+	evec << qvec.x(), qvec.y();
+	return evec;
 }
 
 inline Eigen::Vector3f toEigen(const QVector3D& qvec)
@@ -59,5 +68,5 @@ inline QVector3D toQt(const Eigen::Vector3f& evec)
 	return QVector3D(evec(0), evec(1), evec(2));
 }
 
-}
-}
+} // namespace helpers
+} // namespace qt

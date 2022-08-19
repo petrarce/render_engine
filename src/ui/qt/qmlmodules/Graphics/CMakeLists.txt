@@ -26,6 +26,7 @@ target_deploy_assets(
 	ASSETFILES
 		demos/GraphicsDemo1.qml
 		demos/MultiView.qml
+		demos/CustomMeshes.qml
 		demos/GHS-pictogram-unknown.svg
 		demos/MultiView.png
 		demos/demo_normalmap.jpg)

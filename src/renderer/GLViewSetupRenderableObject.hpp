@@ -3,7 +3,7 @@
 #include <GLComponents>
 #include <GLWrapperCore>
 #include <molecular/util/Matrix4.h>
-#include <Light.hpp>
+#include <lights/Light.hpp>
 
 namespace dream
 {

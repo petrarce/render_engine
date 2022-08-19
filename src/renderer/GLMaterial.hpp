@@ -81,56 +81,10 @@ public:
 		}
 	}
 
-	void setMesh(const std::vector<float> &vertices,
-				 const std::optional<std::vector<float>> &normals,
-				 const std::optional<std::vector<float>> &textureCoordinates,
-				 const std::optional<std::vector<unsigned int>> &indices)
+	void setMesh(const geometry::GLMesh &mesh)
 	{
-		assert(vertices.size() % verticesAttributeSpec.components == 0);
-		assert(!normals.has_value() ||
-			   normals->size() % normalsAttributeSpec.components == 0);
-		assert(!textureCoordinates.has_value() ||
-			   textureCoordinates->size() % textureAttributeSpec.components ==
-				   0);
-		mMeshBuffers			  = std::make_shared<GLMeshObject>();
-		mMeshBuffers->numVertices = vertices.size() / 3;
-		mMeshBuffers->numIndices  = indices.has_value() ? indices->size() : 0;
-		mMeshBuffers->availableComponents = { false, false, false };
 
-		size_t bufferSize =
-			vertices.size() + (normals.has_value() ? normals->size() : 0) +
-			(textureCoordinates.has_value() ? textureCoordinates->size() : 0);
-		std::vector<float> vertexAttributeBuffer;
-		vertexAttributeBuffer.reserve(bufferSize);
-
-		// deploy vertex buffer
-		vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
-									 vertices.begin(), vertices.end());
-
-		// deploy texture buffer
-		if (textureCoordinates.has_value() &&
-			(textureCoordinates->size() % 2) == (vertices.size() % 3))
-		{
-			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
-										 textureCoordinates->begin(),
-										 textureCoordinates->end());
-			mMeshBuffers->availableComponents.textureCoordinates = true;
-		}
-
-		if (normals.has_value())
-		{
-			vertexAttributeBuffer.insert(vertexAttributeBuffer.end(),
-										 normals->begin(), normals->end());
-			mMeshBuffers->availableComponents.normals = true;
-		}
-
-		// reallocate buffer on gpu
-		if (indices.has_value())
-		{
-			mMeshBuffers->EAB.create(*indices, GL_STATIC_DRAW);
-			mMeshBuffers->availableComponents.indices = true;
-		}
-		mMeshBuffers->VAB.create(vertexAttributeBuffer, GL_STATIC_DRAW);
+		mMeshBuffers = std::make_shared<renderer::GLMeshObject>(mesh);
 		resetVertexArrayObject();
 	}
 
@@ -391,22 +345,15 @@ namespace renderer
 class GLMeshWithMaterialObject : public GLTransformedObject
 {
 public:
-	struct Mesh
-	{
-		std::optional<std::vector<unsigned int>> indices{ std::nullopt };
-		std::optional<std::vector<float>> normals{ std::nullopt };
-		std::optional<std::vector<float>> textures{ std::nullopt };
-		std::vector<float> vertices;
-	};
-
 	using AmbientData = GLMeshWithMaterialRenderFunction::AmbientType;
-	using MeshVariant = std::variant<std::string, std::shared_ptr<Mesh>>;
-	using RenderMode  = GLMeshWithMaterialRenderFunction::RenderMode;
-	using Texture	  = GLMeshWithMaterialRenderFunction::Texture;
+	using MeshVariant =
+		std::variant<std::string, std::shared_ptr<geometry::GLMesh>>;
+	using RenderMode = GLMeshWithMaterialRenderFunction::RenderMode;
+	using Texture	 = GLMeshWithMaterialRenderFunction::Texture;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
 		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
-
+		, mMesh(std::shared_ptr<geometry::GLMesh>(nullptr))
 	{
 		mRenderFunction = std::make_shared<GLMeshWithMaterialRenderFunction>();
 	}
@@ -447,10 +394,9 @@ public:
 		if (mMeshChanged)
 		{
 			mMeshChanged = false;
-			if (auto mesh = std::get_if<std::shared_ptr<Mesh>>(&mMesh))
-				rf->setMesh(
-					mesh->operator->()->vertices, mesh->operator->()->normals,
-					mesh->operator->()->textures, mesh->operator->()->indices);
+			if (auto mesh =
+					std::get_if<std::shared_ptr<geometry::GLMesh>>(&mMesh))
+				rf->setMesh(*(mesh->get()));
 			else if (auto mesh = std::get_if<std::string>(&mMesh))
 				rf->setMesh(*mesh);
 		}

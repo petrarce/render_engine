@@ -6,6 +6,7 @@
 #include <Singleton.hpp>
 #include <GLWrapperCore>
 #include <GLMolecularProgram.hpp>
+#include <meshes/MeshObject.hpp>
 
 namespace dream
 {
@@ -21,6 +22,9 @@ struct GLMeshObject
 		bool indices : 1;
 		bool tangentspace : 1;
 	};
+	explicit GLMeshObject(const geometry::GLMesh &mesh);
+	GLMeshObject() = default;
+
 	Components availableComponents = { false, false, false, false };
 	unsigned int numVertices	   = 0;
 	unsigned int numIndices		   = 0;

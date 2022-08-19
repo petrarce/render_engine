@@ -21,6 +21,7 @@ Rectangle {
 				dynamicRoles: true
 				Component.onCompleted: {
 					append({name: "Multi View", preview: "MultiView.png"})
+					append({name: "Custom Meshes"})
 					append({name: "Terrain View"})
 				}
 			}
@@ -64,6 +65,12 @@ Rectangle {
 		
 		MultiView {
 			visible: modeSelect.selectedItem === "Multi View"
+			Layout.fillWidth: true
+			Layout.fillHeight: true
+		}
+
+		CustomMeshes {
+			visible: modeSelect.selectedItem === "Custom Meshes"
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 		}
