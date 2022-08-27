@@ -22,6 +22,7 @@ Rectangle {
 				Component.onCompleted: {
 					append({name: "Multi View", preview: "MultiView.png"})
 					append({name: "Custom Meshes"})
+					append({name: "Texture Maps"})
 					append({name: "Terrain View"})
 				}
 			}
@@ -71,6 +72,12 @@ Rectangle {
 
 		CustomMeshes {
 			visible: modeSelect.selectedItem === "Custom Meshes"
+			Layout.fillWidth: true
+			Layout.fillHeight: true
+		}
+
+		TextureMaps {
+			visible: modeSelect.selectedItem === "Texture Maps"
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 		}

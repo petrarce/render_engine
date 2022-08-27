@@ -41,9 +41,8 @@ Rectangle {
 					id: rootMeshObject
 
 					MeshObject {
-						ambient: Qt.rgba(0.3, 0.4, 0.8, 1)
+						property color u_diffuseColor: Qt.rgba(17/255 ,25/ 255, 73 / 255)
 						mesh: "../assets/Rectangle.ply"
-						normalMap: "../assets/demo_normalmap.jpg"
 						transform: Qt.matrix4x4(100, 0, 0, 0,
 												0, 100, 0, 0,
 												0, 0, 100, -3,
@@ -62,8 +61,8 @@ Rectangle {
 										? 4 * (1 - sceneView.colorValue)
 										: 1)
 							)
-							ambient: Qt.rgba(0.3, 0.5, 0.9, 1)
-							normalMap: "../assets/demo_normalmap.jpg"
+							property color u_diffuseColor: "red"
+							property string u_map_rgb_uNormalMapTexture: "../assets/demo_normalmap.jpg"
 							mesh: "../assets/Cube.ply"
 							transform: Qt.matrix4x4(1, 0, 0, (index % 20) * 5,
 													0, 1, 0, (index / 20) * 5,

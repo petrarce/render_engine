@@ -19,6 +19,7 @@ qt_add_qml_module( NAME Graphics
 		gl-renderer
 		geometry-primitives
 		qt-helpers
+		math-helpers
 	)
 
 target_deploy_assets(
@@ -27,6 +28,8 @@ target_deploy_assets(
 		demos/GraphicsDemo1.qml
 		demos/MultiView.qml
 		demos/CustomMeshes.qml
-		demos/GHS-pictogram-unknown.svg
+		demos/TextureMaps.qml		demos/GHS-pictogram-unknown.svg
 		demos/MultiView.png
-		demos/demo_normalmap.jpg)
+		demos/demo_normalmap.jpg
+		demos/demo_AOmap.png
+		demos/demo_diffuseMap.png)

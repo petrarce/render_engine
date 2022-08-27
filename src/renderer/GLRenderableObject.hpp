@@ -81,6 +81,16 @@ public:
 			removeChild(mChildren.back());
 		}
 	}
+	template <class T>
+	void setUniform(const std::string &name, const T &value)
+	{
+		mRenderFunction->setUniform(name, value);
+	}
+
+	void unsetUniform(const std::string &name)
+	{
+		mRenderFunction->unsetUniform(name);
+	}
 
 protected:
 	virtual void syncSelf(){};

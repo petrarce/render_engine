@@ -46,6 +46,8 @@ protected:
 	{
 		using namespace molecular::util;
 
+		GLMultipleCaleeRenderFunction::prepareScope(scope);
+
 		if (scope.Has("uModel"_H))
 		{
 			auto transform = scope.Get<Uniform<Eigen::Matrix4f>>("uModel"_H);

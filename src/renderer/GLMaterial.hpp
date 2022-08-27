@@ -38,25 +38,30 @@ public:
 	{
 	}
 
-	void setNormalMap(const std::optional<Texture> normalMap)
+	void setMap(const std::string &mapName, const Texture &map)
 	{
-		mNormalMap = normalMap;
-		if (!mNormalMap.has_value())
-			return;
+		mMaps[molecular::util::HashUtils::MakeHash(mapName)] = map;
 
-		auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
-			mNormalMap->path, mNormalMap->internalFormat);
-		if (nmTexture)
+		auto texture = GLAssetManager<glwrapper::GLTexture2D>::addAsset(
+			map.path, map.internalFormat);
+		if (texture)
 		{
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMagFilter::MagNearest);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueMinFilter::MinNearest);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapS::RepeatS);
-			nmTexture->setParameter(
-				glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			texture->setParameter(
+				glwrapper::GLTexture2D::ValueMagFilter::MagLinear);
+			texture->setParameter(
+				glwrapper::GLTexture2D::ValueMinFilter::MinLinearMipmapLinear);
+			texture->setParameter(glwrapper::GLTexture2D::ValueWrapS::RepeatS);
+			texture->setParameter(glwrapper::GLTexture2D::ValueWrapT::RepeatT);
+			texture->generateMipMaps();
 		}
+	}
+
+	void removeMap(const std::string &mapName)
+	{
+		const auto it =
+			mMaps.find(molecular::util::HashUtils::MakeHash(mapName));
+		if (it != mMaps.end())
+			mMaps.erase(it);
 	}
 
 	void setAmbientColor(const AmbientType &ambientColor)
@@ -237,14 +242,17 @@ protected:
 			scope.Set("aTextureCoord"_H,
 					  components::Attribute<Eigen::Vector2f>());
 
-		if (mNormalMap.has_value())
+		int mapNum = 0;
+		for (const auto &map : mMaps)
 		{
 			auto nmTexture = GLAssetManager<glwrapper::GLTexture2D>::getAsset(
-				HashUtils::MakeHash(mNormalMap->path));
+				molecular::util::HashUtils::MakeHash(map.second.path));
 			if (nmTexture)
 			{
-				scope.Set("uNormalMapTexture"_H, components::Uniform<int>(2));
-				nmTexture->attach(glwrapper::GLTextureUnit::Texture0 + 2);
+				scope.Set(map.first, components::Uniform<int>(2 + mapNum));
+				nmTexture->attach(glwrapper::GLTextureUnit::Texture0 + 2 +
+								  mapNum);
+				mapNum++;
 			}
 		}
 
@@ -312,7 +320,7 @@ protected:
 	}
 	AmbientType mAmbientColor;
 
-	std::optional<Texture> mNormalMap;
+	std::map<molecular::util::Hash, Texture> mMaps;
 
 	std::shared_ptr<GLMeshObject> mMeshBuffers;
 
@@ -352,15 +360,9 @@ public:
 	using Texture	 = GLMeshWithMaterialRenderFunction::Texture;
 	GLMeshWithMaterialObject(const std::string &name = "GLMeshWithMaterial")
 		: GLTransformedObject(name)
-		, mAmbient(Eigen::Vector4f(1, 1, 1, 1))
 		, mMesh(std::shared_ptr<geometry::GLMesh>(nullptr))
 	{
 		mRenderFunction = std::make_shared<GLMeshWithMaterialRenderFunction>();
-	}
-	void setAmbient(const AmbientData &ambient)
-	{
-		mAmbient		= ambient;
-		mAmbientChanged = true;
 	}
 
 	void setMesh(const MeshVariant mesh)
@@ -375,10 +377,9 @@ public:
 		mRenderModeChanged = true;
 	}
 
-	void setNormalMap(const std::optional<Texture> normalMap)
+	void setMap(const std::string &name, const Texture map)
 	{
-		mNormalMap		  = normalMap;
-		mNormalMapChanged = true;
+		mMaps.insert({ name, map });
 	}
 
 	void syncSelf() override
@@ -386,11 +387,7 @@ public:
 		GLTransformedObject::syncSelf();
 		auto rf = std::static_pointer_cast<GLMeshWithMaterialRenderFunction>(
 			mRenderFunction);
-		if (mAmbientChanged)
-		{
-			mAmbientChanged = false;
-			rf->setAmbientColor(mAmbient);
-		}
+
 		if (mMeshChanged)
 		{
 			mMeshChanged = false;
@@ -405,22 +402,19 @@ public:
 			rf->setRenderMode(mRenderModes);
 			mRenderModeChanged = false;
 		}
-		if (mNormalMapChanged)
+		if (!mMaps.empty())
 		{
-			rf->setNormalMap(mNormalMap);
-			mNormalMapChanged = false;
+			for (const auto &map : mMaps) rf->setMap(map.first, map.second);
+			mMaps.clear();
 		}
 	}
 
 private:
-	AmbientData mAmbient;
-	bool mAmbientChanged{ true };
-	std::optional<Texture> mNormalMap{ std::nullopt };
-	bool mNormalMapChanged{ true };
 	MeshVariant mMesh;
 	bool mMeshChanged{ false }; // don't draw empty mesh by default
 	int mRenderModes{ RenderMode::Faces };
 	bool mRenderModeChanged{ true };
+	std::map<std::string, Texture> mMaps;
 };
 } // namespace renderer
 } // namespace dream

@@ -46,9 +46,11 @@ int main(int argc, char **argv)
 		auto meshWithMaterial = std::make_shared<GLMeshWithMaterialObject>(
 			"Mesh" + std::to_string(i));
 		meshWithMaterial->setTransform(transform);
-		meshWithMaterial->setAmbient(GLMeshWithMaterialRenderFunction::Texture{
-			"../assets/TestRGBAImage.png",
-			GLTexture2D::InternalFormat::Srgb8_alpha8 });
+		meshWithMaterial->setMap(
+			"uDiffuseMapTexture",
+			GLMeshWithMaterialRenderFunction::Texture{
+				"../assets/TestRGBAImage.png",
+				GLTexture2D::InternalFormat::Srgb8_alpha8 });
 		meshWithMaterial->setMesh(i % 2 ? "../assets/MonkeySmooth.ply"
 										: "../assets/Monkey.ply");
 		meshScene->addChild(meshWithMaterial);

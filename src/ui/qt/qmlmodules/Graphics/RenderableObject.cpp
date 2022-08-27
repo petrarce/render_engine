@@ -1,9 +1,43 @@
 #include "RenderableObject.hpp"
 #include "RenderDisplay.hpp"
+#include <QRegExp>
 namespace qmlmodule
 {
 namespace Graphics
 {
+
+void RenderableObject::classBegin()
+{
+}
+
+void RenderableObject::componentComplete()
+{
+	const QMetaObject *mo = this->metaObject();
+	if (!mo)
+		return;
+
+	connect(this,
+			qOverload<const QString &, const QVariant &>(
+				&RenderableObject::uniformChanged),
+			this,
+			[this](const QString &name, const QVariant &val)
+			{ this->handleUniform(name, val); });
+
+	for (int i = 0; i < mo->propertyCount(); i++)
+	{
+		const auto &property = mo->property(i);
+		QString name(property.name());
+		if (name.mid(0, sizeof("u_") - 1) == "u_")
+		{
+			QVariant value	 = property.read(this);
+			auto slotIndex	 = mo->indexOfSlot("uniformChanged()");
+			auto signalIndex = property.notifySignalIndex();
+			QMetaObject::connect(this, signalIndex, this, slotIndex);
+			mUniforms[name] = QVariant();
+			uniformChanged();
+		}
+	}
+}
 
 QQmlListProperty<RenderableObject> RenderableObject::renderables() const
 {

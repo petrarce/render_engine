@@ -56,6 +56,7 @@ function(qt_add_qml_module)
 	return_if(NOT Qt5Qml_FOUND)
 	return_if(NOT Qt5Core_FOUND)
 
+	message("QMLMOD_SOURCES=${QMLMOD_SOURCES}")
 	add_library(${QMLMOD_NAME}-qmlmodule SHARED
 		${QMLMOD_SOURCES})
 	
