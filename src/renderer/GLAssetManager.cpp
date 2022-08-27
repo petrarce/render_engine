@@ -160,14 +160,20 @@ GLMeshObject::GLMeshObject(const geometry::GLMesh &mesh)
 {
 
 	std::vector<float> vertexData;
-	vertexData.reserve(mesh.vertices().size() * (3 + 3 * (mesh.hasNormals()) +
-												 2 * (mesh.hasTexCoord())));
+	vertexData.reserve(mesh.vertices().size() *
+					   (sizeof(mesh.vertices()[0]) +
+						sizeof(mesh.normals()[0]) * mesh.hasNormals() +
+						sizeof(mesh.texCoord()[0]) * mesh.hasTexCoord() +
+						sizeof(mesh.tangents()[0]) +
+						sizeof(mesh.bitangents()[0]) *
+							(mesh.hasBitangents() && mesh.hasTangents()) +
+						sizeof(mesh.colors()[0]) * mesh.hasColors()) /
+					   sizeof(decltype(vertexData[0])));
 
 	const auto &vertices = mesh.vertices();
 	vertexData.insert(vertexData.end(),
-					  reinterpret_cast<const float *>(vertices.begin()->data()),
-					  reinterpret_cast<const float *>(vertices.back().data()) +
-						  3);
+					  reinterpret_cast<const float *>(vertices.begin().base()),
+					  reinterpret_cast<const float *>(vertices.end().base()));
 
 	if (mesh.hasNormals())
 	{
@@ -175,8 +181,8 @@ GLMeshObject::GLMeshObject(const geometry::GLMesh &mesh)
 		const auto &normals			= mesh.normals();
 		vertexData.insert(
 			vertexData.end(),
-			reinterpret_cast<const float *>(normals.begin()->data()),
-			reinterpret_cast<const float *>(normals.back().data()) + 3);
+			reinterpret_cast<const float *>(normals.begin().base()),
+			reinterpret_cast<const float *>(normals.end().base()));
 	}
 
 	if (mesh.hasTexCoord())
@@ -184,24 +190,30 @@ GLMeshObject::GLMeshObject(const geometry::GLMesh &mesh)
 		availableComponents.textureCoordinates = true;
 
 		const auto &textures = mesh.texCoord();
-		for (unsigned int i = 0; i < mesh.vertices().size(); i++)
-		{
-			vertexData.push_back(textures[i](0));
-			vertexData.push_back(textures[i](1));
-		}
+		vertexData.insert(
+			vertexData.end(),
+			reinterpret_cast<const float *>(textures.begin().base()),
+			reinterpret_cast<const float *>(textures.end().base()));
 	}
 	if (mesh.hasBitangents() && mesh.hasTangents())
 	{
 		availableComponents.tangentspace = true;
 		vertexData.insert(
 			vertexData.end(),
-			reinterpret_cast<const float *>(mesh.tangents().begin()->data()),
-			reinterpret_cast<const float *>(mesh.tangents().back().data()) + 3);
+			reinterpret_cast<const float *>(mesh.tangents().begin().base()),
+			reinterpret_cast<const float *>(mesh.tangents().end().base()));
 		vertexData.insert(
 			vertexData.end(),
-			reinterpret_cast<const float *>(mesh.bitangents().begin()->data()),
-			reinterpret_cast<const float *>(mesh.bitangents().back().data()) +
-				3);
+			reinterpret_cast<const float *>(mesh.bitangents().begin().base()),
+			reinterpret_cast<const float *>(mesh.bitangents().end().base()));
+	}
+	if (mesh.hasColors())
+	{
+		availableComponents.colors = true;
+		vertexData.insert(
+			vertexData.end(),
+			reinterpret_cast<const float *>(mesh.colors().begin().base()),
+			reinterpret_cast<const float *>(mesh.colors().end().base()) + 4);
 	}
 
 	availableComponents.indices = mesh.hasIndices();

@@ -21,6 +21,7 @@ struct GLMeshObject
 		bool textureCoordinates : 1;
 		bool indices : 1;
 		bool tangentspace : 1;
+		bool colors : 1;
 	};
 	explicit GLMeshObject(const geometry::GLMesh &mesh);
 	GLMeshObject() = default;
