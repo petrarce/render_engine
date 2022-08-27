@@ -59,6 +59,14 @@ vec3 normalMapVecModelSpace(vec3 normalMapVecTangentSpace, attr3 vec3 aTangent, 
 }
 
 fragment
+vec4 diffuseColor(attr5 vec4 aVertexColor)
+{
+@src
+	diffuseColor = aVertexColor;
+@endsrc
+}
+
+fragment
 vec4 diffuseColor(vec4 uDiffuseColor)
 {
 @src

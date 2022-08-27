@@ -241,7 +241,9 @@ protected:
 		if (mMeshBuffers->availableComponents.textureCoordinates)
 			scope.Set("aTextureCoord"_H,
 					  components::Attribute<Eigen::Vector2f>());
-
+		if (mMeshBuffers->availableComponents.colors)
+			scope.Set("aVertexColor"_H,
+					  components::Attribute<Eigen::Vector4f>());
 		int mapNum = 0;
 		for (const auto &map : mMaps)
 		{
@@ -263,11 +265,14 @@ protected:
 	{
 		mVAO->createAttribute(verticesAttributeSpec, mMeshBuffers->VAB,
 							  mMeshBuffers->EAB);
+		unsigned int currentOffset = verticesAttributeSpec.components *
+									 mMeshBuffers->numVertices * sizeof(float);
 
 		if (mMeshBuffers->availableComponents.normals)
 		{
 			auto normals   = normalsAttributeSpec;
-			normals.offset = verticesAttributeSpec.components *
+			normals.offset = currentOffset;
+			currentOffset += normalsAttributeSpec.components *
 							 mMeshBuffers->numVertices * sizeof(float);
 			mVAO->createAttribute(normals, mMeshBuffers->VAB,
 								  mMeshBuffers->EAB);
@@ -278,10 +283,9 @@ protected:
 		if (mMeshBuffers->availableComponents.textureCoordinates)
 		{
 			auto texCoord	= textureAttributeSpec;
-			texCoord.offset = (verticesAttributeSpec.components +
-							   normalsAttributeSpec.components *
-								   mMeshBuffers->availableComponents.normals) *
-							  mMeshBuffers->numVertices * sizeof(float);
+			texCoord.offset = currentOffset;
+			currentOffset += textureAttributeSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
 			mVAO->createAttribute(texCoord, mMeshBuffers->VAB,
 								  mMeshBuffers->EAB);
 		}
@@ -291,24 +295,15 @@ protected:
 		if (mMeshBuffers->availableComponents.tangentspace)
 		{
 			auto tangentsSpec = tangentAttributSpec;
-			tangentsSpec.offset =
-				(verticesAttributeSpec.components +
-				 normalsAttributeSpec.components *
-					 mMeshBuffers->availableComponents.normals +
-				 textureAttributeSpec.components *
-					 mMeshBuffers->availableComponents.textureCoordinates) *
-				mMeshBuffers->numVertices * sizeof(float);
+			tangentsSpec.offset = currentOffset;
+			currentOffset += tangentAttributSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
 			mVAO->createAttribute(tangentsSpec, mMeshBuffers->VAB,
 								  mMeshBuffers->EAB);
 			auto bitangentSpec = bitangentAttributSpec;
-			bitangentSpec.offset =
-				(verticesAttributeSpec.components +
-				 normalsAttributeSpec.components *
-					 mMeshBuffers->availableComponents.normals +
-				 textureAttributeSpec.components *
-					 mMeshBuffers->availableComponents.textureCoordinates +
-				 tangentAttributSpec.components) *
-				mMeshBuffers->numVertices * sizeof(float);
+			bitangentSpec.offset = currentOffset;
+			currentOffset += bitangentAttributSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
 			mVAO->createAttribute(bitangentSpec, mMeshBuffers->VAB,
 								  mMeshBuffers->EAB);
 		}
@@ -317,6 +312,18 @@ protected:
 			mVAO->disableAttribute(tangentAttributSpec.location);
 			mVAO->disableAttribute(bitangentAttributSpec.location);
 		}
+
+		if (mMeshBuffers->availableComponents.colors)
+		{
+			auto colorsAttribSpecs	 = vertexColorAttributeSpec;
+			colorsAttribSpecs.offset = currentOffset;
+			currentOffset += vertexColorAttributeSpec.components *
+							 mMeshBuffers->numVertices * sizeof(float);
+			mVAO->createAttribute(colorsAttribSpecs, mMeshBuffers->VAB,
+								  mMeshBuffers->EAB);
+		}
+		else
+			mVAO->disableAttribute(vertexColorAttributeSpec.location);
 	}
 	AmbientType mAmbientColor;
 
@@ -342,6 +349,8 @@ protected:
 		tangentAttributSpec;
 	static const glwrapper::GLVertexArray::AttributeSpecification
 		bitangentAttributSpec;
+	static const glwrapper::GLVertexArray::AttributeSpecification
+		vertexColorAttributeSpec;
 };
 
 } // namespace renderer

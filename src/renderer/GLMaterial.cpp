@@ -67,5 +67,17 @@ const glwrapper::GLVertexArray::AttributeSpecification
 			.type		   = GL_FLOAT,
 		};
 
+const glwrapper::GLVertexArray::AttributeSpecification
+	GLMeshWithMaterialRenderFunction::vertexColorAttributeSpec =
+		glwrapper::GLVertexArray::AttributeSpecification{
+			.components	   = 4,
+			.instanceLevel = 0,
+			.location	   = 5,
+			.normalize	   = false,
+			.offset		   = 0,
+			.stride		   = sizeof(float) * 4,
+			.type		   = GL_FLOAT,
+		};
+
 } // namespace renderer
 } // namespace dream

@@ -66,6 +66,8 @@ MeshObject::MeshObject(QQuickItem *parent)
 										newMesh->bitangents());
 				deployBuffer<QVector2D>("texCoord", meshMap,
 										newMesh->texCoord());
+				deployBuffer<QVector4D>("colors", meshMap, newMesh->colors());
+
 				deployBuffer<int>("indices", meshMap, newMesh->indices());
 				ro->setMesh(newMesh);
 			}

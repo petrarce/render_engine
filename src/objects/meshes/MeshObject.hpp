@@ -31,6 +31,10 @@ public:
 	{
 		return mBitangents;
 	}
+	const auto &colors() const
+	{
+		return mColors;
+	}
 	const auto &indices() const
 	{
 		return mIndices;
@@ -55,6 +59,10 @@ public:
 	auto &bitangents()
 	{
 		return mBitangents;
+	}
+	auto &colors()
+	{
+		return mColors;
 	}
 	auto &indices()
 	{
@@ -81,6 +89,10 @@ public:
 	{
 		return !mBitangents.empty();
 	}
+	bool hasColors() const
+	{
+		return !mColors.empty();
+	}
 	bool hasIndices() const
 	{
 		return !mIndices.empty();
@@ -92,6 +104,7 @@ protected:
 	std::vector<Eigen::Vector2f> mTexCoord;
 	std::vector<Eigen::Vector3f> mTangents;
 	std::vector<Eigen::Vector3f> mBitangents;
+	std::vector<Eigen::Vector4f> mColors;
 	std::vector<int> mIndices;
 };
 
