@@ -2,19 +2,19 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "GLContextCreator.hpp"
 #include <functional>
+#include "GLContextCreator.hpp"
 namespace dream
 {
 
 namespace glcontext
 {
-class GLGlfwContextCreator : public GLContextCreator
+class GlfwContextCreator : public ContextCreator
 {
 public:
-	GLGlfwContextCreator(int width = 1, int height = 1,
-						 const std::string &name = "GLGlfwContextCreator");
-	virtual ~GLGlfwContextCreator();
+	GlfwContextCreator(int width = 1, int height = 1,
+					   const std::string &name = "GLGlfwContextCreator");
+	virtual ~GlfwContextCreator();
 
 	template <class RetType, class... Args>
 	RetType processWindow(
@@ -42,9 +42,9 @@ public:
 	int mWindowWidth{ 0 };
 	int mWindowHeight{ 0 };
 
-private:
-	void createContext() final;
-	void destroyContext() final;
+protected:
+	void createContext() override;
+	void destroyContext() override;
 
 	GLFWwindow *mWindow;
 };

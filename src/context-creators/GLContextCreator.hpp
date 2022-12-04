@@ -4,21 +4,21 @@ namespace dream
 {
 namespace glcontext
 {
-class GLContextCreator
+class ContextCreator
 {
 public:
-	friend class GLContextBinder;
+	friend class ContextBinder;
 
-	GLContextCreator(const std::string &name = "GLContextCreator")
+	ContextCreator(const std::string &name = "GLContextCreator")
 	{
 	}
-	virtual ~GLContextCreator()
+	virtual ~ContextCreator()
 	{
 	}
-	GLContextCreator(const GLContextCreator &)			  = delete;
-	GLContextCreator &operator=(const GLContextCreator &) = delete;
-	GLContextCreator(GLContextCreator &&)				  = delete;
-	GLContextCreator &operator=(GLContextCreator &&)	  = delete;
+	ContextCreator(const ContextCreator &) = delete;
+	ContextCreator &operator=(const ContextCreator &) = delete;
+	ContextCreator(ContextCreator &&)				  = delete;
+	ContextCreator &operator=(ContextCreator &&) = delete;
 
 	std::string mName;
 
@@ -29,27 +29,27 @@ protected:
 private:
 };
 
-class GLContextBinder
+class ContextBinder
 {
 public:
-	GLContextBinder(GLContextCreator &context)
+	ContextBinder(ContextCreator &context)
 		: mContextCreator(context)
 	{
 		mContextCreator.createContext();
 	}
-	~GLContextBinder()
+	~ContextBinder()
 	{
 		mContextCreator.destroyContext();
 	}
 
-	GLContextBinder()									= delete;
-	GLContextBinder(const GLContextBinder &)			= delete;
-	GLContextBinder &operator=(const GLContextBinder &) = delete;
-	GLContextBinder(GLContextBinder &&)					= delete;
-	GLContextBinder &operator=(GLContextBinder &&)		= delete;
+	ContextBinder()						 = delete;
+	ContextBinder(const ContextBinder &) = delete;
+	ContextBinder &operator=(const ContextBinder &) = delete;
+	ContextBinder(ContextBinder &&)					= delete;
+	ContextBinder &operator=(ContextBinder &&) = delete;
 
 private:
-	GLContextCreator &mContextCreator;
+	ContextCreator &mContextCreator;
 };
 
 } // namespace glcontext

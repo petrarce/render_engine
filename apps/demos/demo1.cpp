@@ -1,6 +1,6 @@
 #include <GLWrapperCore>
 #include <GLGeometryObjects>
-#include <GLGlfwContextCreator.hpp>
+#include <OpenGLGlfwContextCreator.h>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -73,8 +73,8 @@ int main()
 	using namespace dream::glcontext;
 	using namespace dream::glwrapper;
 	using namespace dream::geometry;
-	GLGlfwContextCreator glfwContext(800, 500);
-	GLContextBinder bind(glfwContext);
+	OpenGLGlfwContextCreator glfwContext(800, 500);
+	ContextBinder bind(glfwContext);
 	controller.camera.pivot	   = Eigen::Vector3f(0, 0, 0);
 	controller.camera.distance = 10;
 	controller.camera.angleX   = -0.25;
