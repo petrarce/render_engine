@@ -7,20 +7,20 @@ namespace dream
 
 namespace glcontext
 {
-GLGlfwContextCreator::GLGlfwContextCreator(int width, int height,
-										   const std::string &name)
-	: GLContextCreator(name)
+GlfwContextCreator::GlfwContextCreator(int width, int height,
+									   const std::string &name)
+	: ContextCreator(name)
 	, mWindowWidth(width)
 	, mWindowHeight(height)
 {
 	glfwInit();
 }
-GLGlfwContextCreator::~GLGlfwContextCreator()
+GlfwContextCreator::~GlfwContextCreator()
 {
 	glfwTerminate();
 }
 
-void GLGlfwContextCreator::createContext()
+void GlfwContextCreator::createContext()
 {
 	// glfw: initialize and configure
 	// ------------------------------
@@ -42,20 +42,8 @@ void GLGlfwContextCreator::createContext()
 		throw std::runtime_error("Failed to create GLFW window");
 
 	glfwMakeContextCurrent(mWindow);
-	glfwSetFramebufferSizeCallback(
-		mWindow, [](GLFWwindow * /*window*/, int width, int height)
-		{ glViewport(0, 0, width, height); });
-
-	// glad: load all OpenGL function pointers
-	// ---------------------------------------
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		throw std::runtime_error("Failed to initialize GLAD");
-
-	const char *version =
-		reinterpret_cast<const char *>(glGetString(GL_VERSION));
-	std::cerr << "Using next OpenGL version: " << version << std::endl;
 }
-void GLGlfwContextCreator::destroyContext()
+void GlfwContextCreator::destroyContext()
 {
 	glfwDestroyWindow(mWindow);
 }

@@ -4,6 +4,8 @@ include_directories(.)
 find_package(GLFW3)
 if(GLFW3_FOUND)
 	add_library(glfw-context-creator STATIC
+		OpenGLGlfwContextCreator.cpp
+		OpenGLGlfwContextCreator.h
 		GLGlfwContextCreator.cpp
 		GLGlfwContextCreator.hpp
 	)

@@ -1,6 +1,6 @@
 #include <src/components/Singleton.hpp>
 #include <src/objects/camera/CameraController.hpp>
-#include <GLGlfwContextCreator.hpp>
+#include <OpenGLGlfwContextCreator.h>
 #include <map>
 #include <Eigen/Dense>
 
@@ -177,8 +177,8 @@ private:
 		//===================end callbacks======================
 	}
 
-	dream::glcontext::GLGlfwContextCreator glfwContext;
+	dream::glcontext::OpenGLGlfwContextCreator glfwContext;
 	std::function<void()> mRenderFunction;
-	dream::glcontext::GLContextBinder mContextBinder;
+	dream::glcontext::ContextBinder mContextBinder;
 	bool mRotateEnabled = false;
 };
